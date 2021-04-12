@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">StudentScheduler</string>
+    <!-- Term Fragments   -->
+    <string name="fragment_new_term">New Term</string>
+    <string name="fragment_term_dates">%s until %s </string>
+
+</resources>

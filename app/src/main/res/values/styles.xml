@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="StudentSchedulerTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="termNameTextStyle">@style/termNameText</item>
+        <item name="termDatesTextStyle">@style/termDatesText</item>
+        <item name="termEditButtonStyle">@style/termEditButton</item>
+    </style>
+
+    <style name="termNameText">
+        <item name="android:background">@color/purple_700</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/text_view_term_list_layout_height</item>
+        <item name="android:layout_margin">@dimen/text_view_term_list_layout_margin</item>
+        <item name="android:padding">@dimen/text_view_term_list_padding</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="termDatesText" parent="termNameText">
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="termEditButton">
+        <item name="android:background">@color/purple_700</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/image_button_term_list_layout_margin</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:padding">@dimen/image_button_term_list_padding</item>
+    </style>
+</resources>
