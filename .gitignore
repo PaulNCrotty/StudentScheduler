@@ -79,5 +79,5 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 
-
+# From Android Studio
 .DS_Store
