@@ -3,9 +3,40 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/term_list_fragment_container"
+    android:id="@+id/degree_plan_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
+    <!-- TODO make this a fragment that can be added and removed from a list of fragments -->
+    <TextView
+        android:id="@+id/background"
+        style="@style/termBackgroundBanner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/termName"
+        android:layout_width="wrap_content"
+        android:text="Term Name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/termTextField" />
+
+    <TextView
+        android:id="@+id/termDates"
+        android:text="2021-01-01 until 2021-06-30"
+        app:layout_constraintEnd_toStartOf="@+id/editTermIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/termTextField" />
+
+    <ImageView
+        android:id="@+id/editTermIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_edit_24"
+        style="@style/termEditButton"
+        android:onClick="editTermDetails" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

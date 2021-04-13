@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="TermTheme">
-        <attr format="reference" name="termNameTextStyle"/>
-        <attr format="reference" name="termDatesTextStyle"/>
+        <attr format="reference" name="termBackgroundBanner"/>
+        <attr format="reference" name="termTextFieldStyle"/>
         <attr format="reference" name="termEditButtonStyle"/>
     </declare-styleable>
 </resources>
