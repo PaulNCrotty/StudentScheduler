@@ -15,16 +15,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment termContainerFragment = fragmentManager.findFragmentById(R.id.term_list_fragment);
-
-        if(termContainerFragment == null) {
-            System.out.println("Creating new fragment container for Terms");
-            fragmentManager.beginTransaction()
-                    .add(R.id.term_list_fragment, termContainerFragment)
-                    .commit();
-        }
     }
 
     public void showDatePickerDialog(View view) {

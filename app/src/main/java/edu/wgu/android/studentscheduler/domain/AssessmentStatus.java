@@ -1,23 +1,20 @@
 package edu.wgu.android.studentscheduler.domain;
 
-public enum TermStatus {
+public enum AssessmentStatus {
 
-    FUTURE_EMPTY("New"),
     FUTURE_UNAPPROVED("Planned"),
     FUTURE_APPROVED("Approved"),
-    CURRENT("Enrolled"),
-    PAST_INCOMPLETE("Incomplete"),
-    PAST_COMPLETE("Completed");
-
-
-    private TermStatus(String status) {
-        this.status = status;
-    }
+    SCHEDULED("Scheduled"),
+    PASSED("Passed"),
+    FAILED("Failed");
 
     private String status;
+
+    private AssessmentStatus(String status) {
+        this.status = status;
+    }
 
     public String getStatus() {
         return status;
     }
-
 }
