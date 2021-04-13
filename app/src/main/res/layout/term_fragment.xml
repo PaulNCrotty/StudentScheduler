@@ -5,34 +5,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/background"
-        style="@style/termBackgroundBanner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--    <TextView-->
+<!--        android:id="@+id/background"-->
+<!--        style="@style/termBackgroundBanner"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
-    <TextView
-        android:id="@+id/termName"
-        android:layout_width="wrap_content"
-        android:text="@string/fragment_new_term"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/termTextField" />
+<!--    <TextView-->
+<!--        android:id="@+id/termName"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:text="@string/fragment_new_term"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        style="@style/termTextField" />-->
 
-    <TextView
-        android:id="@+id/termDates"
-        android:text="@string/fragment_term_dates"
-        app:layout_constraintEnd_toStartOf="@+id/editTermIcon"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/termTextField" />
+<!--    <TextView-->
+<!--        android:id="@+id/termDates"-->
+<!--        android:text="@string/fragment_term_dates"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/editTermIcon"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        style="@style/termTextField" />-->
 
-    <ImageView
-        android:id="@+id/editTermIcon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_edit_24"
-        style="@style/termEditButton"
-        android:onClick="editTermDetails" />
+<!--    <ImageView-->
+<!--        android:id="@+id/editTermIcon"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="@drawable/ic_baseline_edit_24"-->
+<!--        style="@style/termEditButton"-->
+<!--        android:onClick="editTermDetails" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,7 +19,7 @@
            includes fixes specific to fragments that other view groups such as FrameLayout
            do not provide. (see https://developer.android.com/guide/fragments/create) -->
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/term_container_view"
+        android:id="@+id/term_container_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

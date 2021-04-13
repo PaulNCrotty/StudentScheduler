@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +13,6 @@ import java.util.List;
 import edu.wgu.android.studentscheduler.domain.Term;
 import edu.wgu.android.studentscheduler.domain.TermStatus;
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
-import edu.wgu.android.studentscheduler.fragment.TermFragment;
 
 /**
  * Generally, your fragment must be embedded within an AndroidX FragmentActivity to contribute a
@@ -39,15 +40,18 @@ public class MainActivity extends AppCompatActivity {
          *
          * Other really useful information: https://developer.android.com/guide/fragments/fragmentmanager
          */
-        if(savedInstanceState == null) {
-            List<Term> termData = getTermData();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.term_container_view, new TermFragment(termData.get(0)))
-                    .add(R.id.term_container_view, new TermFragment(termData.get(1)))
-                    .add(R.id.term_container_view, new TermFragment(termData.get(2)))
-                    .setReorderingAllowed(true)
-                    .commit();
-        }
+//        if(savedInstanceState == null) {
+//            List<Term> termData = getTermData();
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.term_container_view, new TermFragment(termData.get(0)))
+//                    .add(R.id.term_container_view, new TermFragment(termData.get(1)))
+//                    .add(R.id.term_container_view, new TermFragment(termData.get(2)))
+//                    .setReorderingAllowed(true)
+//                    .commit();
+//        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment termContainerFragment = fragmentManager.findFragmentById(R.id.term_container_fragment);
     }
 
     public void showDatePickerDialog(View view) {
