@@ -9,6 +9,9 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- custom colors  -->
-    <color name="dark_green">#070</color>
     <color name="orange_dream">#A70</color>
+    <color name="green">#FF00C000</color>
+    <color name="dark_green">#FF007000</color>
+    <color name="orange">#FFF0A000</color>
+    <color name="red_orange">#FFFF6000</color>
 </resources>

@@ -18,7 +18,7 @@
            includes fixes specific to fragments that other view groups such as FrameLayout
            do not provide. (see https://developer.android.com/guide/fragments/create) -->
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/degree_plan_container"
+        android:id="@+id/degree_plan_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
