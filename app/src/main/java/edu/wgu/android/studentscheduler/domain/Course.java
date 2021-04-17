@@ -2,6 +2,11 @@ package edu.wgu.android.studentscheduler.domain;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class Course {
 
     private String courseName;

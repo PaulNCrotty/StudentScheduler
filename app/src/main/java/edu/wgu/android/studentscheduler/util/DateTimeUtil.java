@@ -10,6 +10,7 @@ import java.util.Locale;
 public class DateTimeUtil {
 
     private static final SimpleDateFormat DATE_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private static final SimpleDateFormat DATETIME_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSS", Locale.US);
 
     /**
      * Simple method that takes the year, month, and day of month and converts it to an ISO 8601
@@ -20,7 +21,7 @@ public class DateTimeUtil {
      * @param day_of_month - the integer day of month (1 - 31)
      * @return a string formatted in ISO 8601 for the date (year, month, day)
      */
-    public static String getDateString(int year, int month,  int day_of_month) {
+    public static String getDateString(int year, int month, int day_of_month) {
         String dateString;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             dateString = LocalDate.of(year, month, day_of_month).toString();
@@ -30,5 +31,13 @@ public class DateTimeUtil {
             dateString = DATE_FORMATTER_ISO_8601.format(calendar.getTime());
         }
         return dateString;
+    }
+
+    public static String getDateString(Calendar calendar) {
+        return DATE_FORMATTER_ISO_8601.format(calendar.getTime());
+    }
+
+    public static String getDateTimeString(Calendar calendar) {
+        return DATETIME_FORMATTER_ISO_8601.format(calendar.getTime());
     }
 }
