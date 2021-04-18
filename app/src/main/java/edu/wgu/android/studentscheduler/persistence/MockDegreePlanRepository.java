@@ -22,6 +22,8 @@ public class MockDegreePlanRepository {
     public static final Random RANDOM = new Random(new Date().getTime());
     public static final Calendar CURRENT_TERM_START = getBeginningOfCurrentTerm();
     public static final int MONTHS_PER_TERM = 6;
+    private static final int AVG_DAYS_PER_MONTH = 30; // floor (365/12); double a = (365.00/12.00);
+    public static final int COURSE_TURNAROUND_BUFFER = 2;
 
     private static final int MAX_COURSES_PER_TERM = 10;
     private static final int MAX_COURSES_TERMS_PER_PLAN = 10;
@@ -54,10 +56,6 @@ public class MockDegreePlanRepository {
     }
 
     public DegreePlan getDegreePlanData() {
-        Random random = new Random(new Date().getTime());
-
-        List<Course> courses = getMockCourses();
-
         return new DegreePlan(1, "myDegreePlan", getMockTerms());
     }
 
@@ -67,11 +65,14 @@ public class MockDegreePlanRepository {
 
         Calendar termStartDate = getFirstTermStartDate(amountOTermsInDegreePlan);
         for (int i = 0; i < amountOTermsInDegreePlan; i++) {
-            String termName = TERM_NAME_POOL.get(RANDOM.nextInt(TERM_NAME_POOL.size()));
+            String termName = String.format(TERM_NAME_POOL.get(RANDOM.nextInt(TERM_NAME_POOL.size())), termStartDate.get(Calendar.YEAR)); //TODO select term name that makes more sense based upon term dates....
             String startDate = getDateString(termStartDate);
             String endDate = getEndOfTerm(termStartDate);
             TermStatus status = getTermStatus(termStartDate);
-            terms.add(new Term(termName, startDate, endDate, getMockCourses(), getTermStatus(termStartDate)));
+            List<Course> mockCourses = getMockCourses(termStartDate);
+            terms.add(new Term(termName, startDate, endDate, mockCourses, status));
+
+            toNextTermStartDate(termStartDate); //prepared for next iteration
         }
         return terms;
     }
@@ -97,10 +98,16 @@ public class MockDegreePlanRepository {
     }
 
     protected String getEndOfTerm(Calendar firstDayOfTerm) {
-        //Does this mutate the reference?
+        Calendar endOfTerm = Calendar.getInstance();
+        endOfTerm.setTime(firstDayOfTerm.getTime());
+        endOfTerm.add(Calendar.MONTH, MONTHS_PER_TERM);
+        endOfTerm.add(Calendar.MILLISECOND, -1);
+        return getDateString(endOfTerm);
+    }
+
+    protected void toNextTermStartDate(Calendar firstDayOfTerm) {
         firstDayOfTerm.add(Calendar.MONTH, MONTHS_PER_TERM);
-        firstDayOfTerm.add(Calendar.MILLISECOND, -1);
-        return getDateString(firstDayOfTerm);
+        atBeginningOfMonth(firstDayOfTerm);
     }
 
     public TermStatus getTermStatus(Calendar termStartDate) {
@@ -133,25 +140,53 @@ public class MockDegreePlanRepository {
         return status;
     }
 
-    protected List<Course> getMockCourses() {
+    protected List<Course> getMockCourses(Calendar termStartDate) {
         int amountOfCoursesInTerm = RANDOM.nextInt(MAX_COURSES_PER_TERM) + 1;
         List<Course> courses = new ArrayList<>(amountOfCoursesInTerm);
         CourseStatus[] courseStatuses = CourseStatus.values();
+
+        int avgDaysPerCourse = getDaysPerCourse(amountOfCoursesInTerm);
+
+        Calendar courseStartDate = Calendar.getInstance();
+        courseStartDate.setTime(termStartDate.getTime());
         for (int i = 0; i < amountOfCoursesInTerm; i++) {
             int nameIndex = RANDOM.nextInt(COURSE_NAME_POOL.size());
             String courseName = COURSE_NAME_POOL.get(nameIndex);
             String courseCode = "" + COURSE_CODE_POOL.get(RANDOM.nextInt(COURSE_CODE_POOL.size())) + nameIndex + COURSE_CODE_NUMBER_POOL.get(RANDOM.nextInt(COURSE_CODE_NUMBER_POOL.size()));
-            String startDate = getDateString(2021, 6, 20);
-            String endDate = getDateString(2021, 10, 21);
+            String startDate = getDateString(courseStartDate);
+            String endDate = getDateString(toCourseEndDate(courseStartDate, avgDaysPerCourse));
             List<Assessment> assessments = null; //TODO add fake assessments?
-            CourseStatus status = courseStatuses[RANDOM.nextInt(courseStatuses.length)];
+            CourseStatus status = courseStatuses[RANDOM.nextInt(courseStatuses.length)]; //TODO select course status from a smaller pool that make sense based upon specific course dates
             CourseInstructor instructor = null; //TODO add fake instructor?
             List<String> courseNotes = null; //TODO add random notes?
 
             courses.add(new Course(courseName, courseCode, startDate, endDate, assessments, status, instructor, courseNotes));
 
+            //Prep for next iteration
+            courseStartDate.add(Calendar.DAY_OF_MONTH, COURSE_TURNAROUND_BUFFER);
+
         }
         return courses;
+    }
+
+    Calendar toCourseEndDate(Calendar courseStartDate, int daysPerCourse) {
+        courseStartDate.add(Calendar.DAY_OF_MONTH, daysPerCourse);
+        return courseStartDate;
+    }
+
+    /**
+     * A simple method to calculate the number of days to be allotted to each course for an even
+     * spread
+     *
+     * @param amountOfCoursesInTerm - the number of courses to be packed into a term
+     * @return the number of days to be allotted to each course
+     */
+    private static int getDaysPerCourse(int amountOfCoursesInTerm) {
+        return getDaysPerCourse(amountOfCoursesInTerm, COURSE_TURNAROUND_BUFFER);
+    }
+
+    private static int getDaysPerCourse(int amountOfCoursesInTerm, int buffer) {
+        return ((AVG_DAYS_PER_MONTH * MONTHS_PER_TERM)/amountOfCoursesInTerm) - buffer;
     }
 
 }

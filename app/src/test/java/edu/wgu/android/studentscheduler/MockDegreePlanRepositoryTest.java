@@ -1,10 +1,13 @@
 package edu.wgu.android.studentscheduler;
 
+import com.google.gson.Gson;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Calendar;
 
+import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.TermStatus;
 import edu.wgu.android.studentscheduler.persistence.MockDegreePlanRepository;
 
@@ -16,9 +19,17 @@ public class MockDegreePlanRepositoryTest {
     private static final int MONTHS_PER_TERM = 6;
     private static final int AVG_YEARS_TO_GRADUATE = 5;
     private static final int MONTHS_PER_YEAR = 12;
-    private static final int TERMS_PER_YEAR = MONTHS_PER_YEAR/MONTHS_PER_TERM;
+    private static final int TERMS_PER_YEAR = MONTHS_PER_YEAR / MONTHS_PER_TERM;
 
     private static final MockDegreePlanRepository dpRepo = new MockDegreePlanRepository();
+
+    @Test
+    public void test__getMockTerms() {
+        Gson gson = new Gson();
+        DegreePlan degreePlan = dpRepo.getDegreePlanData();
+
+        System.out.println(gson.toJson(degreePlan));
+    }
 
     @Test
     public void test__getBeginningOfCurrentTerm() {
@@ -74,7 +85,7 @@ public class MockDegreePlanRepositoryTest {
             Calendar termStartDate = Calendar.getInstance();
             termStartDate.setTime(MockDegreePlanRepository.CURRENT_TERM_START.getTime());
             //increment terms by MONTHS_PER_TERM units
-            termStartDate.add(Calendar.MONTH, MONTHS_PER_TERM * -(MockDegreePlanRepository.RANDOM.nextInt(TERMS_PER_YEAR * AVG_YEARS_TO_GRADUATE)+1));
+            termStartDate.add(Calendar.MONTH, MONTHS_PER_TERM * -(MockDegreePlanRepository.RANDOM.nextInt(TERMS_PER_YEAR * AVG_YEARS_TO_GRADUATE) + 1));
             MockDegreePlanRepository.atBeginningOfMonth(termStartDate);
             TermStatus status = dpRepo.getTermStatus(termStartDate);
             System.out.println("Status is " + status.getStatus());
@@ -107,13 +118,13 @@ public class MockDegreePlanRepositoryTest {
             Calendar termStartDate = Calendar.getInstance();
             termStartDate.setTime(MockDegreePlanRepository.CURRENT_TERM_START.getTime());
             //increment terms by MONTHS_PER_TERM units
-            termStartDate.add(Calendar.MONTH, MONTHS_PER_TERM * (MockDegreePlanRepository.RANDOM.nextInt(TERMS_PER_YEAR * AVG_YEARS_TO_GRADUATE)+1));
+            termStartDate.add(Calendar.MONTH, MONTHS_PER_TERM * (MockDegreePlanRepository.RANDOM.nextInt(TERMS_PER_YEAR * AVG_YEARS_TO_GRADUATE) + 1));
             MockDegreePlanRepository.atBeginningOfMonth(termStartDate);
 
             TermStatus status = dpRepo.getTermStatus(termStartDate);
             System.out.println("Status is " + status.getStatus());
 
-            if(status == TermStatus.FUTURE_APPROVED) {
+            if (status == TermStatus.FUTURE_APPROVED) {
                 Assert.assertTrue(termStartDate.compareTo(lowerBoundary) >= 0 &&
                         termStartDate.compareTo(upperBoundary) <= 0);
             } else {
