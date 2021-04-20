@@ -18,17 +18,29 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wgu.android.studentscheduler.R;
+import edu.wgu.android.studentscheduler.domain.Course;
+import edu.wgu.android.studentscheduler.domain.CourseStatus;
+import edu.wgu.android.studentscheduler.domain.DegreePlan;
+import edu.wgu.android.studentscheduler.domain.Term;
+import edu.wgu.android.studentscheduler.persistence.MockDegreePlanRepository;
 
 import static android.view.View.generateViewId;
 
 public class DegreePlanFragment extends Fragment {
 
+    private static final MockDegreePlanRepository dpRepo = new MockDegreePlanRepository();
+    private static final Map<CourseStatus, Integer> COURSE_STATUS_MAP = getCourseStatusMap();
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
+
         ConstraintLayout degreePlanContainer = (ConstraintLayout) inflater.inflate(R.layout.degree_plan_fragment, container, false);
         Log.d("IDS", String.format("Degree Plan Container ID: %d",degreePlanContainer.getId())); //2131230845
 
@@ -39,229 +51,155 @@ public class DegreePlanFragment extends Fragment {
         int defaultTextColor = Color.parseColor("#FFFFFF");
         int courseTextColor = Color.parseColor("#3700B3");
 
-        // Degree plan level constraints (highest container level)
         ConstraintSet constraints = new ConstraintSet();
         constraints.clone(degreePlanContainer);
 
-        //High-level term one details
-        TextView termOneBackground = new TextView(fragmentContext);
-        termOneBackground.setId(generateViewId());
-//        termOneBackground.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, defaultTextHeight)); //get overwritten by constraint set... of no use
-        termOneBackground.setBackgroundColor(termBannerBackgroundColor);
-        degreePlanContainer.addView(termOneBackground);
+        DegreePlan degreePlan = getDegreePlan();
+        Gson gson = new Gson();
+        Log.d("DEGREE_PLAN: ", gson.toJson(degreePlan));
 
-        TextView termName = new TextView(fragmentContext);
-        termName.setId(generateViewId());
-//        termName.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, defaultTextHeight)); //get overwritten by constraint set... of no use
-        termName.setBackgroundColor(termBannerBackgroundColor);
-        termName.setTextColor(defaultTextColor);
-        termName.setText("Term One");
-        degreePlanContainer.addView(termName);
+        int connectionId = degreePlanContainer.getId();
+        for(Term term: degreePlan.getTerms()) {
+            //High-level term one details
+            TextView background = new TextView(fragmentContext);
+            background.setId(generateViewId());
+            background.setBackgroundColor(termBannerBackgroundColor);
+            degreePlanContainer.addView(background);
 
-        TextView termDates = new TextView(fragmentContext);
-        termDates.setId(generateViewId());
-        termDates.setBackgroundColor(termBannerBackgroundColor);
-        termDates.setTextColor(defaultTextColor);
-        termDates.setText("2021-01-01 until 2021-06-30");
-        degreePlanContainer.addView(termDates);
+            TextView title = new TextView(fragmentContext);
+            title.setId(generateViewId());
+            title.setBackgroundColor(termBannerBackgroundColor);
+            title.setTextColor(defaultTextColor);
+            title.setText(term.getTermName());
+            degreePlanContainer.addView(title);
 
-        ImageButton editIcon = new ImageButton(fragmentContext);
-        editIcon.setId(generateViewId());
-        editIcon.setBackgroundColor(termBannerBackgroundColor);
-        editIcon.setImageResource(R.drawable.ic_baseline_edit_24);
-        degreePlanContainer.addView(editIcon);
+            TextView dates = new TextView(fragmentContext);
+            dates.setId(generateViewId());
+            dates.setBackgroundColor(termBannerBackgroundColor);
+            dates.setTextColor(defaultTextColor);
+            dates.setText(getString(R.string.fragment_term_dates, term.getStartDate(), term.getEndDate()));
+            degreePlanContainer.addView(dates);
 
-        constraints.connect(termOneBackground.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        constraints.connect(termOneBackground.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        constraints.connect(termOneBackground.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
-        constraints.constrainHeight(termOneBackground.getId(), defaultTextHeight);
+            ImageButton editIcon = new ImageButton(fragmentContext);
+            editIcon.setId(generateViewId());
+            editIcon.setBackgroundColor(termBannerBackgroundColor);
+            editIcon.setImageResource(R.drawable.ic_baseline_edit_24);
+            degreePlanContainer.addView(editIcon);
 
-        constraints.connect(termName.getId(), ConstraintSet.START, termOneBackground.getId(), ConstraintSet.START);
-        constraints.connect(termName.getId(), ConstraintSet.TOP, termOneBackground.getId(), ConstraintSet.TOP);
-        constraints.constrainWidth(termName.getId(), ConstraintSet.WRAP_CONTENT);
-        constraints.setMargin(termName.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
-        constraints.setMargin(termName.getId(), ConstraintSet.START, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
+            constraints.connect(background.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+            constraints.connect(background.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+            if(connectionId == degreePlanContainer.getId()) {
+                constraints.connect(background.getId(), ConstraintSet.TOP, connectionId, ConstraintSet.TOP);
+            } else {
+                constraints.connect(background.getId(), ConstraintSet.TOP, connectionId, ConstraintSet.BOTTOM);
+            }
+            constraints.constrainHeight(background.getId(), defaultTextHeight);
 
-        constraints.connect(termDates.getId(), ConstraintSet.END, editIcon.getId(), ConstraintSet.START);
-        constraints.connect(termDates.getId(), ConstraintSet.TOP, termOneBackground.getId(), ConstraintSet.TOP);
-        constraints.constrainWidth(termDates.getId(), ConstraintSet.WRAP_CONTENT);
-        constraints.setMargin(termDates.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
-        constraints.setMargin(termDates.getId(), ConstraintSet.START, 20);
-        constraints.setMargin(termDates.getId(), ConstraintSet.END, 20);
+            constraints.connect(title.getId(), ConstraintSet.START, background.getId(), ConstraintSet.START);
+            constraints.connect(title.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.TOP);
+            constraints.constrainWidth(title.getId(), ConstraintSet.WRAP_CONTENT);
+            constraints.setMargin(title.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
+            constraints.setMargin(title.getId(), ConstraintSet.START, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
 
-        constraints.connect(editIcon.getId(), ConstraintSet.END, termOneBackground.getId(), ConstraintSet.END);
-        constraints.connect(editIcon.getId(), ConstraintSet.TOP, termOneBackground.getId(), ConstraintSet.TOP);
-        constraints.constrainWidth(editIcon.getId(), ConstraintSet.WRAP_CONTENT);
-        constraints.setMargin(editIcon.getId(), ConstraintSet.END, 20);
+            constraints.connect(dates.getId(), ConstraintSet.END, editIcon.getId(), ConstraintSet.START);
+            constraints.connect(dates.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.TOP);
+            constraints.constrainWidth(dates.getId(), ConstraintSet.WRAP_CONTENT);
+            constraints.setMargin(dates.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
+            constraints.setMargin(dates.getId(), ConstraintSet.START, 20);
+            constraints.setMargin(dates.getId(), ConstraintSet.END, 20);
 
-        // Course container and high-level course details
-        ConstraintLayout termOneCoursesContainer = new ConstraintLayout(fragmentContext);
-        termOneCoursesContainer.setId(generateViewId());
-        termOneCoursesContainer.setBackgroundColor(courseContainerBackgroundColor);
-        degreePlanContainer.addView(termOneCoursesContainer);
+            constraints.connect(editIcon.getId(), ConstraintSet.END, background.getId(), ConstraintSet.END);
+            constraints.connect(editIcon.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.TOP);
+            constraints.constrainWidth(editIcon.getId(), ConstraintSet.WRAP_CONTENT);
+            constraints.setMargin(editIcon.getId(), ConstraintSet.END, 20);
 
-        constraints.connect(termOneCoursesContainer.getId(), ConstraintSet.START, termOneBackground.getId(), ConstraintSet.START);
-        constraints.connect(termOneCoursesContainer.getId(), ConstraintSet.END, termOneBackground.getId(), ConstraintSet.END);
-        constraints.connect(termOneCoursesContainer.getId(), ConstraintSet.TOP, termOneBackground.getId(), ConstraintSet.BOTTOM); //begin where termOneBackground border ends (vertically)
-        constraints.constrainHeight(termOneCoursesContainer.getId(), ConstraintSet.WRAP_CONTENT); //TODO default to some generic value to allow for adding a course when no courses exist (newly created term)?
+            //Course Containers and Details
+            ConstraintLayout courseContainer = new ConstraintLayout(fragmentContext);
+            courseContainer.setId(generateViewId());
+            courseContainer.setBackgroundColor(courseContainerBackgroundColor);
 
-        ConstraintSet termCoursesConstraints = new ConstraintSet();
-        termCoursesConstraints.clone(termOneCoursesContainer);
+            degreePlanContainer.addView(courseContainer);
 
-        Context termOneContext = termOneCoursesContainer.getContext();
-        ImageView courseOneStatus = new ImageView(termOneContext);
-        courseOneStatus.setId(generateViewId());
-        courseOneStatus.setImageResource(R.drawable.course_status_passed_15);
-        termOneCoursesContainer.addView(courseOneStatus);
+            constraints.connect(courseContainer.getId(), ConstraintSet.START, background.getId(), ConstraintSet.START);
+            constraints.connect(courseContainer.getId(), ConstraintSet.END, background.getId(), ConstraintSet.END);
+            constraints.connect(courseContainer.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.BOTTOM); //begin where termOneBackground border ends (vertically)
+            constraints.constrainHeight(courseContainer.getId(), ConstraintSet.WRAP_CONTENT); //TODO default to some generic value to allow for adding a course when no courses exist (newly created term)?
 
-        Button courseOneName = new Button(termOneContext);
-        courseOneName.setId(generateViewId());
-        courseOneName.setTextColor(courseTextColor);
-        courseOneName.setText("C191 - Android is hard ... isn't it");
-        termOneCoursesContainer.addView(courseOneName);
+            ConstraintSet coursesConstraints = new ConstraintSet();
+            coursesConstraints.clone(courseContainer);
+            Context termContext = courseContainer.getContext();
+            int previousCourseId = courseContainer.getId(); //set first course top relative to container
+            for(Course course: term.getCourses()) {
+                ImageView courseStatus = new ImageView(termContext);
+                courseStatus.setId(generateViewId());
+                courseStatus.setImageResource(COURSE_STATUS_MAP.get(course.getStatus()));
+                courseContainer.addView(courseStatus);
 
-        TextView courseOneFinishDate = new TextView(termOneContext);
-        courseOneFinishDate.setId(generateViewId());
-        courseOneFinishDate.setTextColor(courseTextColor);
-        courseOneFinishDate.setText("2021-04-15");
-        termOneCoursesContainer.addView(courseOneFinishDate);
+                Button courseTitle = new Button(termContext);
+                courseTitle.setId(generateViewId());
+                courseTitle.setTextColor(courseTextColor);
+                courseTitle.setText(getString(R.string.course_title, course.getCourseCode(), course.getCourseName()));
+                courseContainer.addView(courseTitle);
 
-        termCoursesConstraints.connect(courseOneStatus.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        termCoursesConstraints.connect(courseOneStatus.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
-        termCoursesConstraints.constrainHeight(courseOneStatus.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.constrainWidth(courseOneStatus.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.setMargin(courseOneStatus.getId(), ConstraintSet.TOP, 28);
-        termCoursesConstraints.setMargin(courseOneStatus.getId(), ConstraintSet.START, 40);
+                TextView courseEndDate = new TextView(termContext);
+                courseEndDate.setId(generateViewId());
+                courseEndDate.setTextColor(courseTextColor);
+                courseEndDate.setText(course.getEndDate());
+                courseContainer.addView(courseEndDate);
 
-        termCoursesConstraints.connect(courseOneName.getId(), ConstraintSet.START, courseOneStatus.getId(), ConstraintSet.END);
-        termCoursesConstraints.connect(courseOneName.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
-        termCoursesConstraints.constrainHeight(courseOneName.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.constrainWidth(courseOneName.getId(), ConstraintSet.WRAP_CONTENT);
-//        termCoursesConstraints.setMargin(courseOneName.getId(), ConstraintSet.TOP, 20);
-        termCoursesConstraints.setMargin(courseOneName.getId(), ConstraintSet.START, 40);
+                coursesConstraints.connect(courseStatus.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+                coursesConstraints.constrainHeight(courseStatus.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.constrainWidth(courseStatus.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.setMargin(courseStatus.getId(), ConstraintSet.TOP, 28);
+                coursesConstraints.setMargin(courseStatus.getId(), ConstraintSet.START, 40);
 
-        termCoursesConstraints.connect(courseOneFinishDate.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        termCoursesConstraints.connect(courseOneFinishDate.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
-        termCoursesConstraints.constrainHeight(courseOneFinishDate.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.constrainWidth(courseOneFinishDate.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.setMargin(courseOneFinishDate.getId(), ConstraintSet.TOP, 35);
-        termCoursesConstraints.setMargin(courseOneFinishDate.getId(), ConstraintSet.END, 30);
+                coursesConstraints.connect(courseTitle.getId(), ConstraintSet.START, courseStatus.getId(), ConstraintSet.END);
+                coursesConstraints.constrainHeight(courseTitle.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.constrainWidth(courseTitle.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.setMargin(courseTitle.getId(), ConstraintSet.START, 40);
 
-        ImageView courseTwoStatus = new ImageView(termOneContext);
-        courseTwoStatus.setId(generateViewId());
-        courseTwoStatus.setImageResource(R.drawable.course_status_in_progress_15);
-        termOneCoursesContainer.addView(courseTwoStatus);
+                coursesConstraints.connect(courseEndDate.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+                coursesConstraints.constrainHeight(courseEndDate.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.constrainWidth(courseEndDate.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.setMargin(courseEndDate.getId(), ConstraintSet.TOP, 35);
+                coursesConstraints.setMargin(courseEndDate.getId(), ConstraintSet.END, 30);
 
-        Button courseTwoName = new Button(termOneContext);
-        courseTwoName.setId(generateViewId());
-        courseTwoName.setTextColor(courseTextColor);
-        courseTwoName.setText("C291 - More Android is even harder ... Wow!");
-        termOneCoursesContainer.addView(courseTwoName);
+                if(previousCourseId == courseContainer.getId()) {
+                    coursesConstraints.connect(courseStatus.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+                    coursesConstraints.connect(courseTitle.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+                    coursesConstraints.connect(courseEndDate.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+                } else {
+                    coursesConstraints.connect(courseStatus.getId(), ConstraintSet.TOP, previousCourseId, ConstraintSet.BOTTOM);
+                    coursesConstraints.connect(courseTitle.getId(), ConstraintSet.TOP, previousCourseId, ConstraintSet.BOTTOM);
+                    coursesConstraints.connect(courseEndDate.getId(), ConstraintSet.TOP, previousCourseId, ConstraintSet.BOTTOM);
+                }
 
-        termCoursesConstraints.connect(courseTwoStatus.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        termCoursesConstraints.connect(courseTwoStatus.getId(), ConstraintSet.TOP, courseOneName.getId(), ConstraintSet.BOTTOM);
-        termCoursesConstraints.constrainHeight(courseTwoStatus.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.constrainWidth(courseTwoStatus.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.setMargin(courseTwoStatus.getId(), ConstraintSet.TOP, 43);
-        termCoursesConstraints.setMargin(courseTwoStatus.getId(), ConstraintSet.START, 40);
+                previousCourseId = courseTitle.getId(); // prep for next course iteration
+            }
+            coursesConstraints.applyTo(courseContainer);
 
-        termCoursesConstraints.connect(courseTwoName.getId(), ConstraintSet.START, courseTwoStatus.getId(), ConstraintSet.END);
-        termCoursesConstraints.connect(courseTwoName.getId(), ConstraintSet.TOP, courseOneName.getId(), ConstraintSet.BOTTOM);
-        termCoursesConstraints.constrainHeight(courseTwoName.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.constrainWidth(courseTwoName.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.setMargin(courseTwoName.getId(), ConstraintSet.START, 35);
-//        termCoursesConstraints.setMargin(courseTwoName.getId(), ConstraintSet.TOP, 35);
+            connectionId = courseContainer.getId(); // prep for next term iteration
 
-        ImageView courseThreeStatus = new ImageView(termOneContext);
-        courseThreeStatus.setId(generateViewId());
-        courseThreeStatus.setImageResource(R.drawable.course_status_planned_15);
-        termOneCoursesContainer.addView(courseThreeStatus);
-
-        Button courseThreeName = new Button(termOneContext);
-        courseThreeName.setId(generateViewId());
-        courseThreeName.setTextColor(courseTextColor);
-        courseThreeName.setText("C391 - Almost getting it now ....");
-        termOneCoursesContainer.addView(courseThreeName);
-
-        TextView finalCourseBuffer = new TextView(termOneContext);
-        finalCourseBuffer.setId(generateViewId());
-        termOneCoursesContainer.addView(finalCourseBuffer);
-
-        termCoursesConstraints.connect(courseThreeStatus.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        termCoursesConstraints.connect(courseThreeStatus.getId(), ConstraintSet.TOP, courseTwoName.getId(), ConstraintSet.BOTTOM);
-        termCoursesConstraints.constrainHeight(courseThreeStatus.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.constrainWidth(courseThreeStatus.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.setMargin(courseThreeStatus.getId(), ConstraintSet.TOP, 43);
-        termCoursesConstraints.setMargin(courseThreeStatus.getId(), ConstraintSet.START, 40);
-//        termCoursesConstraints.setMargin(courseThreeStatus.getId(), ConstraintSet.BOTTOM, 35); //not working
-
-        termCoursesConstraints.connect(courseThreeName.getId(), ConstraintSet.START, courseThreeStatus.getId(), ConstraintSet.END);
-        termCoursesConstraints.connect(courseThreeName.getId(), ConstraintSet.TOP, courseTwoName.getId(), ConstraintSet.BOTTOM);
-        termCoursesConstraints.constrainHeight(courseThreeName.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.constrainWidth(courseThreeName.getId(), ConstraintSet.WRAP_CONTENT);
-        termCoursesConstraints.setMargin(courseThreeName.getId(), ConstraintSet.START, 35);
-//        termCoursesConstraints.setMargin(courseThreeName.getId(), ConstraintSet.TOP, 35);
-//        termCoursesConstraints.setMargin(courseThreeName.getId(), ConstraintSet.BOTTOM, 35); //TODO Note the need to add padding on the last item ... Not working :(
-
-        termCoursesConstraints.connect(finalCourseBuffer.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        termCoursesConstraints.connect(finalCourseBuffer.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        termCoursesConstraints.connect(finalCourseBuffer.getId(), ConstraintSet.TOP, courseThreeName.getId(), ConstraintSet.BOTTOM);
-        termCoursesConstraints.constrainWidth(finalCourseBuffer.getId(), ConstraintSet.MATCH_CONSTRAINT);
-        termCoursesConstraints.setMargin(finalCourseBuffer.getId(), ConstraintSet.TOP, 25);
-
-        termCoursesConstraints.applyTo(termOneCoursesContainer);
-
-        //High-level term two details
-        TextView termTwoBackground = new TextView(fragmentContext);
-        termTwoBackground.setId(generateViewId());
-        termTwoBackground.setBackgroundColor(termBannerBackgroundColor);
-        degreePlanContainer.addView(termTwoBackground);
-
-        TextView termTwoName = new TextView(fragmentContext);
-        termTwoName.setId(generateViewId());
-        termTwoName.setBackgroundColor(termBannerBackgroundColor);
-        termTwoName.setTextColor(defaultTextColor);
-        termTwoName.setText("Term Two");
-        degreePlanContainer.addView(termTwoName);
-
-        TextView termTwoDates = new TextView(fragmentContext);
-        termTwoDates.setId(generateViewId());
-        termTwoDates.setBackgroundColor(termBannerBackgroundColor);
-        termTwoDates.setTextColor(defaultTextColor);
-        termTwoDates.setText("2020-07-01 until 2020-06-30");
-        degreePlanContainer.addView(termTwoDates);
-
-        ImageButton termTwoEditIcon = new ImageButton(fragmentContext);
-        termTwoEditIcon.setId(generateViewId());
-        termTwoEditIcon.setBackgroundColor(termBannerBackgroundColor);
-        termTwoEditIcon.setImageResource(R.drawable.ic_baseline_edit_24);
-        degreePlanContainer.addView(termTwoEditIcon);
-
-        constraints.connect(termTwoBackground.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        constraints.connect(termTwoBackground.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        constraints.connect(termTwoBackground.getId(), ConstraintSet.TOP, termOneCoursesContainer.getId(), ConstraintSet.BOTTOM);
-        constraints.constrainHeight(termTwoBackground.getId(), defaultTextHeight);
-
-        constraints.connect(termTwoName.getId(), ConstraintSet.START, termTwoBackground.getId(), ConstraintSet.START);
-        constraints.connect(termTwoName.getId(), ConstraintSet.TOP, termTwoBackground.getId(), ConstraintSet.TOP);
-        constraints.constrainWidth(termTwoName.getId(), ConstraintSet.WRAP_CONTENT);
-        constraints.setMargin(termTwoName.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
-        constraints.setMargin(termTwoName.getId(), ConstraintSet.START, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
-
-        constraints.connect(termTwoDates.getId(), ConstraintSet.END, termTwoEditIcon.getId(), ConstraintSet.START);
-        constraints.connect(termTwoDates.getId(), ConstraintSet.TOP, termTwoBackground.getId(), ConstraintSet.TOP);
-        constraints.constrainWidth(termTwoDates.getId(), ConstraintSet.WRAP_CONTENT);
-        constraints.setMargin(termTwoDates.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
-        constraints.setMargin(termTwoDates.getId(), ConstraintSet.START, 20);
-        constraints.setMargin(termTwoDates.getId(), ConstraintSet.END, 20);
-
-        constraints.connect(termTwoEditIcon.getId(), ConstraintSet.END, termTwoBackground.getId(), ConstraintSet.END);
-        constraints.connect(termTwoEditIcon.getId(), ConstraintSet.TOP, termTwoBackground.getId(), ConstraintSet.TOP);
-        constraints.constrainWidth(termTwoEditIcon.getId(), ConstraintSet.WRAP_CONTENT);
-        constraints.setMargin(termTwoEditIcon.getId(), ConstraintSet.END, 20);
+        }
 
         constraints.applyTo(degreePlanContainer);
 
         return degreePlanContainer;
+    }
+
+    private static Map<CourseStatus, Integer> getCourseStatusMap() {
+        Map<CourseStatus, Integer> courseStatusMap = new HashMap<>(CourseStatus.values().length);
+        courseStatusMap.put(CourseStatus.PLANNED, R.drawable.course_status_planned_15);
+        courseStatusMap.put(CourseStatus.DROPPED, R.drawable.course_status_dropped_15);
+        courseStatusMap.put(CourseStatus.ENROLLED, R.drawable.course_status_enrolled_15);
+        courseStatusMap.put(CourseStatus.IN_PROGRESS, R.drawable.course_status_in_progress_15);
+        courseStatusMap.put(CourseStatus.PASSED, R.drawable.course_status_passed_15);
+        courseStatusMap.put(CourseStatus.FAILED, R.drawable.course_status_failed_15);
+
+        return courseStatusMap;
+    }
+
+    private DegreePlan getDegreePlan() {
+        return dpRepo.getDegreePlanData();
     }
 }

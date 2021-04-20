@@ -3,5 +3,6 @@
     <!-- Term Fragments   -->
     <string name="fragment_new_term">New Term</string>
     <string name="fragment_term_dates">%s until %s </string>
+    <string name="course_title">%s - %s</string>
 
 </resources>
