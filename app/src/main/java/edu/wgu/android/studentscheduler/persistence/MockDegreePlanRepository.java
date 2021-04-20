@@ -32,7 +32,10 @@ public class MockDegreePlanRepository {
     private static final List<String> COURSE_CODE_POOL = Arrays.asList("C", "D", "F", "G", "M", "R", "S", "T");
     private static final List<String> COURSE_CODE_NUMBER_POOL = Arrays.asList("01", "31", "51", "71", "91");
     private static final List<String> COURSE_NAME_POOL = Arrays.asList("Einstein Electric Math",
-            "Bunsen Chemistry", "Newton Fall Physics", "Mozart Music Medley", "Schwarzenegger Strength Training");
+            "Ada Lovelace Algorithms", "Bunsen Chemistry", "Curie Bio-Chemistry", "Newton Fall Physics",
+            "Clara Schumann Concerts", "Robert Schumann Rhythms", "Granville General Computations",
+            "Mozart Music Medley", "Serena Strength Training", "Schwarzenegger Training",
+            "Germain Geometry");
 
     /**
      * Generates a calendar instance at the beginning of a month anywhere from 5 to 0 months from today
