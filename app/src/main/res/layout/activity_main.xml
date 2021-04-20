@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generally speaking, your app should consist of a single or small number of activities in your
+<?xml version="1.0" encoding="utf-8"?><!-- Generally speaking, your app should consist of a single or small number of activities in your
      application project, with each activity representing a group of related screens. The activity
      may provide a point to place top-level navigation and a place to scope ViewModels and other
      view-state between fragments. Each individual destination in your app should be represented by
      a fragment. (see https://developer.android.com/guide/fragments/fragmentmanager) -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,11 +15,16 @@
            always use a FragmentContainerView as the container for fragments, as FragmentContainerView
            includes fixes specific to fragments that other view groups such as FrameLayout
            do not provide. (see https://developer.android.com/guide/fragments/create) -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/degree_plan_fragment"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="match_parent">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/degree_plan_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
