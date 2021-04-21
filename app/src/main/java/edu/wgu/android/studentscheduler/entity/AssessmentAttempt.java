@@ -1,14 +1,28 @@
-package edu.wgu.android.studentscheduler.domain;
+package edu.wgu.android.studentscheduler.entity;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
+@Entity(tableName = "assessment_attempt")
 public class AssessmentAttempt {
 
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    private Long id;
+
+    @ColumnInfo(name = "final_score")
     private Float finalScore;
+
+    @ColumnInfo(name = "assessment_date")
     private String assessmentDate;
+
     private AssessmentStatus status;
 
     /**

@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wgu.android.studentscheduler.R;
-import edu.wgu.android.studentscheduler.domain.Course;
-import edu.wgu.android.studentscheduler.domain.CourseStatus;
-import edu.wgu.android.studentscheduler.domain.DegreePlan;
-import edu.wgu.android.studentscheduler.domain.Term;
+import edu.wgu.android.studentscheduler.entity.Course;
+import edu.wgu.android.studentscheduler.entity.CourseStatus;
+import edu.wgu.android.studentscheduler.entity.DegreePlan;
+import edu.wgu.android.studentscheduler.entity.Term;
 import edu.wgu.android.studentscheduler.persistence.MockDegreePlanRepository;
 
 import static android.view.View.generateViewId;

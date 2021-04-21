@@ -1,4 +1,4 @@
-package edu.wgu.android.studentscheduler.domain;
+package edu.wgu.android.studentscheduler.entity;
 
 public enum CourseStatus {
 

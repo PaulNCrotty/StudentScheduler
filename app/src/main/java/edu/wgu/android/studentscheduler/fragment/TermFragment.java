@@ -4,20 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-import java.util.List;
 
 import edu.wgu.android.studentscheduler.R;
-import edu.wgu.android.studentscheduler.domain.Term;
+import edu.wgu.android.studentscheduler.entity.Term;
 
 public class TermFragment extends Fragment {
 

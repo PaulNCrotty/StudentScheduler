@@ -7,13 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import edu.wgu.android.studentscheduler.domain.Assessment;
-import edu.wgu.android.studentscheduler.domain.Course;
-import edu.wgu.android.studentscheduler.domain.CourseInstructor;
-import edu.wgu.android.studentscheduler.domain.CourseStatus;
-import edu.wgu.android.studentscheduler.domain.DegreePlan;
-import edu.wgu.android.studentscheduler.domain.Term;
-import edu.wgu.android.studentscheduler.domain.TermStatus;
+import edu.wgu.android.studentscheduler.entity.Assessment;
+import edu.wgu.android.studentscheduler.entity.Course;
+import edu.wgu.android.studentscheduler.entity.CourseInstructor;
+import edu.wgu.android.studentscheduler.entity.CourseStatus;
+import edu.wgu.android.studentscheduler.entity.DegreePlan;
+import edu.wgu.android.studentscheduler.entity.Term;
+import edu.wgu.android.studentscheduler.entity.TermStatus;
 
 import static edu.wgu.android.studentscheduler.util.DateTimeUtil.getDateString;
 

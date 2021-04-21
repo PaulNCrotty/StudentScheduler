@@ -1,4 +1,10 @@
-package edu.wgu.android.studentscheduler.domain;
+package edu.wgu.android.studentscheduler.entity;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
 
 import java.util.List;
 
@@ -9,15 +15,36 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString
+@Entity(tableName = "course",
+        foreignKeys = {@ForeignKey(entity = Assessment.class, parentColumns = "id", childColumns = "assessment"),
+                @ForeignKey(entity = CourseInstructor.class, parentColumns = "id", childColumns = "course_instructor")
+})
 public class Course {
 
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    private Long id;
+
+    @ColumnInfo(name="course_name")
     private String courseName;
+
+    @ColumnInfo(name="course_code")
     private String courseCode;
+
+    @ColumnInfo(name="start_date")
     private String startDate;
+
+    @ColumnInfo(name="end_date")
     private String endDate;
+
+    @ColumnInfo(name="assessment")
     private List<Assessment> assessments;
+
     private CourseStatus status;
+
     private CourseInstructor instructor;
+
+    @ColumnInfo(name="note")
     private List<String> courseNotes;
 
 
