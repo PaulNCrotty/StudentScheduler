@@ -1,5 +1,8 @@
 package edu.wgu.android.studentscheduler.persistence.contract;
 
+/***
+ * Standard Contract class with static nested classes for the underlying tables supporting the student scheduler
+ */
 public class DegreePlanContract {
 
     private static final String ID = "ID";

@@ -1,12 +1,14 @@
 package edu.wgu.android.studentscheduler;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
 import edu.wgu.android.studentscheduler.fragment.DegreePlanFragment;
+import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
 
 /**
  * Generally, your fragment must be embedded within an AndroidX FragmentActivity to contribute a
@@ -17,6 +19,8 @@ import edu.wgu.android.studentscheduler.fragment.DegreePlanFragment;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static DegreePlanRepositoryManager repositoryManager;
+
     public MainActivity() {
         super(R.layout.activity_main);
     }
@@ -24,6 +28,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        repositoryManager = DegreePlanRepositoryManager.getInstance(getApplicationContext());
+
+        long rowId = repositoryManager.insertDegreePlan("Test Plan");
+        Log.d("MAIN", "DEGREE_PLAN_ROW_ID: " + rowId);
         /*
          * In the previous example, note that the fragment transaction is only created when
          * savedInstanceState is null. This is to ensure that the fragment is added only once, when
