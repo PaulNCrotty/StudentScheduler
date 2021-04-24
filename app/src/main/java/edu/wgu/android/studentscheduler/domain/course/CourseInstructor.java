@@ -1,6 +1,5 @@
 package edu.wgu.android.studentscheduler.domain.course;
 
-import edu.wgu.android.studentscheduler.domain.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,7 +12,6 @@ public class CourseInstructor {
     private String lastName;
     private String phoneNumber;
     private String email;
-    private Address address;
 
 }
 

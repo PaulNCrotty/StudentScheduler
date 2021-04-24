@@ -15,7 +15,12 @@ public class Course {
     private Long id;
     private String courseName;
     private String courseCode;
+    private String startDate;
+    private String endDate;
+    private CourseStatus status;
+    private CourseInstructor instructor;
     private List<Assessment> assessments;
+    private List<String> courseNotes; //optional display field
 
     //TODO add functionality that allows the user to adjust list of assessments associated with course to their heart's desire
 

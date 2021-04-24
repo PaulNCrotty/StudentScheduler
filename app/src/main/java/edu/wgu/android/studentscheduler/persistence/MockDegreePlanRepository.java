@@ -163,7 +163,7 @@ public class MockDegreePlanRepository {
             CourseInstructor instructor = null; //TODO add fake instructor?
             List<String> courseNotes = null; //TODO add random notes?
 
-            courses.add(new Course((long) (i + 1), courseName, courseCode, startDate, endDate, assessments, status, instructor, courseNotes));
+            courses.add(new Course((long) (i + 1), courseName, courseCode, startDate, endDate, status, instructor, assessments, courseNotes));
 
             //Prep for next iteration
             courseStartDate.add(Calendar.DAY_OF_MONTH, COURSE_TURNAROUND_BUFFER);
