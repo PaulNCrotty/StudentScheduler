@@ -1,4 +1,4 @@
-package edu.wgu.android.studentscheduler.entity;
+package edu.wgu.android.studentscheduler.domain;
 
 public enum TermStatus {
 

@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import edu.wgu.android.studentscheduler.R;
-import edu.wgu.android.studentscheduler.entity.Term;
+import edu.wgu.android.studentscheduler.domain.Term;
 
 public class TermFragment extends Fragment {
 

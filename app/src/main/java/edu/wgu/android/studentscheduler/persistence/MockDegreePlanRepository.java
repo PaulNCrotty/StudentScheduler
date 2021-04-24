@@ -7,13 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import edu.wgu.android.studentscheduler.entity.Assessment;
-import edu.wgu.android.studentscheduler.entity.Course;
-import edu.wgu.android.studentscheduler.entity.CourseInstructor;
-import edu.wgu.android.studentscheduler.entity.CourseStatus;
-import edu.wgu.android.studentscheduler.entity.DegreePlan;
-import edu.wgu.android.studentscheduler.entity.Term;
-import edu.wgu.android.studentscheduler.entity.TermStatus;
+import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
+import edu.wgu.android.studentscheduler.domain.course.Course;
+import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
+import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
+import edu.wgu.android.studentscheduler.domain.DegreePlan;
+import edu.wgu.android.studentscheduler.domain.Term;
+import edu.wgu.android.studentscheduler.domain.TermStatus;
 
 import static edu.wgu.android.studentscheduler.util.DateTimeUtil.getDateString;
 
@@ -73,7 +73,7 @@ public class MockDegreePlanRepository {
             String endDate = getEndOfTerm(termStartDate);
             TermStatus status = getTermStatus(termStartDate);
             List<Course> mockCourses = getMockCourses(termStartDate);
-            terms.add(new Term(termName, startDate, endDate, mockCourses, status));
+            terms.add(new Term((long) i + 1, termName, startDate, endDate, mockCourses, status));
 
             toNextTermStartDate(termStartDate); //prepared for next iteration
         }
@@ -163,7 +163,7 @@ public class MockDegreePlanRepository {
             CourseInstructor instructor = null; //TODO add fake instructor?
             List<String> courseNotes = null; //TODO add random notes?
 
-            courses.add(new Course(courseName, courseCode, startDate, endDate, assessments, status, instructor, courseNotes));
+            courses.add(new Course((long) (i + 1), courseName, courseCode, startDate, endDate, assessments, status, instructor, courseNotes));
 
             //Prep for next iteration
             courseStartDate.add(Calendar.DAY_OF_MONTH, COURSE_TURNAROUND_BUFFER);

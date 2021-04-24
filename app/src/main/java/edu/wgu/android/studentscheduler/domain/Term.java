@@ -1,7 +1,8 @@
-package edu.wgu.android.studentscheduler.entity;
+package edu.wgu.android.studentscheduler.domain;
 
 import java.util.List;
 
+import edu.wgu.android.studentscheduler.domain.course.Course;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -11,6 +12,7 @@ import lombok.ToString;
 @ToString
 public class Term {
 
+    private Long id;
     private String termName;
     private String startDate;
     private String endDate;

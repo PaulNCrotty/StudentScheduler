@@ -1,11 +1,9 @@
-package edu.wgu.android.studentscheduler.entity;
+package edu.wgu.android.studentscheduler.domain;
 
-
-import androidx.room.ColumnInfo;
 
 public class Address {
 
-    @ColumnInfo(name="post_code")
+    private Long id;
     private int postalCode;
     private String street;
     private String state;
