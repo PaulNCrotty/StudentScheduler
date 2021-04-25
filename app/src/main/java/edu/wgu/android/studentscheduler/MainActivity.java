@@ -2,6 +2,7 @@ package edu.wgu.android.studentscheduler;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,8 +20,6 @@ import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private static DegreePlanRepositoryManager repositoryManager;
-
     public MainActivity() {
         super(R.layout.activity_main);
     }
@@ -28,10 +27,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        repositoryManager = DegreePlanRepositoryManager.getInstance(getApplicationContext());
-
-        long rowId = repositoryManager.insertDegreePlan("Test Plan");
-        Log.d("MAIN", "DEGREE_PLAN_ROW_ID: " + rowId);
         /*
          * In the previous example, note that the fragment transaction is only created when
          * savedInstanceState is null. This is to ensure that the fragment is added only once, when
@@ -42,13 +37,19 @@ public class MainActivity extends AppCompatActivity {
          *
          * Other really useful information: https://developer.android.com/guide/fragments/fragmentmanager
          */
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.degree_plan_fragment, DegreePlanFragment.class, null)
-                    .setReorderingAllowed(true)
-                    .commit();
-        }
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.degree_plan_fragment, DegreePlanFragment.class, null)
+//                    .setReorderingAllowed(true)
+//                    .commit();
+//        }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_appbar_menu, menu);
+        return true;
     }
 
     public void showDatePickerDialog(View view) {

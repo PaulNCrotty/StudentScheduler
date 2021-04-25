@@ -15,16 +15,58 @@
            always use a FragmentContainerView as the container for fragments, as FragmentContainerView
            includes fixes specific to fragments that other view groups such as FrameLayout
            do not provide. (see https://developer.android.com/guide/fragments/create) -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/degree_plan_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </ScrollView>
+<!--        <androidx.fragment.app.FragmentContainerView-->
+<!--            android:id="@+id/degree_plan_fragment"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+<!--    </ScrollView>-->
+
+    <ImageView
+        android:id="@+id/calendarIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/edit_calendar"
+        android:layout_marginTop="50dp"
+        android:contentDescription="generic calendar icon used as logo" />
+
+    <TextView
+        android:id="@+id/homePageTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/calendarIcon"
+        app:layout_constraintBottom_toTopOf="@+id/createNewPlanButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Student Scheduler App"
+        android:textColor="@color/orange"
+        android:textSize="34sp"
+        android:layout_margin="15dp" />
+
+    <Button
+        android:id="@+id/createNewPlanButton"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:text="New Plan"
+        app:layout_constraintBottom_toTopOf="@id/existingPlansButton"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="15dp" />
+
+    <Button
+        android:id="@+id/existingPlansButton"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:text="Existing Plans"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="15dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
