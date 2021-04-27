@@ -68,7 +68,7 @@ public class DegreePlanFragmentPoc extends Fragment {
         ImageButton editIcon = new ImageButton(fragmentContext);
         editIcon.setId(generateViewId());
         editIcon.setBackgroundColor(termBannerBackgroundColor);
-        editIcon.setImageResource(R.drawable.ic_baseline_edit_24);
+        editIcon.setImageResource(R.drawable.edit_icon_white);
         degreePlanContainer.addView(editIcon);
 
         constraints.connect(termOneBackground.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
@@ -234,7 +234,7 @@ public class DegreePlanFragmentPoc extends Fragment {
         ImageButton termTwoEditIcon = new ImageButton(fragmentContext);
         termTwoEditIcon.setId(generateViewId());
         termTwoEditIcon.setBackgroundColor(termBannerBackgroundColor);
-        termTwoEditIcon.setImageResource(R.drawable.ic_baseline_edit_24);
+        termTwoEditIcon.setImageResource(R.drawable.edit_icon_white);
         degreePlanContainer.addView(termTwoEditIcon);
 
         constraints.connect(termTwoBackground.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);

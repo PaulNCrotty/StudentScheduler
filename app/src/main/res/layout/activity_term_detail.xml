@@ -5,18 +5,34 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/termDetailContainer"
+        android:id="@+id/assessmentDetailContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/termDetailsEditMainHeader"
+            android:background="@color/light_orange"/>
         <TextView
             android:id="@+id/termDetailsEditMainHeader"
             style="@style/detailsViewBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Term Details Editor"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/editIconImage"
             app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/editIconImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/termDetailsEditMainHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/termDetailsEditMainHeader"
+            android:src="@drawable/edit_icon_white_medium" />
 
         <!-- Extra padding for top on this first label because marginBottom for banner doesn't seem to be working -->
         <TextView
@@ -37,7 +53,7 @@
             app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
             app:layout_constraintTop_toBottomOf="@+id/generalDetailsHeader" />
         <EditText
-            android:id="@+id/termNameEditText"
+            android:id="@+id/assessmentCodeEditText"
             style="@style/detailsViewEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,7 +78,6 @@
             android:focusable="false"
             android:onClick="showDatePickerDialog"
             android:hint="2021-04-15"
-            android:textSize="12dp"
             app:layout_constraintTop_toTopOf="@+id/assessmentDateLabel"
             app:layout_constraintBottom_toBottomOf="@+id/assessmentDateLabel"
             app:layout_constraintStart_toEndOf="@+id/assessmentDateLabel" />
@@ -84,7 +99,6 @@
             android:focusable="false"
             android:onClick="showDatePickerDialog"
             android:hint="2021-05-31"
-            android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="@+id/termEndDateLabel"
             app:layout_constraintStart_toEndOf="@+id/termEndDateLabel"
             app:layout_constraintTop_toTopOf="@+id/termEndDateLabel" />
@@ -181,6 +195,13 @@
             app:layout_constraintTop_toBottomOf="@+id/courseHeader" />
 
         <!-- Primary Action Buttons (submit or cancel transaction) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cancelButton"
+            app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
+            android:background="@color/light_orange"/>
         <Button
             android:id="@+id/submitButton"
             android:layout_width="wrap_content"

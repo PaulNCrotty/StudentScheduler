@@ -5,18 +5,34 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/termDetailContainer"
+        android:id="@+id/assessmentDetailContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/termDetailsEditMainHeader"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/assessmentDetailsEditMainHeader"
+            android:background="@color/light_orange"/>
+        <TextView
+            android:id="@+id/assessmentDetailsEditMainHeader"
             style="@style/detailsViewBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Assessment Details Editor"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/editIconImage"
             app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/editIconImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/assessmentDetailsEditMainHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/assessmentDetailsEditMainHeader"
+            android:src="@drawable/edit_icon_white_medium" />
 
         <!-- Extra padding for top on this first label because marginBottom for banner doesn't seem to be working -->
         <TextView
@@ -26,7 +42,7 @@
             android:layout_height="wrap_content"
             android:text="General Assessment Details"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/termDetailsEditMainHeader" />
+            app:layout_constraintTop_toBottomOf="@+id/assessmentDetailsEditMainHeader" />
 
         <TextView
             android:id="@+id/assessmentNameLabel"
@@ -47,7 +63,7 @@
             app:layout_constraintStart_toEndOf="@+id/assessmentNameLabel" />
 
         <TextView
-            android:id="@+id/termCodeLabel"
+            android:id="@+id/assessmentCodeLabel"
             style="@style/detailsViewTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,14 +71,14 @@
             app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
             app:layout_constraintTop_toBottomOf="@+id/assessmentNameLabel" />
         <EditText
-            android:id="@+id/termNameEditText"
+            android:id="@+id/assessmentCodeEditText"
             style="@style/detailsViewEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="MMSS"
-            app:layout_constraintTop_toTopOf="@+id/termCodeLabel"
-            app:layout_constraintBottom_toBottomOf="@+id/termCodeLabel"
-            app:layout_constraintStart_toEndOf="@+id/termCodeLabel" />
+            app:layout_constraintTop_toTopOf="@+id/assessmentCodeLabel"
+            app:layout_constraintBottom_toBottomOf="@+id/assessmentCodeLabel"
+            app:layout_constraintStart_toEndOf="@+id/assessmentCodeLabel" />
 
         <TextView
             android:id="@+id/assessmentDateLabel"
@@ -71,7 +87,7 @@
             android:layout_height="wrap_content"
             android:text="Assessment Date:"
             app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
-            app:layout_constraintTop_toBottomOf="@+id/termCodeLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/assessmentCodeLabel" />
         <EditText
             android:id="@+id/assessmentDateEditText"
             style="@style/detailsViewEditText"
@@ -80,7 +96,6 @@
             android:focusable="false"
             android:onClick="showDatePickerDialog"
             android:hint="2021-04-15"
-            android:textSize="12dp"
             app:layout_constraintTop_toTopOf="@+id/assessmentDateLabel"
             app:layout_constraintBottom_toBottomOf="@+id/assessmentDateLabel"
             app:layout_constraintStart_toEndOf="@+id/assessmentDateLabel" />
@@ -120,6 +135,13 @@
         </RadioGroup>
 
         <!-- Primary Action Buttons (submit or cancel transaction) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cancelButton"
+            app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
+            android:background="@color/light_orange"/>
         <Button
             android:id="@+id/submitButton"
             android:layout_width="wrap_content"
