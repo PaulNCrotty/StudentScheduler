@@ -8,7 +8,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <!--   you need to add a FragmentContainerView that defines the location where the fragment
            should be placed within the activity's view hierarchy. It is strongly recommended to
@@ -59,7 +59,8 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:onClick="createNewPlan" />
 
     <Button
         android:id="@+id/existingPlansButton"
@@ -70,6 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:onClick="showExistingPlansDialog" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

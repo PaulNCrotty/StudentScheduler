@@ -1,16 +1,16 @@
-package edu.wgu.android.studentscheduler;
+package edu.wgu.android.studentscheduler.activity;
 
 import android.os.Bundle;
 import android.view.Menu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class CourseDetailsActivity extends AppCompatActivity {
+import edu.wgu.android.studentscheduler.R;
 
-    public CourseDetailsActivity() {
-        super(R.layout.activity_course_detail);
+public class TermDetailsActivity extends AppCompatActivity {
+    public TermDetailsActivity() {
+        super(R.layout.activity_term_detail);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

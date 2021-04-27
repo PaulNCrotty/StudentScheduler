@@ -99,7 +99,7 @@
             app:layout_constraintStart_toStartOf="@+id/generalTermDetailsHeader"
             app:layout_constraintTop_toBottomOf="@+id/generalTermDetailsHeader" />
         <EditText
-            android:id="@+id/assessmentCodeEditText"
+            android:id="@+id/termNameEditText"
             style="@style/detailsViewEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -192,6 +192,16 @@
                 android:text="Enrolled" />
         </RadioGroup>
 
+        <TextView
+            android:id="@+id/newCourseNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/progressStatusSelectionGroup"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingBottom="15dp"
+            android:text="New Courses can be added in the Degree Plan Details View" />
+
         <!-- Primary Action Buttons (submit or cancel transaction) -->
         <TextView
             android:layout_width="match_parent"
@@ -204,18 +214,20 @@
             android:id="@+id/submitButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/progressStatusSelectionGroup"
+            app:layout_constraintTop_toBottomOf="@+id/newCourseNotification"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="35dp"
-            android:text="Submit"/>
+            android:text="Submit"
+            android:onClick="verifyAndSubmitPlan" />
         <Button
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/progressStatusSelectionGroup"
+            app:layout_constraintTop_toBottomOf="@+id/newCourseNotification"
             app:layout_constraintEnd_toStartOf="@+id/submitButton"
             android:layout_marginEnd="15dp"
-            android:text="Cancel"/>
+            android:text="Cancel"
+            android:onClick="cancel" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

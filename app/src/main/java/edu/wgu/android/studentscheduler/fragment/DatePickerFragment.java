@@ -5,15 +5,45 @@ import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.DatePicker;
-import android.widget.Toast;
+import android.widget.EditText;
 
 import androidx.fragment.app.DialogFragment;
 
 import java.time.LocalDate;
 import java.util.Calendar;
 
+import edu.wgu.android.studentscheduler.util.DateTimeUtil;
+
 
 public class DatePickerFragment extends DialogFragment {
+
+    private EditText selectedView;
+//    private DatePickerListener dialogListener;
+
+    public DatePickerFragment(EditText selectedView) {
+        this.selectedView = selectedView;
+    }
+
+//    public interface DatePickerListener {
+//        void onDateSet(int year, int month, int dayOfMonth);
+//    }
+//
+//    /**
+//     * Ties the invoking activity or fragment (context) to this dialog, which allows the parent context
+//     * to take its own actions (as defined in its implementation of onPositive and onNegative)
+//     * in response to the user's choice from the dialog.
+//     *
+//     * @param context - the invoking activity or fragment (the parent context)
+//     */
+//    @Override
+//    public void onAttach(@NonNull Context context) {
+//        super.onAttach(context);
+//        if (context instanceof DatePickerFragment.DatePickerListener) {
+//            dialogListener = (DatePickerFragment.DatePickerListener) context;
+//        } else {
+//            throw new ClassCastException(context.toString() + " must implement DatePickerListener");
+//        }
+//    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -36,7 +66,7 @@ public class DatePickerFragment extends DialogFragment {
         return new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                Toast.makeText(getActivity(), String.format("You chose %d-%d-%d", year, month, dayOfMonth), Toast.LENGTH_LONG).show();
+                selectedView.setText(DateTimeUtil.getDateString(year, month, dayOfMonth));
             }
         }, year, month, day);
 

@@ -1,15 +1,11 @@
-package edu.wgu.android.studentscheduler;
+package edu.wgu.android.studentscheduler.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
-import edu.wgu.android.studentscheduler.fragment.DegreePlanFragment;
-import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
+import edu.wgu.android.studentscheduler.R;
 
 /**
  * Generally, your fragment must be embedded within an AndroidX FragmentActivity to contribute a
@@ -18,10 +14,10 @@ import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
  * then you do not need to change your activity base class.
  * (https://developer.android.com/guide/fragments/create#java)
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends StudentSchedulerActivity {
 
     public MainActivity() {
-        super(R.layout.activity_term_detail);
+        super(R.layout.activity_main);
     }
 
     @Override
@@ -52,9 +48,12 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void showDatePickerDialog(View view) {
-        DatePickerFragment datePicker = new DatePickerFragment();
-        datePicker.show(getSupportFragmentManager(), "datePicker");
+    public void createNewPlan(View view) {
+        startActivity(new Intent(this, DegreePlanCreationActivity.class));
+    }
+
+    public void showExistingPlansDialog(View view) {
+        //TODO implement
     }
 
 }
