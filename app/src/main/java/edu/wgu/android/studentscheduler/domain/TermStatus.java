@@ -2,7 +2,6 @@ package edu.wgu.android.studentscheduler.domain;
 
 public enum TermStatus {
 
-    FUTURE_EMPTY("New"),
     FUTURE_UNAPPROVED("Planned"),
     FUTURE_APPROVED("Approved"),
     CURRENT("Enrolled"),

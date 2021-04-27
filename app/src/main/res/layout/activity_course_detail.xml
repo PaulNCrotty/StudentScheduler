@@ -11,252 +11,328 @@
 
         <TextView
             android:id="@+id/courseDetailsEditMainHeader"
+            style="@style/detailsViewBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Course Details Editor"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            style="@style/detailsViewBanner" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Extra padding for top on this first label because marginBottom for banner doesn't seem to be working -->
         <TextView
             android:id="@+id/generalDetailsHeader"
+            style="@style/detailsViewHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="General Course Details"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/courseDetailsEditMainHeader"
-            style="@style/detailsViewHeader"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/courseDetailsEditMainHeader" />
 
         <TextView
             android:id="@+id/courseNameLabel"
+            style="@style/detailsViewTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Course Name: "
             app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
-            app:layout_constraintTop_toBottomOf="@+id/generalDetailsHeader"
-
-            style="@style/detailsViewTextLabel"
-            />
-        <!-- TODO dynamically update layout width to some default length for empty fields (i.e. creating new courses) -->
+            app:layout_constraintTop_toBottomOf="@+id/generalDetailsHeader" />
         <EditText
             android:id="@+id/courseNameEditText"
+            style="@style/detailsViewEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/courseNameLabel"
+            android:hint="Android Development Misery"
             app:layout_constraintBottom_toBottomOf="@+id/courseNameLabel"
             app:layout_constraintStart_toEndOf="@+id/courseNameLabel"
-            android:text="Some Name"
-            style="@style/detailsViewEditText" />
+            app:layout_constraintTop_toTopOf="@+id/courseNameLabel" />
 
         <TextView
             android:id="@+id/courseCodeLabel"
+            style="@style/detailsViewTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Course Code:  "
             app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
-            app:layout_constraintTop_toBottomOf="@+id/courseNameLabel"
-            style="@style/detailsViewTextLabel"
-             />
+            app:layout_constraintTop_toBottomOf="@+id/courseNameLabel" />
         <EditText
             android:id="@+id/courseCodeEditText"
+            style="@style/detailsViewEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/courseCodeLabel"
+            android:hint="C196"
             app:layout_constraintBottom_toBottomOf="@+id/courseCodeLabel"
             app:layout_constraintStart_toEndOf="@+id/courseCodeLabel"
-            android:text="Some Code"
-            style="@style/detailsViewEditText" />
+            app:layout_constraintTop_toTopOf="@+id/courseCodeLabel" />
 
         <TextView
             android:id="@+id/courseStartDateLabel"
+            style="@style/detailsViewTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Start Date:"
             app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
-            app:layout_constraintTop_toBottomOf="@+id/courseCodeLabel"
-            style="@style/detailsViewTextLabel"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/courseCodeLabel" />
         <EditText
             android:id="@+id/courseStartDateEditText"
+            style="@style/detailsViewEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/courseStartDateLabel"
+            android:focusable="false"
+            android:onClick="showDatePickerDialog"
+            android:hint="2021-04-15"
+            android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="@+id/courseStartDateLabel"
             app:layout_constraintStart_toEndOf="@+id/courseStartDateLabel"
-            android:textSize="12dp"
-            android:text="2021-04-15"
-            android:onClick="showDatePickerDialog"
-            android:focusable="false"
-            style="@style/detailsViewEditText"
-            />
+            app:layout_constraintTop_toTopOf="@+id/courseStartDateLabel" />
 
         <TextView
             android:id="@+id/courseEndDateLabel"
+            style="@style/detailsViewTextLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="End Date:"
             app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
-            app:layout_constraintTop_toBottomOf="@+id/courseStartDateLabel"
-            style="@style/detailsViewTextLabel"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/courseStartDateLabel" />
         <EditText
             android:id="@+id/courseEndDateEditText"
+            style="@style/detailsViewEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/courseEndDateLabel"
+            android:focusable="false"
+            android:onClick="showDatePickerDialog"
+            android:hint="2021-05-31"
+            android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="@+id/courseEndDateLabel"
             app:layout_constraintStart_toEndOf="@+id/courseEndDateLabel"
-            android:textSize="12dp"
-            android:text="2021-05-31"
-            android:onClick="showDatePickerDialog"
-            android:focusable="false"
-            style="@style/detailsViewEditText"
-            />
+            app:layout_constraintTop_toTopOf="@+id/courseEndDateLabel" />
 
         <TextView
-            android:id="@+id/progressStatusHeader"
+            android:id="@+id/assessmentTypeHeader"
+            style="@style/detailsViewHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Progress Status"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/courseEndDateLabel"
-            style="@style/detailsViewHeader"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/courseEndDateLabel" />
         <RadioGroup
             android:id="@+id/progressStatusSelectionGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/progressStatusHeader"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            android:orientation="horizontal">
+            app:layout_constraintTop_toBottomOf="@+id/assessmentTypeHeader">
+
             <RadioButton
                 android:id="@+id/plannedStatusButton"
+                style="@style/detailsViewRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Planned"
-                android:checked="false"
                 android:layout_marginStart="26dp"
-                style="@style/detailsViewRadioButton"
-                />
+                android:checked="false"
+                android:text="Planned" />
+
             <RadioButton
                 android:id="@+id/inProgressStatusButton"
+                style="@style/detailsViewRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="In Progress"
                 android:checked="false"
-                style="@style/detailsViewRadioButton"
-                />
+                android:text="In Progress" />
+
             <RadioButton
                 android:id="@+id/passedStatusButton"
+                style="@style/detailsViewRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Passed"
                 android:checked="false"
-                style="@style/detailsViewRadioButton"
-                />
+                android:text="Passed" />
+
             <RadioButton
                 android:id="@+id/droppedStatusButton"
+                style="@style/detailsViewRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dropped"
                 android:checked="false"
-                style="@style/detailsViewRadioButton"
-                />
+                android:text="Dropped" />
         </RadioGroup>
 
-        <!-- TODO add style for these sub section header -->
         <!-- Course Instructor Section -->
         <TextView
             android:id="@+id/courseInstructorHeader"
+            style="@style/detailsViewHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Course Instructor"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progressStatusSelectionGroup"
-            style="@style/detailsViewHeader"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/progressStatusSelectionGroup" />
 
-            <TextView
-                android:id="@+id/instructorFirstName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="First Name: "
-                app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
-                app:layout_constraintTop_toBottomOf="@+id/courseInstructorHeader"
-                style="@style/detailsViewTextLabel"
-                />
+        <TextView
+            android:id="@+id/instructorFirstName"
+            style="@style/detailsViewTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="First Name: "
+            app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
+            app:layout_constraintTop_toBottomOf="@+id/courseInstructorHeader" />
+        <EditText
+            android:id="@+id/instructorFirstNameEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Henry"
+            app:layout_constraintBottom_toBottomOf="@+id/instructorFirstName"
+            app:layout_constraintStart_toEndOf="@+id/instructorFirstName"
+            app:layout_constraintTop_toTopOf="@+id/instructorFirstName" />
+        <TextView
+            android:id="@+id/instructorLastName"
+            style="@style/detailsViewTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last Name: "
+            app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
+            app:layout_constraintTop_toBottomOf="@+id/instructorFirstName" />
+        <EditText
+            android:id="@+id/instructorLastNameEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Ford"
+            app:layout_constraintBottom_toBottomOf="@+id/instructorLastName"
+            app:layout_constraintStart_toEndOf="@+id/instructorLastName"
+            app:layout_constraintTop_toTopOf="@+id/instructorLastName" />
 
-            <TextView
-                android:id="@+id/instructorLastName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Last Name: "
-                app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
-                app:layout_constraintTop_toBottomOf="@+id/instructorFirstName"
-                style="@style/detailsViewTextLabel"
-                />
+        <TextView
+            android:id="@+id/instructorPhoneNumber"
+            style="@style/detailsViewTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone Number: "
+            app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
+            app:layout_constraintTop_toBottomOf="@+id/instructorLastName" />
+        <EditText
+            android:id="@+id/instructorPhoneAreaCodeEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="43sp"
+            android:layout_height="wrap_content"
+            android:hint="(555)"
+            app:layout_constraintBottom_toBottomOf="@+id/instructorPhoneNumber"
+            app:layout_constraintStart_toEndOf="@+id/instructorPhoneNumber"
+            app:layout_constraintTop_toTopOf="@+id/instructorPhoneNumber" />
+        <EditText
+            android:id="@+id/instructorPhonePrefixEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="35sp"
+            android:layout_height="wrap_content"
+            android:hint="555"
+            app:layout_constraintBottom_toBottomOf="@+id/instructorPhoneNumber"
+            app:layout_constraintStart_toEndOf="@+id/instructorPhoneAreaCodeEditText"
+            app:layout_constraintTop_toTopOf="@+id/instructorPhoneNumber" />
+        <EditText
+            android:id="@+id/instructorPhoneSuffixEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="43sp"
+            android:layout_height="wrap_content"
+            android:hint="5555"
+            app:layout_constraintBottom_toBottomOf="@+id/instructorPhoneNumber"
+            app:layout_constraintStart_toEndOf="@+id/instructorPhonePrefixEditText"
+            app:layout_constraintTop_toTopOf="@+id/instructorPhoneNumber" />
 
-            <TextView
-                android:id="@+id/instructorPhoneNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Phone Number: "
-                app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
-                app:layout_constraintTop_toBottomOf="@+id/instructorLastName"
-                style="@style/detailsViewTextLabel"
-                />
-
-            <TextView
-                android:id="@+id/instructorEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="E-mail: "
-                app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
-                app:layout_constraintTop_toBottomOf="@+id/instructorPhoneNumber"
-                style="@style/detailsViewTextLabel"
-                />
+        <TextView
+            android:id="@+id/instructorEmail"
+            style="@style/detailsViewTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="E-mail: "
+            app:layout_constraintStart_toStartOf="@+id/courseInstructorHeader"
+            app:layout_constraintTop_toBottomOf="@+id/instructorPhoneNumber" />
+        <EditText
+            android:id="@+id/instructorEmailEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="your.email@wgu.edu"
+            app:layout_constraintBottom_toBottomOf="@+id/instructorEmail"
+            app:layout_constraintStart_toEndOf="@+id/instructorEmail"
+            app:layout_constraintTop_toTopOf="@+id/instructorEmail" />
 
         <!-- Assessment Section -->
         <!-- TODO try to use RecycleView -->
         <TextView
             android:id="@+id/assessmentHeader"
+            style="@style/detailsViewHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Assessments"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/instructorEmail"
-            style="@style/detailsViewHeader"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/instructorEmail" />
+        <ImageButton
+            android:id="@+id/addAssessmentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/assessmentHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/assessmentHeader"
+            android:layout_marginEnd="35dp"
+            android:src="@drawable/add_icon"
+            android:background="#FFFFFF"
+            android:onClick="addAssessmentToCourse" />
         <!-- Dynamically Filled with associated assessments -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/assessmentContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/assessmentHeader"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp" />
+            android:layout_marginBottom="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assessmentHeader" />
 
         <!-- Notes Section -->
         <!-- TODO try to use RecycleView -->
         <TextView
             android:id="@+id/courseNotesHeader"
+            style="@style/detailsViewHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/assessmentContainer"
             android:text="Notes"
-            style="@style/detailsViewHeader"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assessmentContainer" />
+        <ImageButton
+            android:id="@+id/addNoteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/courseNotesHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/courseNotesHeader"
+            android:layout_marginEnd="35dp"
+            android:src="@drawable/add_icon"
+            android:background="#FFFFFF"
+            android:onClick="addNoteToCourse" />
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/notesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/courseNotesHeader"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp" />
+            android:layout_marginBottom="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/courseNotesHeader" />
+
+
+        <!-- Primary Action Buttons (submit or cancel transaction) -->
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/notesContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="35dp"
+            android:text="Submit"/>
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/notesContainer"
+            app:layout_constraintEnd_toStartOf="@+id/submitButton"
+            android:layout_marginEnd="15dp"
+            android:text="Cancel"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

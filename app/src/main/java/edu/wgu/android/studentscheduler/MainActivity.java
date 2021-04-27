@@ -21,7 +21,7 @@ import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
 public class MainActivity extends AppCompatActivity {
 
     public MainActivity() {
-        super(R.layout.activity_course_detail);
+        super(R.layout.activity_term_detail);
     }
 
     @Override
