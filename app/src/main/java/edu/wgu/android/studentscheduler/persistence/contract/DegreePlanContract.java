@@ -13,9 +13,12 @@ public class DegreePlanContract {
 
     public static class DegreePlan extends DegreePlanContract {
         public static final String TABLE_NAME = "DEGREE_PLAN";
+        public static final String STUDENT_NAME = "STUDENT_NAME";
         public static final String NAME = "NAME";
 
-        public static final String CREATE_TABLE_DDL = "create table " + TABLE_NAME + "(" + ID + " " + ID_CONSTRAINTS + ", " + NAME + " text not null)";
+        public static final String CREATE_TABLE_DDL = "create table " + TABLE_NAME + "(" +
+                ID + " " + ID_CONSTRAINTS + ", " + NAME + " text not null, " +
+                STUDENT_NAME + " text)";
     }
 
     public static class Term extends DegreePlanContract {

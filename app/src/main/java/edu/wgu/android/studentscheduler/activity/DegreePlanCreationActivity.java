@@ -29,6 +29,11 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
         String planName = getEditTextValue(R.id.planNameEditText);
         String studentName = getEditTextValue(R.id.studentNameEditText);
         String termName = getEditTextValue(R.id.termNameEditText);
+        String termStartDate = getEditTextValue(R.id.termStartDateEditText);
+        String termEndDate = getEditTextValue(R.id.termEndDateEditText);
+        String termStatus = getRadioGroupSelection(R.id.progressStatusSelectionGroup);
+
+
     }
 
 }

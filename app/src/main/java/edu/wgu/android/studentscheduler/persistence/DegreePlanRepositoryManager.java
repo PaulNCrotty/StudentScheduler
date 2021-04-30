@@ -8,6 +8,8 @@ import android.util.Log;
 
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 
+import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
+
 public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
     private static DegreePlanRepositoryManager repositoryManager;
@@ -48,11 +50,14 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
     }
 
-    public long insertDegreePlan(String planName) {
+    public long insertDegreePlan(String planName, String studentName) {
         Log.d("SQLITE_INSERT", "Inserting Plan " + planName + " into Database");
         SQLiteDatabase db = getWritableDatabase();
         ContentValues data = new ContentValues();
         data.put(DegreePlanContract.DegreePlan.NAME, planName);
+        if(!isEmpty(studentName)) {
+            data.put(DegreePlanContract.DegreePlan.STUDENT_NAME, studentName);
+        }
         return db.insert(DegreePlanContract.DegreePlan.TABLE_NAME, null, data);
     }
 }
