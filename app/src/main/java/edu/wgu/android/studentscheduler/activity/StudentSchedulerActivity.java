@@ -12,19 +12,43 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import java.util.Calendar;
 
+import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.fragment.ConfirmationDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
+import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
+import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
 
 public class StudentSchedulerActivity extends AppCompatActivity implements ConfirmationDialogFragment.ConfirmationDialogListener {
 
-//    private Calendar selectedDate;
+    //    private Calendar selectedDate;
+    int invalidEntryColor;
 
     StudentSchedulerActivity(@LayoutRes int id) {
         super(id);
+    }
+
+    /**
+     * To initialize standard colors and other key values used to dynamically modify
+     * styles or other views. Should only be called after or at the end of onCreate.
+     */
+    void init() {
+        invalidEntryColor = getResources().getColor(R.color.red_orange);
+    }
+
+    public int getSecondsSinceEpoch(String dateString) {
+        int secondsSinceEpoch = 0;
+        try {
+            secondsSinceEpoch = (int) DateTimeUtil.getSecondsSinceEpoch(dateString);
+        } catch (java.text.ParseException pe) {
+            String title = "INVALID DATE";
+            String errorMessage = "There was an error trying to parse the date \"" + dateString + "\". Is it in the proper ISO8601 date format?";
+            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, errorMessage);
+            errorDialog.show(getSupportFragmentManager(), "dateError");
+        }
+        return secondsSinceEpoch;
     }
 
     /**
@@ -81,12 +105,12 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     public String getRadioGroupSelection(@IdRes int id) {
         String selection = null;
         View view = findViewById(id);
-        if(view instanceof RadioGroup) {
+        if (view instanceof RadioGroup) {
             RadioGroup radioGroup = (RadioGroup) view;
             int rButtonCount = radioGroup.getChildCount();
-            for(int i = 0; i < rButtonCount; i++) {
+            for (int i = 0; i < rButtonCount; i++) {
                 RadioButton rButton = (RadioButton) radioGroup.getChildAt(i);
-                if(rButton.isChecked()) {
+                if (rButton.isChecked()) {
                     selection = rButton.getText().toString();
                 }
             }

@@ -5,12 +5,20 @@ import android.os.Build;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+
+import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 
 public class DateTimeUtil {
 
+    private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final SimpleDateFormat DATE_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private static final SimpleDateFormat DATETIME_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSS", Locale.US);
+
+    public static long getSecondsSinceEpoch(String isoDate) throws java.text.ParseException {
+        return DATE_FORMATTER_ISO_8601.parse(isoDate).getTime()/MILLISECONDS_PER_SECOND;
+    }
 
     /**
      * Simple method that takes the year, month, and day of month and converts it to an ISO 8601

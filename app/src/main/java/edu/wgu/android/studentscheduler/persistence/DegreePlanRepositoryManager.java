@@ -60,4 +60,18 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         }
         return db.insert(DegreePlanContract.DegreePlan.TABLE_NAME, null, data);
     }
+
+    public long insertTerm(long degreePlanId, String termName, int startDate, int endDate, String status) {
+        Log.d("SQLITE_INSERT", "Inserting Term " + termName + " into Database for Degree Plan " + degreePlanId);
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues data = new ContentValues();
+        data.put(DegreePlanContract.Term.DEGREE_PLAN_ID, degreePlanId);
+        data.put(DegreePlanContract.Term.NAME, termName);
+        data.put(DegreePlanContract.Term.START_DATE, startDate);
+        data.put(DegreePlanContract.Term.END_DATE, endDate);
+        if(!isEmpty(status)) {
+            data.put(DegreePlanContract.Term.STATUS, status);
+        }
+        return db.insert(DegreePlanContract.Term.TABLE_NAME, null, data);
+    }
 }
