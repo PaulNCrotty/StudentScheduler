@@ -1,5 +1,6 @@
 package edu.wgu.android.studentscheduler.activity;
 
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -17,14 +18,20 @@ import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.fragment.ConfirmationDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
+import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
 
 public class StudentSchedulerActivity extends AppCompatActivity implements ConfirmationDialogFragment.ConfirmationDialogListener {
 
-    //    private Calendar selectedDate;
+    public static final String DEGREE_PLAN_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanId";
+
+    final DegreePlanRepositoryManager repositoryManager = DegreePlanRepositoryManager.getInstance(this);
+
     int invalidEntryColor;
+    int validEntryColor;
+
 
     StudentSchedulerActivity(@LayoutRes int id) {
         super(id);
@@ -36,6 +43,13 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
      */
     void init() {
         invalidEntryColor = getResources().getColor(R.color.red_orange);
+        validEntryColor = getResources().getColor(R.color.white);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_appbar_menu, menu);
+        return true;
     }
 
     public int getSecondsSinceEpoch(String dateString) {
@@ -86,7 +100,9 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
                 RadioGroup radioGroup = (RadioGroup) child;
                 int rButtonCount = radioGroup.getChildCount();
                 do {
-                    viewModified = ((RadioButton) radioGroup.getChildAt(j++)).isChecked();
+                    RadioButton rButton = (RadioButton) radioGroup.getChildAt(j++);
+                    // the default button will be checked and also have a hint of 'default'; no other buttons will have a hint
+                    viewModified = rButton.isChecked() && rButton.getHint() == null;
                 } while (j < rButtonCount && !viewModified);
             }
         } while (i < childCount && !viewModified);

@@ -35,7 +35,7 @@ public class DegreePlanContract {
                 NAME + " text not null, " +
                 START_DATE + " integer not null, " +
                 END_DATE + " integer not null, " +
-                STATUS + " text DEFAULT('PLANNED') CHECK (" + STATUS + " IN ('PLANNED', 'ENROLLED', 'COMPLETED', 'INCOMPLETE')))";
+                STATUS + " text DEFAULT('PLANNED') CHECK (" + STATUS + " IN ('PLANNED', 'APPROVED', 'ENROLLED', 'INCOMPLETE', 'COMPLETED')))";
     }
 
     public static class Instructor extends DegreePlanContract {

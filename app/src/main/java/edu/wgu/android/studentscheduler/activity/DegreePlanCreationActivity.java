@@ -1,5 +1,6 @@
 package edu.wgu.android.studentscheduler.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -18,8 +19,6 @@ import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
 
 public class DegreePlanCreationActivity extends StudentSchedulerActivity {
 
-    private DegreePlanRepositoryManager repositoryManager = DegreePlanRepositoryManager.getInstance(this);
-
     public DegreePlanCreationActivity() {
         super(R.layout.activity_new_degreeplan_creation);
     }
@@ -30,12 +29,6 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
         init();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_appbar_menu, menu);
-        return true;
-    }
-
     public void verifyAndSubmitPlan(View view) {
         String planName = getEditTextValue(R.id.planNameEditText);
         String studentName = getEditTextValue(R.id.studentNameEditText);
@@ -44,12 +37,19 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
         String termEndDate = getEditTextValue(R.id.termEndDateEditText);
         String termStatus = getRadioGroupSelection(R.id.progressStatusSelectionGroup);
 
+        //TODO try to generalize validation so it can be reused across the different forms
+        Set<Integer> validValues = new HashSet<>();
         Set<Integer> invalidValues = new HashSet<>();
         if (isEmpty(planName)) {
             invalidValues.add(R.id.planNameEditText);
+        } else {
+            validValues.add(R.id.planNameEditText);
         }
+
         if (isEmpty(termName)) {
             invalidValues.add(R.id.termNameEditText);
+        } else {
+            validValues.add(R.id.termNameEditText);
         }
 
         // must set to null explicitly for null check prior to date comparison below
@@ -82,6 +82,9 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
                 String message = "The term start date must be before the term end date";
                 GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, message);
                 errorDialog.show(getSupportFragmentManager(), "dateErrors");
+            } else {
+                validValues.add(R.id.termStartDateEditText);
+                validValues.add(R.id.termEndDateEditText);
             }
         }
 
@@ -90,11 +93,21 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
                 findViewById(id).setBackgroundColor(invalidEntryColor);
             }
 
+            // only reset background if there are still valid values; otherwise the form will be submitted
+            // and the activity closes so the changes won't be noticeable
+            for (Integer id: validValues) {
+                findViewById(id).setBackgroundColor(validEntryColor);
+            }
+
             MissingRequiredValueDialogFragment missingDialog = new MissingRequiredValueDialogFragment();
             missingDialog.show(getSupportFragmentManager(), "missingRequiredValues");
         } else {
             long degreePlanId = repositoryManager.insertDegreePlan(planName, studentName);
-            long termId = repositoryManager.insertTerm(degreePlanId, termName, termStartDateSeconds, termEndDateSeconds, termStatus.toUpperCase());
+            repositoryManager.insertTerm(degreePlanId, termName, termStartDateSeconds, termEndDateSeconds, termStatus.toUpperCase());
+            Intent degreePlanEditorActivity = new Intent(getApplicationContext(), DegreePlanActivity.class);
+            degreePlanEditorActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
+            startActivity(degreePlanEditorActivity);
+            finish();
         }
 
     }

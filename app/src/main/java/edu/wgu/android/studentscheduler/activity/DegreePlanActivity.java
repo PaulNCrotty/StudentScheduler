@@ -1,22 +1,16 @@
-package edu.wgu.android.studentscheduler.fragment;
+package edu.wgu.android.studentscheduler.activity;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 
@@ -28,23 +22,30 @@ import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.Term;
-import edu.wgu.android.studentscheduler.persistence.MockDegreePlanRepository;
 
 import static android.view.View.generateViewId;
 
-public class DegreePlanFragment extends Fragment {
+public class DegreePlanActivity extends StudentSchedulerActivity {
 
-    private static final MockDegreePlanRepository dpRepo = new MockDegreePlanRepository();
     private static final Map<CourseStatus, Integer> COURSE_STATUS_MAP = getCourseStatusMap();
 
+    public DegreePlanActivity() {
+        super(R.layout.activity_degree_plan);
+    }
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // pull degree plan
+        long degreePlanId = getIntent().getExtras().getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
+        DegreePlan degreePlan = getDegreePlan(degreePlanId);
+        Gson gson = new Gson();
+        Log.d("DEGREE_PLAN: ", gson.toJson(degreePlan));
 
-        ConstraintLayout degreePlanContainer = (ConstraintLayout) inflater.inflate(R.layout.degree_plan_fragment, container, false);
-        Log.d("IDS", String.format("Degree Plan Container ID: %d",degreePlanContainer.getId())); //2131230845
-
-        Context fragmentContext = degreePlanContainer.getContext();
+        ConstraintLayout degreePlanContainer = (ConstraintLayout) findViewById(R.id.degree_plan_container);
+        Log.d("IDS", String.format("Degree Plan Container ID: %d",degreePlanContainer.getId()));
+        Context degreePlanContainerContext = degreePlanContainer.getContext();
+        //TODO put styles and formatting in "values"
         int defaultTextHeight = 100; //getResources().getDimensionPixelSize(R.dimen.text_view_term_list_layout_height);
         int termBannerBackgroundColor = Color.parseColor("#3700B3");
         int courseContainerBackgroundColor = Color.parseColor("#DEDEDE");
@@ -54,33 +55,31 @@ public class DegreePlanFragment extends Fragment {
         ConstraintSet constraints = new ConstraintSet();
         constraints.clone(degreePlanContainer);
 
-        DegreePlan degreePlan = getDegreePlan();
-        Gson gson = new Gson();
-        Log.d("DEGREE_PLAN: ", gson.toJson(degreePlan));
+
 
         int connectionId = degreePlanContainer.getId();
         for(Term term: degreePlan.getTerms()) {
             //High-level term one details
-            TextView background = new TextView(fragmentContext);
+            TextView background = new TextView(degreePlanContainerContext);
             background.setId(generateViewId());
             background.setBackgroundColor(termBannerBackgroundColor);
             degreePlanContainer.addView(background);
 
-            TextView title = new TextView(fragmentContext);
+            TextView title = new TextView(degreePlanContainerContext);
             title.setId(generateViewId());
             title.setBackgroundColor(termBannerBackgroundColor);
             title.setTextColor(defaultTextColor);
             title.setText(term.getTermName());
             degreePlanContainer.addView(title);
 
-            TextView dates = new TextView(fragmentContext);
+            TextView dates = new TextView(degreePlanContainerContext);
             dates.setId(generateViewId());
             dates.setBackgroundColor(termBannerBackgroundColor);
             dates.setTextColor(defaultTextColor);
             dates.setText(getString(R.string.fragment_term_dates, term.getStartDate(), term.getEndDate()));
             degreePlanContainer.addView(dates);
 
-            ImageButton editIcon = new ImageButton(fragmentContext);
+            ImageButton editIcon = new ImageButton(degreePlanContainerContext);
             editIcon.setId(generateViewId());
             editIcon.setBackgroundColor(termBannerBackgroundColor);
             editIcon.setImageResource(R.drawable.edit_icon_white);
@@ -114,7 +113,7 @@ public class DegreePlanFragment extends Fragment {
             constraints.setMargin(editIcon.getId(), ConstraintSet.END, 20);
 
             //Course Containers and Details
-            ConstraintLayout courseContainer = new ConstraintLayout(fragmentContext);
+            ConstraintLayout courseContainer = new ConstraintLayout(degreePlanContainerContext);
             courseContainer.setId(generateViewId());
             courseContainer.setBackgroundColor(courseContainerBackgroundColor);
 
@@ -183,8 +182,6 @@ public class DegreePlanFragment extends Fragment {
         }
 
         constraints.applyTo(degreePlanContainer);
-
-        return degreePlanContainer;
     }
 
     private static Map<CourseStatus, Integer> getCourseStatusMap() {
@@ -199,7 +196,7 @@ public class DegreePlanFragment extends Fragment {
         return courseStatusMap;
     }
 
-    private DegreePlan getDegreePlan() {
-        return dpRepo.getDegreePlanData();
+    private DegreePlan getDegreePlan(long degreePlanId) {
+        return repositoryManager.getDegreePlanData(degreePlanId);
     }
 }

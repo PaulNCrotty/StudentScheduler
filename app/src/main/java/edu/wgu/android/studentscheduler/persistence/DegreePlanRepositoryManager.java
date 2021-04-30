@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 
 import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
@@ -30,24 +31,21 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("SQLITE_CREATION", "PREPPING TO RUN DDL DegreePlan");
         db.execSQL(DegreePlanContract.DegreePlan.CREATE_TABLE_DDL);
-        Log.d("SQLITE_CREATION", "PREPPING TO RUN DDL Term");
         db.execSQL(DegreePlanContract.Term.CREATE_TABLE_DDL);
-        Log.d("SQLITE_CREATION", "PREPPING TO RUN DDL Instructor");
         db.execSQL(DegreePlanContract.Instructor.CREATE_TABLE_DDL);
-        Log.d("SQLITE_CREATION", "PREPPING TO RUN DDL Course");
         db.execSQL(DegreePlanContract.Course.CREATE_TABLE_DDL);
-        Log.d("SQLITE_CREATION", "PREPPING TO RUN DDL CourseNote");
         db.execSQL(DegreePlanContract.CourseNote.CREATE_TABLE_DDL);
-        Log.d("SQLITE_CREATION", "PREPPING TO RUN DDL Assessment");
         db.execSQL(DegreePlanContract.Assessment.CREATE_TABLE_DDL);
-        Log.d("SQLITE_CREATION", "FINISHED DDL");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public DegreePlan getDegreePlanData(long degreePlanId) {
+        return new MockDegreePlanRepository().getDegreePlanData(); //TODO iron out big SQL stuff here...
     }
 
     public long insertDegreePlan(String planName, String studentName) {

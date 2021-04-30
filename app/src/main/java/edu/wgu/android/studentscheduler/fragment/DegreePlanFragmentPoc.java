@@ -29,7 +29,7 @@ public class DegreePlanFragmentPoc extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-        ConstraintLayout degreePlanContainer = (ConstraintLayout) inflater.inflate(R.layout.degree_plan_fragment, container, false);
+        ConstraintLayout degreePlanContainer = (ConstraintLayout) inflater.inflate(R.layout.activity_degree_plan, container, false);
         Log.d("IDS", String.format("Degree Plan Container ID: %d",degreePlanContainer.getId())); //2131230845
 
         Context fragmentContext = degreePlanContainer.getContext();
