@@ -1,9 +1,15 @@
 package edu.wgu.android.studentscheduler.persistence.dao;
 
+import java.util.Comparator;
+
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@Getter
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class DegreePlanDao {
 
@@ -12,8 +18,6 @@ public class DegreePlanDao {
     private String studentName;
     private long createdDate;
     private long modifiedDate;
-
-    //TODO add unit tests
 
     /**
      * Based upon the assumption that modified dates should always be greater than or equal to the
@@ -29,6 +33,14 @@ public class DegreePlanDao {
         long comparatorDateToUse = comparator.modifiedDate == 0 ? comparator.createdDate: comparator.modifiedDate;
 
         return thisDateToUse - comparatorDateToUse;
+    }
+
+    public static class AuditDateComparator implements Comparator<DegreePlanDao> {
+
+        @Override
+        public int compare(DegreePlanDao o1, DegreePlanDao o2) {
+            return (int) o1.compareAuditDates(o2);
+        }
     }
 
 }
