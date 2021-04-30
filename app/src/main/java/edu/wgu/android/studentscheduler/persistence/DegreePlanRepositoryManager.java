@@ -77,7 +77,9 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
                 String studentName = cursor.getString(studentNameIndex);
                 long createdDate = cursor.getLong(createdDateIndex);
                 long modifiedDate = cursor.getLong(modifiedDateIndex);
-                degreePlans.add(new DegreePlanDao(id, planName, studentName, createdDate, modifiedDate));
+                DegreePlanDao e = new DegreePlanDao(id, planName, studentName, createdDate, modifiedDate);
+                degreePlans.add(e);
+                Log.d("DAO",  e.toString());
 
             } while (cursor.moveToNext());
         }

@@ -12,7 +12,7 @@ import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 
 public class DateTimeUtil {
 
-    private static final long MILLISECONDS_PER_SECOND = 1000L;
+    public static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final SimpleDateFormat DATE_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private static final SimpleDateFormat DATETIME_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSS", Locale.US);
 
