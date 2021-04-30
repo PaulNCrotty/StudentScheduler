@@ -59,7 +59,7 @@ public class MockDegreePlanRepository {
     }
 
     public DegreePlan getDegreePlanData() {
-        return new DegreePlan(1, "myDegreePlan", getMockTerms());
+        return new DegreePlan(1, "myDegreePlan", false, getMockTerms());
     }
 
     protected List<Term> getMockTerms() {

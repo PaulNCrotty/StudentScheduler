@@ -16,6 +16,11 @@ public class DateTimeUtil {
     private static final SimpleDateFormat DATE_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private static final SimpleDateFormat DATETIME_FORMATTER_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSS", Locale.US);
 
+
+    public static long getSecondsSinceEpoch() {
+        return new Date().getTime()/MILLISECONDS_PER_SECOND;
+    }
+
     public static long getSecondsSinceEpoch(String isoDate) throws java.text.ParseException {
         return DATE_FORMATTER_ISO_8601.parse(isoDate).getTime()/MILLISECONDS_PER_SECOND;
     }

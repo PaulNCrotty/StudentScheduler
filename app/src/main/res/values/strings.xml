@@ -4,5 +4,6 @@
     <string name="fragment_new_term">New Term</string>
     <string name="fragment_term_dates">%s until %s </string>
     <string name="course_title">%s - %s</string>
+    <string name="degree_plan_basic_description">%s\'s "%s"</string>
 
 </resources>

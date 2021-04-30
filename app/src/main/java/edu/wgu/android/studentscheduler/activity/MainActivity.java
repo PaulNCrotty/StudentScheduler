@@ -52,8 +52,8 @@ public class MainActivity extends StudentSchedulerActivity {
         startActivity(new Intent(this, DegreePlanCreationActivity.class));
     }
 
-    public void showExistingPlansDialog(View view) {
-        //TODO implement
+    public void loadExistingPlans(View view) {
+        startActivity(new Intent(this, DegreePlanListActivity.class));
     }
 
 }

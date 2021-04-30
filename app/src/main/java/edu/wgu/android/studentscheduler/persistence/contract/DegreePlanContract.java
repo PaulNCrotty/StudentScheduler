@@ -8,17 +8,20 @@ public class DegreePlanContract {
     private static final String ID = "ID";
     private static final String ID_CONSTRAINTS = "integer not null primary key autoincrement";
 
-    private DegreePlanContract() {
-    }
+    private DegreePlanContract() {}
 
     public static class DegreePlan extends DegreePlanContract {
         public static final String TABLE_NAME = "DEGREE_PLAN";
         public static final String STUDENT_NAME = "STUDENT_NAME";
         public static final String NAME = "NAME";
+        public static final String CREATED_DATE = "CREATED_DATE";
+        public static final String MODIFIED_DATE = "MODIFIED_DATE";
 
         public static final String CREATE_TABLE_DDL = "create table " + TABLE_NAME + "(" +
                 ID + " " + ID_CONSTRAINTS + ", " + NAME + " text not null, " +
-                STUDENT_NAME + " text)";
+                STUDENT_NAME + " text, " +
+                CREATED_DATE + " integer not null, " +
+                MODIFIED_DATE + " integer)";
     }
 
     public static class Term extends DegreePlanContract {
@@ -103,4 +106,7 @@ public class DegreePlanContract {
                 TYPE + " text not null CHECK(" + TYPE + " IN ('Objective', 'Performance')))";
     }
 
+    public static String getId() {
+        return ID;
+    }
 }

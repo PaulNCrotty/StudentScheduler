@@ -69,6 +69,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="15dp"
-        android:onClick="showExistingPlansDialog" />
+        android:onClick="loadExistingPlans" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -66,4 +66,41 @@
         <item name="android:textSize">10sp</item>
     </style>
 
+    <!-- List Views: Standards and Styles  -->
+    <style name="listViewContainer">
+        <item name="android:layout_marginStart">25dp</item>
+        <item name="android:layout_marginEnd">25dp</item>
+        <item name="android:background">@drawable/simple_border</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="listOptionBanner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:background">@color/orange</item>
+    </style>
+    <style name="listOptionDetails">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_marginStart">10dp</item>
+    </style>
+    <style name="listOptionDates">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_marginEnd">35dp</item>
+    </style>
+
+    <style name="listOptionBannerAlt">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">35dp</item>
+    </style>
+    <style name="listOptionDetailsAlt" parent="listOptionDetails">
+        <item name="android:textColor">@color/orange</item>
+    </style>
+    <style name="listOptionDatesAlt" parent="listOptionDates">
+        <item name="android:textColor">@color/orange</item>
+    </style>
+
 </resources>
