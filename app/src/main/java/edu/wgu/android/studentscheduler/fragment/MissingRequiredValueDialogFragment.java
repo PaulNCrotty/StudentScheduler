@@ -13,6 +13,7 @@ public class MissingRequiredValueDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle("Submission Error")
                 .setMessage("Some required values are missing or invalid. Please fill them in and submit again")
+                .setPositiveButton("OK", null)
                 .create();
     }
 }

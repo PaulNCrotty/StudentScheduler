@@ -19,6 +19,7 @@ public class GeneralErrorDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setMessage(message)
+                .setPositiveButton("OK", null)
                 .create();
     }
 
