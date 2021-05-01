@@ -43,7 +43,6 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
         Log.d("DEGREE_PLAN: ", gson.toJson(degreePlan));
 
         ConstraintLayout degreePlanContainer = (ConstraintLayout) findViewById(R.id.degree_plan_container);
-        Log.d("IDS", String.format("Degree Plan Container ID: %d",degreePlanContainer.getId()));
         Context degreePlanContainerContext = degreePlanContainer.getContext();
         //TODO put styles and formatting in "values"
         int defaultTextHeight = 100; //getResources().getDimensionPixelSize(R.dimen.text_view_term_list_layout_height);

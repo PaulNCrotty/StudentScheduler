@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
@@ -87,6 +88,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         System.out.println("Number of rows parsed: " + degreePlans.size());
 
         cursor.close();
+        Collections.sort(degreePlans, new DegreePlanDao.AuditDateComparator());
         return degreePlans;
     }
 

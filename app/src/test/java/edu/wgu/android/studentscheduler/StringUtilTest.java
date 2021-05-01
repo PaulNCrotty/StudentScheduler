@@ -28,4 +28,26 @@ public class StringUtilTest {
         Assert.assertFalse(StringUtil.isEmpty("I'm a little teapot"));
     }
 
+    /***
+     * sanity check on integer division (should truncate any remainders and only have the bytes for the quotient)
+     */
+    @Test
+    public void test__stuff() {
+        Assert.assertEquals(0, 0/3);
+        Assert.assertEquals(0, 1/3);
+        Assert.assertEquals(0, 2/3);
+
+        Assert.assertEquals(1, 3/3);
+        Assert.assertEquals(1, 4/3);
+        Assert.assertEquals(1, 5/3);
+
+        Assert.assertEquals(2, 6/3);
+        Assert.assertEquals(2, 7/3);
+        Assert.assertEquals(2, 8/3);
+
+        Assert.assertEquals(3, 9/3);
+        Assert.assertEquals(3, 10/3);
+        Assert.assertEquals(3, 11/3);
+    }
+
 }

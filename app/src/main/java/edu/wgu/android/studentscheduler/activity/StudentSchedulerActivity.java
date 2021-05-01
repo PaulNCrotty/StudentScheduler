@@ -27,6 +27,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
 
     public static final String DEGREE_PLAN_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanId";
 
+    //TODO shouldn't be calling a repo from a view layer;  move this to a business layer and invoke that instead
     final DegreePlanRepositoryManager repositoryManager = DegreePlanRepositoryManager.getInstance(this);
 
     int invalidEntryColor;

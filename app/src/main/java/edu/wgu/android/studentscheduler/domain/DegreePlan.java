@@ -11,7 +11,7 @@ public class DegreePlan {
 
     private long id;
     private String name;
-    private boolean isRecent;
+    private String studentName;
     private List<Term> terms;
 
 }

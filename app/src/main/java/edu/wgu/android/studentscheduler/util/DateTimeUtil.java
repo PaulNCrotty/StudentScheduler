@@ -50,6 +50,10 @@ public class DateTimeUtil {
         return DATE_FORMATTER_ISO_8601.format(calendar.getTime());
     }
 
+    public static String getDateString(long secondsSinceEpoch) {
+        return DATE_FORMATTER_ISO_8601.format(new Date(secondsSinceEpoch * MILLISECONDS_PER_SECOND));
+    }
+
     public static String getDateTimeString(Calendar calendar) {
         return DATETIME_FORMATTER_ISO_8601.format(calendar.getTime());
     }

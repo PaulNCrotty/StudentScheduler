@@ -29,10 +29,14 @@ public class DegreePlanDao {
      * less than zero if the comparator entity was actively worked on after this entity.
      */
     public long compareAuditDates(DegreePlanDao comparator) {
-        long thisDateToUse = this.modifiedDate == 0 ? this.createdDate : this.modifiedDate;
-        long comparatorDateToUse = comparator.modifiedDate == 0 ? comparator.createdDate: comparator.modifiedDate;
+        long thisDateToUse = getLastModified();
+        long comparatorDateToUse = comparator.getLastModified();
 
         return thisDateToUse - comparatorDateToUse;
+    }
+
+    public long getLastModified() {
+        return modifiedDate == 0 ? createdDate : modifiedDate;
     }
 
     public static class AuditDateComparator implements Comparator<DegreePlanDao> {
