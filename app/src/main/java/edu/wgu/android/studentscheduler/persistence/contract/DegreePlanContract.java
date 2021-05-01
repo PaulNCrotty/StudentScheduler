@@ -96,6 +96,8 @@ public class DegreePlanContract {
         public static final String CODE = "CODE";
         public static final String DATE = "DATE";
         public static final String TYPE = "TYPE";
+        public static final String RESULT = "RESULT";
+        public static final String CUTOFF = "CUTOFF_SCORE";
 
         public static final String CREATE_TABLE_DDL = "create table " + TABLE_NAME + "(" +
                 ID + " " + ID_CONSTRAINTS + ", " +

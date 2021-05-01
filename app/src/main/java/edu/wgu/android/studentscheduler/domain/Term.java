@@ -5,6 +5,7 @@ import java.util.List;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -16,6 +17,7 @@ public class Term {
     private String termName;
     private String startDate;
     private String endDate;
+    @Setter
     private List<Course> courses;
     private TermStatus status;
 

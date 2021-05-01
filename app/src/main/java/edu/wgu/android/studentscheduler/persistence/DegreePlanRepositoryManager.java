@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
+import edu.wgu.android.studentscheduler.domain.Term;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
@@ -52,7 +53,37 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
     }
 
     public DegreePlan getDegreePlanData(long degreePlanId) {
-        return new MockDegreePlanRepository().getDegreePlanData(); //TODO iron out big SQL stuff here...
+        String query =
+            "select " +
+                "dp.id as degree_plan_id, " +
+                "dp.student_name, " +
+                "dp.name as degree_plan_name, " +
+                "t.id as term_id, " +
+                "t.name as term_name, " +
+                "t.start_date as term_start_date, " +
+                "t.end_date as term_end_date, " +
+                "t.status as term_status, "  +
+                "c.id as course_id, " +
+                "c.name as course_name, " +
+                "c.code as course_code, " +
+                "c.start_date as course_start_date, " +
+                "c.end_date as course_end_date, " +
+                "c.status as course_status, " +
+                "a.id as assessment_id, " +
+                "a.name as assessment_name, " +
+                "a.code as assessment_code, " +
+                "a.type as assessment_type " +
+            "from degree_plan dp " +
+            "left join term t on t.plan_id = dp.id " +
+            "left join course c on c.term_id = t.id " +
+            "left join assessment a on a.course_id = c.id " +
+            "where dp.id = 1 ";
+//            "order by t.id, c.id"; //do I really need to order by?
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(degreePlanId).toString()});
+        return DegreePlanExtractor.extract(cursor); //extractor will close cursor #TODO verify
     }
 
     public List<DegreePlanDao> getBasicDegreePlanDataForAllPlans() {
@@ -80,7 +111,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
                 long modifiedDate = cursor.getLong(modifiedDateIndex);
                 DegreePlanDao e = new DegreePlanDao(id, planName, studentName, createdDate, modifiedDate);
                 degreePlans.add(e);
-                Log.d("DAO",  e.toString());
+                Log.d("DAO", e.toString());
 
             } while (cursor.moveToNext());
         }
