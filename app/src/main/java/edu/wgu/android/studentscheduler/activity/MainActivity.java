@@ -23,23 +23,6 @@ public class MainActivity extends StudentSchedulerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-         * In the previous example, note that the fragment transaction is only created when
-         * savedInstanceState is null. This is to ensure that the fragment is added only once, when
-         * the activity is first created. When a configuration change occurs and the activity is
-         * recreated, savedInstanceState is no longer null, and the fragment does not need to be
-         * added a second time, _as the fragment is automatically restored_ from the
-         * savedInstanceState. (see https://developer.android.com/guide/fragments/create)
-         *
-         * Other really useful information: https://developer.android.com/guide/fragments/fragmentmanager
-         */
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.degree_plan_fragment, DegreePlanFragment.class, null)
-//                    .setReorderingAllowed(true)
-//                    .commit();
-//        }
-
     }
 
     @Override

@@ -1,5 +1,6 @@
 package edu.wgu.android.studentscheduler.activity;
 
+import android.content.res.Resources;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +11,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-
 
 import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.fragment.ConfirmationDialogFragment;
@@ -30,8 +29,11 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     //TODO shouldn't be calling a repo from a view layer;  move this to a business layer and invoke that instead
     final DegreePlanRepositoryManager repositoryManager = DegreePlanRepositoryManager.getInstance(this);
 
+    int defaultTextSize;
     int invalidEntryColor;
     int validEntryColor;
+    int orangeColor;
+    int whiteColor;
 
 
     StudentSchedulerActivity(@LayoutRes int id) {
@@ -40,11 +42,17 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
 
     /**
      * To initialize standard colors and other key values used to dynamically modify
-     * styles or other views. Should only be called after or at the end of onCreate.
+     * styles or other views. Should only be called after onCreate (or at least after
+     * the super.onCreate() method is invoked).
      */
-    void init() {
-        invalidEntryColor = getResources().getColor(R.color.red_orange);
-        validEntryColor = getResources().getColor(R.color.white);
+    Resources init() {
+        Resources resources = getResources();
+        invalidEntryColor = resources.getColor(R.color.red_orange);
+        validEntryColor = resources.getColor(R.color.white);
+        orangeColor = resources.getColor(R.color.orange);
+        whiteColor = resources.getColor(R.color.white);
+        defaultTextSize = resources.getDimensionPixelSize(R.dimen.text_size_default);
+        return resources;
     }
 
     @Override
@@ -136,7 +144,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     }
 
     @Override
-    public void onPositive(DialogFragment dialog) {
+    public void onPositive() {
         finish(); // close the activity
     }
 

@@ -2,18 +2,14 @@ package edu.wgu.android.studentscheduler.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.MissingRequiredValueDialogFragment;
-import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
 
 import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
 
@@ -58,24 +54,24 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
             invalidValues.add(R.id.termStartDateEditText);
         } else {
             termStartDateSeconds = getSecondsSinceEpoch(termStartDate);
-            if(termStartDateSeconds == 0) {
+            if (termStartDateSeconds == 0) {
                 invalidValues.add(R.id.termStartDateEditText);
             }
         }
 
         // must set to null explicitly for null check prior to date comparison below
-        int termEndDateSeconds =  0;
+        int termEndDateSeconds = 0;
         if (isEmpty(termEndDate)) {
             invalidValues.add(R.id.termEndDateEditText);
         } else {
             termEndDateSeconds = getSecondsSinceEpoch(termEndDate);
-            if(termEndDateSeconds == 0) {
+            if (termEndDateSeconds == 0) {
                 invalidValues.add(R.id.termEndDateEditText);
             }
         }
 
-        if(termStartDateSeconds != 0 && termEndDateSeconds != 0) {
-            if(termStartDateSeconds > termEndDateSeconds) {
+        if (termStartDateSeconds != 0 && termEndDateSeconds != 0) {
+            if (termStartDateSeconds > termEndDateSeconds) {
                 invalidValues.add(R.id.termStartDateEditText);
                 invalidValues.add(R.id.termEndDateEditText);
                 String title = "INVALID TERM DATES";
@@ -95,7 +91,7 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
 
             // only reset background if there are still valid values; otherwise the form will be submitted
             // and the activity closes so the changes won't be noticeable
-            for (Integer id: validValues) {
+            for (Integer id : validValues) {
                 findViewById(id).setBackgroundColor(validEntryColor);
             }
 

@@ -15,7 +15,7 @@ public class ConfirmationDialogFragment extends DialogFragment {
 
     public interface ConfirmationDialogListener {
 
-        void onPositive(DialogFragment dialog);
+        void onPositive();
 
 //        void onNegative(DialogFragment dialog);
     }
@@ -41,12 +41,7 @@ public class ConfirmationDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
                 .setMessage("Are you sure you want to quit?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialogListener.onPositive(ConfirmationDialogFragment.this);
-                    }
-                })
+                .setPositiveButton("Yes", (dialog, which) -> dialogListener.onPositive())
                 .setNegativeButton("Continue Editing", null
 //                        new DialogInterface.OnClickListener() {
 //                    @Override

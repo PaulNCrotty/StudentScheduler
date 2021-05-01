@@ -4,177 +4,177 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/degreePlanListContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <!-- Main Activity Banner -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/light_orange"
-            app:layout_constraintBottom_toBottomOf="@+id/degreePlanListMainHeader"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/degreePlanListContainer"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
+<!--        &lt;!&ndash; Main Activity Banner &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:background="@color/light_orange"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/degreePlanListMainHeader"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-        <TextView
-            android:id="@+id/degreePlanListMainHeader"
-            style="@style/detailsViewBanner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Degree Plans"
-            app:layout_constraintEnd_toStartOf="@+id/editIconImage"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <TextView-->
+<!--            android:id="@+id/degreePlanListMainHeader"-->
+<!--            style="@style/detailsViewBanner"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Degree Plans"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/editIconImage"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-        <ImageView
-            android:id="@+id/editIconImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="35dp"
-            android:src="@drawable/edit_calendar_icon"
-            app:layout_constraintBottom_toBottomOf="@+id/degreePlanListMainHeader"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/degreePlanListMainHeader" />
-
-
-        <TextView
-            android:id="@+id/recentDegreePlansHeader"
-            style="@style/detailsViewHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recent Degree Plans"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/degreePlanListMainHeader" />
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/recentDegreePlansContainer"
-            style="@style/listViewContainer"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recentDegreePlansHeader">
-            <TextView
-                android:id="@+id/optionOneBackground"
-                style="@style/listOptionBanner"
-                android:hint="1L"
-                android:text=" "
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:onClick="modifyDegreePlan"/>
-            <TextView
-                android:id="@+id/optionOnePlanName"
-                style="@style/listOptionDetails"
-                app:layout_constraintTop_toTopOf="@+id/optionOneBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/optionOneBackground"
-                app:layout_constraintStart_toStartOf="@id/optionOneBackground"
-                android:text="@string/degree_plan_basic_description"
-                android:onClick="modifyDegreePlan" />
-            <TextView
-                android:id="@+id/optionOneLastModifiedDate"
-                style="@style/listOptionDates"
-                app:layout_constraintTop_toTopOf="@+id/optionOneBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/optionOneBackground"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:text="2021-04-15"
-                android:onClick="modifyDegreePlan" />
-
-            <!-- Keep for clickable area -->
-            <TextView
-                android:id="@+id/optionTwoBackground"
-                style="@style/listOptionBannerAlt"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/optionOneBackground"
-                android:onClick="modifyDegreePlan"/>
-            <TextView
-                android:id="@+id/optionTwoPlanName"
-                style="@style/listOptionDetailsAlt"
-                app:layout_constraintTop_toTopOf="@+id/optionTwoBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/optionTwoBackground"
-                app:layout_constraintStart_toStartOf="@id/optionTwoBackground"
-                android:text="@string/degree_plan_basic_description"
-                android:onClick="modifyDegreePlan" />
-            <TextView
-                android:id="@+id/optionTwoLastModifiedDate"
-                style="@style/listOptionDatesAlt"
-                app:layout_constraintTop_toTopOf="@+id/optionTwoBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/optionTwoBackground"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:text="2021-04-15"
-                android:onClick="modifyDegreePlan" />
-
-            <TextView
-                android:id="@+id/optionThreeBackground"
-                style="@style/listOptionBanner"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/optionTwoBackground"
-                android:onClick="modifyDegreePlan"/>
-            <TextView
-                android:id="@+id/optionThreePlanName"
-                style="@style/listOptionDetails"
-                app:layout_constraintTop_toTopOf="@+id/optionThreeBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/optionThreeBackground"
-                app:layout_constraintStart_toStartOf="@id/optionThreeBackground"
-                android:text="@string/degree_plan_basic_description"
-                android:onClick="modifyDegreePlan" />
-            <TextView
-                android:id="@+id/optionThreeLastModifiedDate"
-                style="@style/listOptionDates"
-                app:layout_constraintTop_toTopOf="@+id/optionThreeBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/optionThreeBackground"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:text="2021-04-15"
-                android:onClick="modifyDegreePlan" />
+<!--        <ImageView-->
+<!--            android:id="@+id/editIconImage"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="35dp"-->
+<!--            android:src="@drawable/edit_calendar_icon"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/degreePlanListMainHeader"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/degreePlanListMainHeader" />-->
 
 
+<!--        <TextView-->
+<!--            android:id="@+id/recentDegreePlansHeader"-->
+<!--            style="@style/detailsViewHeader"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Recent Degree Plans"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/degreePlanListMainHeader" />-->
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/recentDegreePlansContainer"-->
+<!--            style="@style/listViewContainer"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/recentDegreePlansHeader">-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionOneBackground"-->
+<!--                style="@style/listOptionBanner"-->
+<!--                android:hint="1L"-->
+<!--                android:text=" "-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                android:onClick="modifyDegreePlan"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionOnePlanName"-->
+<!--                style="@style/listOptionDetails"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/optionOneBackground"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/optionOneBackground"-->
+<!--                app:layout_constraintStart_toStartOf="@id/optionOneBackground"-->
+<!--                android:text="@string/degree_plan_basic_description"-->
+<!--                android:onClick="modifyDegreePlan" />-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionOneLastModifiedDate"-->
+<!--                style="@style/listOptionDates"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/optionOneBackground"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/optionOneBackground"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                android:text="2021-04-15"-->
+<!--                android:onClick="modifyDegreePlan" />-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            &lt;!&ndash; Keep for clickable area &ndash;&gt;-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionTwoBackground"-->
+<!--                style="@style/listOptionBannerAlt"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/optionOneBackground"-->
+<!--                android:onClick="modifyDegreePlan"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionTwoPlanName"-->
+<!--                style="@style/listOptionDetailsAlt"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/optionTwoBackground"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/optionTwoBackground"-->
+<!--                app:layout_constraintStart_toStartOf="@id/optionTwoBackground"-->
+<!--                android:text="@string/degree_plan_basic_description"-->
+<!--                android:onClick="modifyDegreePlan" />-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionTwoLastModifiedDate"-->
+<!--                style="@style/listOptionDatesAlt"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/optionTwoBackground"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/optionTwoBackground"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                android:text="2021-04-15"-->
+<!--                android:onClick="modifyDegreePlan" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/optionThreeBackground"-->
+<!--                style="@style/listOptionBanner"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/optionTwoBackground"-->
+<!--                android:onClick="modifyDegreePlan"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionThreePlanName"-->
+<!--                style="@style/listOptionDetails"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/optionThreeBackground"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/optionThreeBackground"-->
+<!--                app:layout_constraintStart_toStartOf="@id/optionThreeBackground"-->
+<!--                android:text="@string/degree_plan_basic_description"-->
+<!--                android:onClick="modifyDegreePlan" />-->
+<!--            <TextView-->
+<!--                android:id="@+id/optionThreeLastModifiedDate"-->
+<!--                style="@style/listOptionDates"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/optionThreeBackground"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/optionThreeBackground"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                android:text="2021-04-15"-->
+<!--                android:onClick="modifyDegreePlan" />-->
 
 
 
-        <!-- Initial Term Details -->
-        <TextView
-            android:id="@+id/allDegreePlansHeader"
-            style="@style/detailsViewHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Remaining Degree Plans"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recentDegreePlansContainer" />
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/allDegreePlansContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/allDegreePlansHeader">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 
-        <!-- Primary Action Buttons (submit or cancel transaction) -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/light_orange"
-            app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/cancelButton" />
 
-        <Button
-            android:id="@+id/submitButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="35dp"
-            android:onClick="verifyAndSubmitPlan"
-            android:text="Submit"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/allDegreePlansContainer" />
+<!--        &lt;!&ndash; Initial Term Details &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/allDegreePlansHeader"-->
+<!--            style="@style/detailsViewHeader"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Remaining Degree Plans"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/recentDegreePlansContainer" />-->
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/allDegreePlansContainer"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/allDegreePlansHeader">-->
 
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:onClick="cancel"
-            android:text="Cancel"
-            app:layout_constraintEnd_toStartOf="@+id/submitButton"
-            app:layout_constraintTop_toBottomOf="@+id/allDegreePlansContainer" />
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--        &lt;!&ndash; Primary Action Buttons (submit or cancel transaction) &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:background="@color/light_orange"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/cancelButton"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/cancelButton" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/submitButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="35dp"-->
+<!--            android:onClick="verifyAndSubmitPlan"-->
+<!--            android:text="Submit"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/allDegreePlansContainer" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/cancelButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="15dp"-->
+<!--            android:onClick="cancel"-->
+<!--            android:text="Cancel"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/submitButton"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/allDegreePlansContainer" />-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </ScrollView>

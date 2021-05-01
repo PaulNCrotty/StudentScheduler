@@ -18,19 +18,19 @@ public class DateTimeUtil {
 
 
     public static long getSecondsSinceEpoch() {
-        return new Date().getTime()/MILLISECONDS_PER_SECOND;
+        return new Date().getTime() / MILLISECONDS_PER_SECOND;
     }
 
     public static long getSecondsSinceEpoch(String isoDate) throws java.text.ParseException {
-        return DATE_FORMATTER_ISO_8601.parse(isoDate).getTime()/MILLISECONDS_PER_SECOND;
+        return DATE_FORMATTER_ISO_8601.parse(isoDate).getTime() / MILLISECONDS_PER_SECOND;
     }
 
     /**
      * Simple method that takes the year, month, and day of month and converts it to an ISO 8601
      * conforming string representation of that date.
      *
-     * @param year - the integer year (e.g. 1970, or 2020)
-     * @param month - the integer month per the java.util.Calendar implementation (0 = January,..., 11 = December)
+     * @param year       - the integer year (e.g. 1970, or 2020)
+     * @param month      - the integer month per the java.util.Calendar implementation (0 = January,..., 11 = December)
      * @param dayOfMonth - the integer day of month (1 - 31)
      * @return a string formatted in ISO 8601 for the date (year, month, day)
      */

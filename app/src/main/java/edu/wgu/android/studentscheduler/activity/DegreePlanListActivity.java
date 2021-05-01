@@ -1,32 +1,41 @@
 package edu.wgu.android.studentscheduler.activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.R;
-import edu.wgu.android.studentscheduler.domain.DegreePlan;
+import edu.wgu.android.studentscheduler.fragment.NoDegreePlansDialogFragment;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 import static android.view.View.generateViewId;
 
-public class DegreePlanListActivity extends StudentSchedulerActivity {
+public class DegreePlanListActivity extends StudentSchedulerActivity implements NoDegreePlansDialogFragment.Listener {
 
     private static final int MAX_RECENT_TO_LIST = 3;
     private static final int VIEWS_PER_PLAN = 3;
 
-//    private List<DegreePlan> recentlyModifiedPlans;
-//    private List<DegreePlan> remainingDegreePlans;
+    //Have to be injected via constraints as they are not honored from TextView styles
+    private int bannerHeight;
+    private int marginStart;
+    private int marginEnd;
 
+    private List<DegreePlanDao> planDAOs;
+
+    /**
+     * Basic no arg constructor which calls super -> super -> super -> super to prepare layout
+     */
     public DegreePlanListActivity() {
         super(R.layout.activity_degree_plan_list);
     }
@@ -34,13 +43,16 @@ public class DegreePlanListActivity extends StudentSchedulerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        List<DegreePlanDao> planDAOs = repositoryManager.getBasicDegreePlanDataForAllPlans();  //TODO shouldn't be calling a repo from a view layer
+        planDAOs = repositoryManager.getBasicDegreePlanDataForAllPlans();  //TODO shouldn't be calling a repo from a view layer
+        checkForPlans();  //surface option to create plans if none exist yet in the database;
+        Resources resources = init();  //required to instantiated and use standard colors
+        bannerHeight = resources.getDimensionPixelSize(R.dimen.text_view_degree_plan_list_layout_height);
+        marginStart = resources.getDimensionPixelSize(R.dimen.text_view_degree_plan_list_layout_marginStart);
+        marginEnd = resources.getDimensionPixelSize(R.dimen.text_view_degree_plan_list_layout_marginEnd);
+
         //put them in reverse chronological order so newly worked on plans appear first (original sorting done in repo layer)
         Collections.reverse(planDAOs);
         int numberOfPlans = planDAOs.size();
-//        recentlyModifiedPlans = numberOfPlans >= MAX_RECENT_TO_LIST ? new ArrayList<>(MAX_RECENT_TO_LIST) : new ArrayList<>(numberOfPlans);
-//        remainingDegreePlans = numberOfPlans > MAX_RECENT_TO_LIST ? new ArrayList<>(numberOfPlans - MAX_RECENT_TO_LIST) : null;
-        boolean useStandardStyles = true;
 
         ConstraintLayout recentPlansContainer = findViewById(R.id.recentDegreePlansContainer);
         Context recentPlansContext = recentPlansContainer.getContext();
@@ -54,81 +66,110 @@ public class DegreePlanListActivity extends StudentSchedulerActivity {
 
         int viewIndex = 0;
         int bannerConnectorId = recentPlansContainer.getId();
+        boolean useStandardStyles = true;
         boolean isFirstRemainingDegreePlan = true;
+
+        Context context = recentPlansContext;
+        ConstraintLayout layout = recentPlansContainer;
+        ConstraintSet constraintSet = recentPlansConstraints;
         for (int i = 0; i < numberOfPlans; i++) {
+
             DegreePlanDao d = planDAOs.get(i);
-            if (i < MAX_RECENT_TO_LIST) {
-                TextView banner;
-                TextView planNames;
-                TextView modifiedDates;
-                if (useStandardStyles) {
-                    banner = new TextView(recentPlansContext, null, R.style.listOptionBanner);
-                    planNames = new TextView(recentPlansContext, null, R.style.listOptionDetails);
-                    modifiedDates = new TextView(recentPlansContext, null, R.style.listOptionDates);
-                } else {
-                    banner = new TextView(recentPlansContext, null, R.style.listOptionBannerAlt);
-                    planNames = new TextView(recentPlansContext, null, R.style.listOptionDetailsAlt);
-                    modifiedDates = new TextView(recentPlansContext, null, R.style.listOptionDatesAlt);
-                }
-                //set content
-                banner.setId(generateViewId());
-                banner.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
 
-                planNames.setId(generateViewId());
-                planNames.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
-                planNames.setText(DateTimeUtil.getDateString(d.getLastModified()));
-
-                modifiedDates.setId(generateViewId());
-                modifiedDates.setText(getString(R.string.degree_plan_basic_description, d.getStudentName(), d.getName()));
-                modifiedDates.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
-
-                // add constraints
-                recentPlansConstraints.connect(banner.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-                if(bannerConnectorId == recentPlansContainer.getId()) {
-                    recentPlansConstraints.connect(banner.getId(), ConstraintSet.TOP, bannerConnectorId, ConstraintSet.TOP);
-                } else {
-                    recentPlansConstraints.connect(banner.getId(), ConstraintSet.TOP, bannerConnectorId, ConstraintSet.BOTTOM);
-                }
-
-                recentPlansConstraints.connect(planNames.getId(), ConstraintSet.TOP, banner.getId(), ConstraintSet.TOP);
-                recentPlansConstraints.connect(planNames.getId(), ConstraintSet.BOTTOM, banner.getId(), ConstraintSet.BOTTOM);
-                recentPlansConstraints.connect(planNames.getId(), ConstraintSet.START, banner.getId(), ConstraintSet.START);
-
-                recentPlansConstraints.connect(modifiedDates.getId(), ConstraintSet.TOP, banner.getId(), ConstraintSet.TOP);
-                recentPlansConstraints.connect(modifiedDates.getId(), ConstraintSet.BOTTOM, banner.getId(), ConstraintSet.BOTTOM);
-                recentPlansConstraints.connect(modifiedDates.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-
-                bannerConnectorId = banner.getId();
-
-            } else {
-                if(isFirstRemainingDegreePlan) {
-                    useStandardStyles = true; //reset pattern for new section ('remaining degree plans')
-                    isFirstRemainingDegreePlan = false;
-                }
-
-                TextView banner;
-                TextView planNames;
-                TextView modifiedDates;
-                if (useStandardStyles) {
-                    banner = new TextView(remainingPlansContext, null, R.style.listOptionBanner);
-                    planNames = new TextView(remainingPlansContext, null, R.style.listOptionDetails);
-                    modifiedDates = new TextView(remainingPlansContext, null, R.style.listOptionDates);
-                } else {
-                    banner = new TextView(remainingPlansContext, null, R.style.listOptionBannerAlt);
-                    planNames = new TextView(remainingPlansContext, null, R.style.listOptionDetailsAlt);
-                    modifiedDates = new TextView(remainingPlansContext, null, R.style.listOptionDatesAlt);
-                }
-                banner.setId(generateViewId());
-                banner.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
-                modifiedDates.setId(generateViewId());
-                modifiedDates.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
-                planNames.setId(generateViewId());
-                planNames.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
+            //toggle to remaining plans after we hit max amount to surface in recent list
+            if (i >= MAX_RECENT_TO_LIST && isFirstRemainingDegreePlan) {
+                useStandardStyles = true;
+                context = remainingPlansContext;
+                layout = remainingPlansContainer;
+                constraintSet = remainingPlansConstraints;
+                isFirstRemainingDegreePlan = false;
             }
+
+            //declare views and prep for basic color styles
+            TextView banner;
+            TextView planNames;
+            TextView modifiedDates;
+            if (useStandardStyles) {
+                banner = new TextView(context, null, 0, R.style.listOptionBanner);
+                planNames = new TextView(context, null, 0, R.style.listOptionDetails);
+                modifiedDates = new TextView(context, null, 0, R.style.listOptionDates);
+            } else {
+                banner = new TextView(context, null, 0, R.style.listOptionBannerAlt);
+                planNames = new TextView(context, null, 0, R.style.listOptionDetailsAlt);
+                modifiedDates = new TextView(context, null, 0, R.style.listOptionDatesAlt);
+            }
+            //set content
+            banner.setId(generateViewId());
+            banner.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
+            layout.addView(banner);
+
+            planNames.setId(generateViewId());
+            planNames.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
+            planNames.setText(getString(R.string.degree_plan_basic_description, d.getStudentName(), d.getName()));
+            layout.addView(planNames);
+
+            modifiedDates.setId(generateViewId());
+            modifiedDates.setText(DateTimeUtil.getDateString(d.getLastModified()));
+            modifiedDates.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
+            layout.addView(modifiedDates);
+
+            // add constraints
+            addBannerConstraints(constraintSet, recentPlansContainer.getId(), banner.getId(), bannerConnectorId);
+            addPlanNamesConstraints(constraintSet, planNames.getId(), banner.getId());
+            addModifiedDatesConstraints(constraintSet, modifiedDates.getId(), banner.getId());
+
+            //prep for next iteration
+            bannerConnectorId = banner.getId();
             useStandardStyles = !useStandardStyles;
         }
 
+        recentPlansConstraints.applyTo(recentPlansContainer);
+        remainingPlansConstraints.applyTo(remainingPlansContainer);
 
+    }
+
+    private void addBannerConstraints(ConstraintSet constraintSet, int containerId, int constrainedViewId, int connectorId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+        if (connectorId == containerId) {
+            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.TOP);
+        } else {
+            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.BOTTOM);
+        }
+        //height is not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, bannerHeight);
+    }
+
+    private void addPlanNamesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.START, bannerId, ConstraintSet.START);
+        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
+        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
+        //height and margins are not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
+        constraintSet.setMargin(constrainedViewId, ConstraintSet.START, marginStart);
+    }
+
+    private void addModifiedDatesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
+        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
+        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+        //height and margins are not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
+        constraintSet.setMargin(constrainedViewId, ConstraintSet.END, marginEnd);
+    }
+
+    private void checkForPlans() {
+        if (planDAOs != null && planDAOs.size() <= 0) {
+            NoDegreePlansDialogFragment noPlansDialog = new NoDegreePlansDialogFragment();
+            noPlansDialog.show(getSupportFragmentManager(), "noPlansDialog");
+        }
+    }
+
+    @Override
+    public void onPositive() {
+        Intent degreePlanCreation = new Intent(getApplicationContext(), DegreePlanCreationActivity.class);
+        startActivity(degreePlanCreation);
+        finish();
     }
 
     private class ModifyDegreePlanAction implements View.OnClickListener {
@@ -141,7 +182,8 @@ public class DegreePlanListActivity extends StudentSchedulerActivity {
 
         @Override
         public void onClick(View v) {
-
+            String message = "You bonked on " + planDAOs.get(this.viewIndex / VIEWS_PER_PLAN);
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
 }
