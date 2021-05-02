@@ -23,7 +23,7 @@ import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
-import edu.wgu.android.studentscheduler.domain.Term;
+import edu.wgu.android.studentscheduler.domain.term.Term;
 
 import static android.view.View.generateViewId;
 
@@ -139,14 +139,14 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
                 createCourseButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO call course details activity with a blank slate....
+                        showCourseDetailsActivity(null);
                     }
                 });
                 courseContainer.addView(createCourseButton);
 
                 coursesConstraints.connect(createCourseButton.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+                coursesConstraints.connect(createCourseButton.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
                 coursesConstraints.constrainHeight(createCourseButton.getId(), ConstraintSet.WRAP_CONTENT);
-                coursesConstraints.constrainWidth(createCourseButton.getId(), ConstraintSet.WRAP_CONTENT);
                 coursesConstraints.setMargin(createCourseButton.getId(), ConstraintSet.START, 40);
             }
 

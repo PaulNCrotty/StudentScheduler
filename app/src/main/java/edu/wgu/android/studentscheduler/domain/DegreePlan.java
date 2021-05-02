@@ -2,6 +2,7 @@ package edu.wgu.android.studentscheduler.domain;
 
 import java.util.List;
 
+import edu.wgu.android.studentscheduler.domain.term.Term;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

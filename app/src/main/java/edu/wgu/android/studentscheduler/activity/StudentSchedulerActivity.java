@@ -1,5 +1,6 @@
 package edu.wgu.android.studentscheduler.activity;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.view.Menu;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import edu.wgu.android.studentscheduler.R;
+import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.fragment.ConfirmationDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
@@ -25,6 +27,7 @@ import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
 public class StudentSchedulerActivity extends AppCompatActivity implements ConfirmationDialogFragment.ConfirmationDialogListener {
 
     public static final String DEGREE_PLAN_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanId";
+    public static final String COURSE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
 
     //TODO shouldn't be calling a repo from a view layer;  move this to a business layer and invoke that instead
     final DegreePlanRepositoryManager repositoryManager = DegreePlanRepositoryManager.getInstance(this);
@@ -91,7 +94,8 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
             ConfirmationDialogFragment confirmation = new ConfirmationDialogFragment();
             confirmation.show(supportFragmentManager, "cancelConfirmation");
         } else {
-            finish();
+
+            finish();  //TODO causes issues is someone bonks cancel twice in the same activity (because this one closes)
         }
     }
 
@@ -153,4 +157,9 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
 //
 //    }
 
+    public void showCourseDetailsActivity(Course course) {
+        Intent courseDetailsActivity = new Intent(getApplicationContext(), CourseDetailsActivity.class);
+        courseDetailsActivity.putExtra(COURSE_BUNDLE_KEY, course);
+        startActivity(courseDetailsActivity);
+    }
 }

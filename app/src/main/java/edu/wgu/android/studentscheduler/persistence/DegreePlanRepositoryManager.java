@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
-import edu.wgu.android.studentscheduler.domain.Term;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;

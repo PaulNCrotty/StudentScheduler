@@ -1,5 +1,6 @@
 package edu.wgu.android.studentscheduler.domain.course;
 
+import java.io.Serializable;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
@@ -10,7 +11,7 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString
-public class Course {
+public class Course implements Serializable {
 
     private Long id;
     private String courseName;

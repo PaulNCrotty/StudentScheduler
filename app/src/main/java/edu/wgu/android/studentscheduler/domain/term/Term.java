@@ -1,4 +1,4 @@
-package edu.wgu.android.studentscheduler.domain;
+package edu.wgu.android.studentscheduler.domain.term;
 
 import java.util.List;
 

@@ -12,8 +12,8 @@ import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
-import edu.wgu.android.studentscheduler.domain.Term;
-import edu.wgu.android.studentscheduler.domain.TermStatus;
+import edu.wgu.android.studentscheduler.domain.term.Term;
+import edu.wgu.android.studentscheduler.domain.term.TermStatus;
 
 import static edu.wgu.android.studentscheduler.util.DateTimeUtil.getDateString;
 

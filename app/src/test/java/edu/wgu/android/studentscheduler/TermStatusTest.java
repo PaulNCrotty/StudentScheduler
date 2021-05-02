@@ -3,7 +3,7 @@ package edu.wgu.android.studentscheduler;
 import org.junit.Assert;
 import org.junit.Test;
 
-import edu.wgu.android.studentscheduler.domain.TermStatus;
+import edu.wgu.android.studentscheduler.domain.term.TermStatus;
 
 public class TermStatusTest {
 

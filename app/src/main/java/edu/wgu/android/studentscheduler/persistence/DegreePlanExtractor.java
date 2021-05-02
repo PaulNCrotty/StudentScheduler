@@ -4,12 +4,11 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
-import edu.wgu.android.studentscheduler.domain.Term;
-import edu.wgu.android.studentscheduler.domain.TermStatus;
+import edu.wgu.android.studentscheduler.domain.term.Term;
+import edu.wgu.android.studentscheduler.domain.term.TermStatus;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.assessment.AssessmentType;
 import edu.wgu.android.studentscheduler.domain.course.Course;

@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.Calendar;
 
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
-import edu.wgu.android.studentscheduler.domain.TermStatus;
+import edu.wgu.android.studentscheduler.domain.term.TermStatus;
 import edu.wgu.android.studentscheduler.persistence.MockDegreePlanRepository;
 
 import static edu.wgu.android.studentscheduler.util.DateTimeUtil.getDateString;
