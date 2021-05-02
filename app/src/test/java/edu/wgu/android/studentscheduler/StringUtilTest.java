@@ -28,6 +28,31 @@ public class StringUtilTest {
         Assert.assertFalse(StringUtil.isEmpty("I'm a little teapot"));
     }
 
+    @Test
+    public void test__toStandardCase__withNull() {
+        Assert.assertNull(StringUtil.toStandardCase(null));
+    }
+
+    @Test
+    public void test__toStandardCase__withEmptyString() {
+        Assert.assertEquals("", StringUtil.toStandardCase(""));
+    }
+
+    @Test
+    public void test__toStandardCase__withNonEmptyString() {
+        Assert.assertEquals("Hello world", StringUtil.toStandardCase("hello world"));
+    }
+
+    @Test
+    public void test__toStandardCase__withNonEmptyStringContainingLeadingSpaces() {
+        Assert.assertEquals("Hello world", StringUtil.toStandardCase("   hello world"));
+    }
+
+    @Test
+    public void test__toStandardCase__withNonEmptyStringContainingLeadingSpacesAndOtherCapitalization() {
+        Assert.assertEquals("Hello world", StringUtil.toStandardCase("   hello WORLD"));
+    }
+
     /***
      * sanity check on integer division (should truncate any remainders and only have the bytes for the quotient)
      */

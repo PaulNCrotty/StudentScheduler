@@ -2,6 +2,7 @@ package edu.wgu.android.studentscheduler.persistence;
 
 import android.database.Cursor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,9 +58,9 @@ public class DegreePlanExtractor {
                     String termName = cursor.getString(TERM_NAME_COLUMN);
                     String termStartDate = DateTimeUtil.getDateString(cursor.getLong(TERM_START_DATE_COLUMN));
                     String termEndDate = DateTimeUtil.getDateString(cursor.getLong(TERM_END_DATE_COLUMN));
-                    TermStatus termStatus = TermStatus.valueOf(cursor.getString(TERM_STATUS_COLUMN));
+                    TermStatus termStatus = TermStatus.fromStatus((cursor.getString(TERM_STATUS_COLUMN)));
 
-                    term = new Term(termId, termName, termStartDate, termEndDate, null, termStatus);
+                    term = new Term(termId, termName, termStartDate, termEndDate, new ArrayList<>(), termStatus);
                     createdTerms.put(termId, term);
                 }
 
@@ -76,10 +77,10 @@ public class DegreePlanExtractor {
                     String courseStartDate = cStartDate == 0 ? null : DateTimeUtil.getDateString(cStartDate);
                     String courseEndDate = cEndDate == 0 ? null: DateTimeUtil.getDateString(cEndDate);
 
-                    CourseStatus courseStatus = CourseStatus.valueOf(cursor.getString(COURSE_STATUS_COLUMN));
+                    CourseStatus courseStatus = CourseStatus.fromStatus(cursor.getString(COURSE_STATUS_COLUMN));
 
                     //create course
-                    course = new Course(courseId, courseName, courseCode, courseStartDate, courseEndDate, courseStatus, null, null, null);
+                    course = new Course(courseId, courseName, courseCode, courseStartDate, courseEndDate, courseStatus, null, new ArrayList<>(), null);
                     term.getCourses().add(course);  //TODO does this update the reference used by parent container (i.e. degreePlan) properly?
                     createdCourses.put(courseId, course);
                 }
@@ -89,14 +90,14 @@ public class DegreePlanExtractor {
                 if(assessmentId != 0) {
                     String assessmentName = cursor.getString(ASSESSMENT_NAME_COLUMN);
                     String assessmentCode = cursor.getString(ASSESSMENT_CODE_COLUMN);
-                    AssessmentType assessmentType = AssessmentType.valueOf(cursor.getString(ASSESSMENT_TYPE_COLUMN));
+                    AssessmentType assessmentType = AssessmentType.fromType(cursor.getString(ASSESSMENT_TYPE_COLUMN));
 
                     course.getAssessments().add(new Assessment(assessmentId, assessmentName, assessmentCode, null, assessmentType)); //TODO does this update the reference used by parent containers (i.e. terms and degreePlan) properly?
                 }
 
             } while (cursor.moveToNext());
 
-            degreePlan = new DegreePlan(degreePlanId, degreePlanName, studentName, (List<Term>)createdTerms.values());
+            degreePlan = new DegreePlan(degreePlanId, degreePlanName, studentName, new ArrayList<>(createdTerms.values()));
         }
 
         cursor.close(); //TODO can we close here?

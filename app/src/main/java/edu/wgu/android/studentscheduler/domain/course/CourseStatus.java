@@ -1,5 +1,6 @@
 package edu.wgu.android.studentscheduler.domain.course;
 
+
 public enum CourseStatus {
 
     PLANNED("Planned"), //orange play button
@@ -19,4 +20,15 @@ public enum CourseStatus {
         return status;
     }
 
+    public static CourseStatus fromStatus(String status) {
+        CourseStatus CourseStatus = null;
+        for(CourseStatus s : values()) {
+            if(s.getStatus().toLowerCase().equals(status.toLowerCase())) {
+                CourseStatus = s;
+                break;
+            }
+        }
+        return CourseStatus;
+    }
+    
 }

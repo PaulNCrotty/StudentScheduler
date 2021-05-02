@@ -182,8 +182,12 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
 
         @Override
         public void onClick(View v) {
-            String message = "You bonked on " + planDAOs.get(this.viewIndex / VIEWS_PER_PLAN);
+            int index = this.viewIndex / VIEWS_PER_PLAN;
+            String message = "You bonked on " + planDAOs.get(index);
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            Intent degreePlanActivity = new Intent(getApplicationContext(), DegreePlanActivity.class);
+            degreePlanActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, planDAOs.get(index).getId());
+            startActivity(degreePlanActivity);
         }
     }
 }

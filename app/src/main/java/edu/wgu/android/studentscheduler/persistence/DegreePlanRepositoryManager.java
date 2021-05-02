@@ -56,7 +56,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         String query =
             "select " +
                 "dp.id as degree_plan_id, " +
-                "dp.student_name, " +
+                "dp.student_name as student_name, " +
                 "dp.name as degree_plan_name, " +
                 "t.id as term_id, " +
                 "t.name as term_name, " +
@@ -77,7 +77,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
             "left join term t on t.plan_id = dp.id " +
             "left join course c on c.term_id = t.id " +
             "left join assessment a on a.course_id = c.id " +
-            "where dp.id = 1 ";
+            "where dp.id = ? ";
 //            "order by t.id, c.id"; //do I really need to order by?
 
         SQLiteDatabase db = getReadableDatabase();

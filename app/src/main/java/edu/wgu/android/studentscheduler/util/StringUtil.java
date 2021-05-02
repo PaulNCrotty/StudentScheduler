@@ -17,4 +17,12 @@ public class StringUtil {
         return isEmpty;
     }
 
+    public static String toStandardCase(String s) {
+        if(!isEmpty(s)) {
+            s = s.trim();  //warning: do not chain (without trimming s on both sides of the '+' operator)
+            s = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+        }
+        return s;
+    }
+
 }

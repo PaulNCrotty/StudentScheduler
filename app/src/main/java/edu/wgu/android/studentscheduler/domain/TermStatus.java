@@ -1,5 +1,8 @@
 package edu.wgu.android.studentscheduler.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum TermStatus {
 
     FUTURE_UNAPPROVED("Planned"),
@@ -19,4 +22,14 @@ public enum TermStatus {
         return status;
     }
 
+    public static TermStatus fromStatus(String status) {
+        TermStatus termStatus = null;
+        for(TermStatus s : values()) {
+            if(s.getStatus().toLowerCase().equals(status.toLowerCase())) {
+                termStatus = s;
+                break;
+            }
+        }
+        return termStatus;
+    }
 }

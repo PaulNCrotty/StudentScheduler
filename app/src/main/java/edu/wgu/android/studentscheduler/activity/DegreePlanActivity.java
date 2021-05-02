@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.wgu.android.studentscheduler.R;
@@ -127,7 +129,28 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
             coursesConstraints.clone(courseContainer);
             Context termContext = courseContainer.getContext();
             int previousCourseId = courseContainer.getId(); //set first course top relative to container
-            for(Course course: term.getCourses()) {
+            List<Course> courses = term.getCourses();
+
+            if(courses.size() <= 0) {
+                Button createCourseButton = new Button(termContext);
+                createCourseButton.setId(generateViewId());
+                createCourseButton.setTextColor(courseTextColor);
+                createCourseButton.setText("Create New Course");
+                createCourseButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //TODO call course details activity with a blank slate....
+                    }
+                });
+                courseContainer.addView(createCourseButton);
+
+                coursesConstraints.connect(createCourseButton.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+                coursesConstraints.constrainHeight(createCourseButton.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.constrainWidth(createCourseButton.getId(), ConstraintSet.WRAP_CONTENT);
+                coursesConstraints.setMargin(createCourseButton.getId(), ConstraintSet.START, 40);
+            }
+
+            for(Course course: courses) {
                 ImageView courseStatus = new ImageView(termContext);
                 courseStatus.setId(generateViewId());
                 courseStatus.setImageResource(COURSE_STATUS_MAP.get(course.getStatus()));
