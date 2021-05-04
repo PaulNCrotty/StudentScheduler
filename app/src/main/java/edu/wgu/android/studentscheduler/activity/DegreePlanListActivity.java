@@ -24,12 +24,6 @@ import static android.view.View.generateViewId;
 public class DegreePlanListActivity extends StudentSchedulerActivity implements NoDegreePlansDialogFragment.Listener {
 
     private static final int MAX_RECENT_TO_LIST = 3;
-    private static final int VIEWS_PER_PLAN = 3;
-
-    //Have to be injected via constraints as they are not honored from TextView styles
-    private int bannerHeight;
-    private int marginStart;
-    private int marginEnd;
 
     private List<DegreePlanDao> planDAOs;
 
@@ -45,10 +39,7 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
         super.onCreate(savedInstanceState);
         planDAOs = repositoryManager.getBasicDegreePlanDataForAllPlans();  //TODO shouldn't be calling a repo from a view layer
         checkForPlans();  //surface option to create plans if none exist yet in the database;
-        Resources resources = init();  //required to instantiated and use standard colors
-        bannerHeight = resources.getDimensionPixelSize(R.dimen.text_view_degree_plan_list_layout_height);
-        marginStart = resources.getDimensionPixelSize(R.dimen.text_view_degree_plan_list_layout_marginStart);
-        marginEnd = resources.getDimensionPixelSize(R.dimen.text_view_degree_plan_list_layout_marginEnd);
+        init();  //required to instantiated and use standard colors
 
         //put them in reverse chronological order so newly worked on plans appear first (original sorting done in repo layer)
         Collections.reverse(planDAOs);
@@ -126,36 +117,6 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
         recentPlansConstraints.applyTo(recentPlansContainer);
         remainingPlansConstraints.applyTo(remainingPlansContainer);
 
-    }
-
-    private void addBannerConstraints(ConstraintSet constraintSet, int containerId, int constrainedViewId, int connectorId) {
-        constraintSet.connect(constrainedViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        if (connectorId == containerId) {
-            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.TOP);
-        } else {
-            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.BOTTOM);
-        }
-        //height is not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, bannerHeight);
-    }
-
-    private void addPlanNamesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
-        constraintSet.connect(constrainedViewId, ConstraintSet.START, bannerId, ConstraintSet.START);
-        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
-        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
-        //height and margins are not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
-        constraintSet.setMargin(constrainedViewId, ConstraintSet.START, marginStart);
-    }
-
-    private void addModifiedDatesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
-        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
-        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
-        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        //height and margins are not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
-        constraintSet.setMargin(constrainedViewId, ConstraintSet.END, marginEnd);
     }
 
     private void checkForPlans() {

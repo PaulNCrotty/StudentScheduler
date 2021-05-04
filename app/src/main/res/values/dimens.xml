@@ -7,7 +7,7 @@
     <dimen name="text_view_term_list_layout_height">45dp</dimen>
     <dimen name="text_view_term_list_layout_margin">5dp</dimen>
     <dimen name="text_view_term_list_padding">10dp</dimen>
-    <dimen name="text_view_degree_plan_list_layout_height">35dp</dimen>
-    <dimen name="text_view_degree_plan_list_layout_marginStart">10dp</dimen>
-    <dimen name="text_view_degree_plan_list_layout_marginEnd">10dp</dimen>
+    <dimen name="text_view_list_layout_height">35dp</dimen>
+    <dimen name="text_view_list_layout_marginStart">10dp</dimen>
+    <dimen name="text_view_list_layout_marginEnd">10dp</dimen>
 </resources>

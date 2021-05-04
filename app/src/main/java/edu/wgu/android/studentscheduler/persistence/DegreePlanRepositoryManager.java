@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
+import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
@@ -146,5 +147,38 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
             data.put(DegreePlanContract.Term.STATUS, status);
         }
         return db.insert(DegreePlanContract.Term.TABLE_NAME, null, data);
+    }
+
+    public Course getCourseDetails(long courseId) {
+        String query =
+            "select " +
+                "c.id as course_id, " +
+                "c.name as course_name, " +
+                "c.code as course_code, " +
+                "c.start_date as course_start_date, " +
+                "c.end_date as course_end_date, " +
+                "c.status as course_status, " +
+                "i.id as instructor_id, " +
+                "i.first_name as instructor_first, " +
+                "i.last_name as instructor_last, " +
+                "i.phone as instructor_phone, " +
+                "i.email as instructor_email, " +
+                "a.id as assessment_id, " +
+                "a.name as assessment_name, " +
+                "a.code as assessment_code, " +
+                "a.date as assessment_date, " +
+                "a.type as assessment_type, " +
+                "n.id as course_note_id, " +
+                "n.note as course_note " +
+            "from course c " +
+            "left join instructor i on i.id = c.instructor_id " +
+            "left join assessment a on a.course_id = c.id " +
+            "left join course_note n on n.course_id = c.id " +
+            "where c.id = ? ";
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
+        return CourseDetailsExtractor.extract(cursor); //extractor will close cursor #TODO verify
     }
 }
