@@ -129,19 +129,34 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
+    public void verifyAndSubmitCourse(View view) {
+
+    }
+
+    public void createAssessmentAction(View view) {
+        startActivity(new Intent(getApplicationContext(), AssessmentDetailsActivity.class));
+    }
+
+    public void createNoteAction(View view) {
+        //TODO how to implement?
+    }
+
     private class ModifyAssessmentAction implements View.OnClickListener {
 
         ModifyAssessmentAction(int viewIndex) {
             this.viewIndex = viewIndex;
         }
 
-        private int viewIndex;
+        private final int viewIndex;
 
         @Override
         public void onClick(View v) {
             Assessment assessment = course.getAssessments().get(this.viewIndex / VIEWS_PER_PLAN);
+
+            //TODO get rid of this once we verify it works well
             String message = "You bonked on " + assessment;
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+
             Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
             assessmentDetailsActivity.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
             startActivity(assessmentDetailsActivity);

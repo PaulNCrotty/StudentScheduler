@@ -19,12 +19,14 @@ public class AssessmentDetailsActivity extends StudentSchedulerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        Assessment assessment = (Assessment) extras.getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
-        ((EditText)findViewById(R.id.assessmentNameEditText)).setText(assessment.getName());
-        ((EditText)findViewById(R.id.assessmentCodeEditText)).setText(assessment.getCode());
-        ((EditText)findViewById(R.id.assessmentDateEditText)).setText(assessment.getAssessmentDate());
+        if(extras != null) {
+            Assessment assessment = (Assessment) extras.getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
+            ((EditText) findViewById(R.id.assessmentNameEditText)).setText(assessment.getName());
+            ((EditText) findViewById(R.id.assessmentCodeEditText)).setText(assessment.getCode());
+            ((EditText) findViewById(R.id.assessmentDateEditText)).setText(assessment.getAssessmentDate());
 
-        setTypeButton(assessment);
+            setTypeButton(assessment);
+        }
     }
 
     private void setTypeButton(Assessment assessment) {
