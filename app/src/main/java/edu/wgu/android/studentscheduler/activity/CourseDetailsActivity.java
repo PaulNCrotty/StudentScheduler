@@ -31,6 +31,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        init();
         Bundle extras = getIntent().getExtras();
         long termId = extras.getLong(TERM_ID_BUNDLE_KEY);
         long courseId = extras.getLong(COURSE_ID_BUNDLE_KEY);
