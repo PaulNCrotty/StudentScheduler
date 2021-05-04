@@ -134,7 +134,7 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
                 createCourseButton.setId(generateViewId());
                 createCourseButton.setTextColor(courseTextColor);
                 createCourseButton.setText("Create New Course");
-                createCourseButton.setOnClickListener(v -> showCourseDetailsActivity(term.getId(), 0));
+                createCourseButton.setOnClickListener(v -> showCourseDetailsActivity(term, 0));
                 courseContainer.addView(createCourseButton);
 
                 coursesConstraints.connect(createCourseButton.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
@@ -153,7 +153,7 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
                 courseTitle.setId(generateViewId());
                 courseTitle.setTextColor(courseTextColor);
                 courseTitle.setText(getString(R.string.course_title, course.getCourseCode(), course.getCourseName()));
-                courseTitle.setOnClickListener(v -> showCourseDetailsActivity(term.getId(), course.getId()));
+                courseTitle.setOnClickListener(v -> showCourseDetailsActivity(term, course.getId()));
                 courseContainer.addView(courseTitle);
 
                 TextView courseEndDate = new TextView(termContext);

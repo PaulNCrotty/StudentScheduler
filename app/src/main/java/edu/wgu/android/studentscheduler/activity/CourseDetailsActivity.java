@@ -17,6 +17,7 @@ import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
+import edu.wgu.android.studentscheduler.domain.term.Term;
 
 import static android.view.View.generateViewId;
 
@@ -26,6 +27,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         super(R.layout.activity_course_detail);
     }
 
+    private Term term;
     private Course course;
 
     @Override
@@ -33,7 +35,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         super.onCreate(savedInstanceState);
         init();
         Bundle extras = getIntent().getExtras();
-        long termId = extras.getLong(TERM_ID_BUNDLE_KEY);
+        term = (Term) extras.getSerializable(TERM_OBJECT_BUNDLE_KEY);
         long courseId = extras.getLong(COURSE_ID_BUNDLE_KEY);
         if (courseId > 0) {
             course = repositoryManager.getCourseDetails(courseId);
@@ -129,12 +131,15 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
+
     public void verifyAndSubmitCourse(View view) {
 
     }
 
     public void createAssessmentAction(View view) {
-        startActivity(new Intent(getApplicationContext(), AssessmentDetailsActivity.class));
+        Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
+        assessmentDetailsActivity.putExtra(COURSE_OBJECT_BUNDLE_KEY, course);
+        startActivity(assessmentDetailsActivity);
     }
 
     public void createNoteAction(View view) {
@@ -158,6 +163,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
             Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
+            assessmentDetailsActivity.putExtra(COURSE_OBJECT_BUNDLE_KEY, course);
             assessmentDetailsActivity.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
             startActivity(assessmentDetailsActivity);
         }

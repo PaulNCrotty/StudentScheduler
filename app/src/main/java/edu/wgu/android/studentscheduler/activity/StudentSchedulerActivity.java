@@ -15,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.Set;
+
 import edu.wgu.android.studentscheduler.R;
-import edu.wgu.android.studentscheduler.domain.course.Course;
+import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.fragment.ConfirmationDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
@@ -29,6 +31,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
 
     public static final String DEGREE_PLAN_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanId";
     public static final String TERM_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.termId";
+    public static final String TERM_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.termObject";
     public static final String COURSE_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
     public static final String COURSE_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
     public static final String ASSESSMENT_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.assessmentObject";
@@ -142,6 +145,49 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         return viewModified;
     }
 
+    String getRequiredTextValue(@IdRes int editTextField, Set<Integer> validValues, Set<Integer> invalidValues) {
+        String textValue = getEditTextValue(editTextField);
+        if (isEmpty(textValue)) {
+            invalidValues.add(editTextField);
+        } else {
+            validValues.add(editTextField);
+        }
+
+        return textValue;
+    }
+
+    void verifyDates(int startDateSeconds, int endDateSeconds,
+                     @IdRes int startDateId, @IdRes int endDateId,
+                     Set<Integer> invalidValues, Set<Integer> validValues) {
+        if (startDateSeconds != 0 && endDateSeconds != 0) {
+            if (startDateSeconds > endDateSeconds) {
+                invalidValues.add(startDateId);
+                invalidValues.add(endDateId);
+                String title = "INVALID TERM DATES";
+                String message = "The term start date must be before the term end date";
+                GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, message);
+                errorDialog.show(getSupportFragmentManager(), "dateErrors");
+            } else {
+                validValues.add(startDateId);
+                validValues.add(endDateId);
+            }
+        }
+    }
+
+    int getRequiredDate(@IdRes int dateEditTextId, Set<Integer> invalidValues) {
+        String startDate = getEditTextValue(dateEditTextId);
+        int startDateSeconds = 0;
+        if (isEmpty(startDate)) {
+            invalidValues.add(dateEditTextId);
+        } else {
+            startDateSeconds = getSecondsSinceEpoch(startDate);
+            if (startDateSeconds == 0) {
+                invalidValues.add(dateEditTextId);
+            }
+        }
+        return startDateSeconds;
+    }
+
     String getEditTextValue(@IdRes int id) {
         String value = null;
         View view = findViewById(id);
@@ -202,14 +248,9 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         finish(); // close the activity
     }
 
-//    @Override
-//    public void onNegative(DialogFragment dialog) {
-//
-//    }
-
-    public void showCourseDetailsActivity(long termId, long courseId) {
+    public void showCourseDetailsActivity(Term term, long courseId) {
         Intent courseDetailsActivity = new Intent(getApplicationContext(), CourseDetailsActivity.class);
-        courseDetailsActivity.putExtra(TERM_ID_BUNDLE_KEY, termId);
+        courseDetailsActivity.putExtra(TERM_OBJECT_BUNDLE_KEY, term);
         courseDetailsActivity.putExtra(COURSE_ID_BUNDLE_KEY, courseId);
         startActivity(courseDetailsActivity);
     }
