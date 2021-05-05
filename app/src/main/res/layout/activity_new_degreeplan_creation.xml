@@ -218,7 +218,7 @@
             app:layout_constraintTop_toBottomOf="@+id/newCourseNotification"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="35dp"
-            android:text="Submit"
+            android:text="Save"
             android:onClick="verifyAndSubmitPlan" />
         <Button
             android:id="@+id/cancelButton"

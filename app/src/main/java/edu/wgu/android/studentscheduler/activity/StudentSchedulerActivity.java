@@ -38,6 +38,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     public static final String COURSE_START_DATE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseStartDate";
     public static final String COURSE_END_DATE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseEndDate";
     public static final String COURSE_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
+    public static final String COURSE_NOTE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseNote";
     public static final String ASSESSMENT_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.assessmentObject";
 
     static final int VIEWS_PER_PLAN = 3;

@@ -20,6 +20,7 @@
         <activity android:name=".activity.DegreePlanListActivity"/>
         <activity android:name=".activity.TermDetailsActivity"/>
         <activity android:name=".activity.CourseDetailsActivity"/>
+        <activity android:name=".activity.CourseNoteActivity"/>
         <activity android:name=".activity.AssessmentDetailsActivity"/>
     </application>
 

@@ -149,7 +149,7 @@
             app:layout_constraintTop_toBottomOf="@id/assessmentTypeSelectionGroup"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="35dp"
-            android:text="Submit"
+            android:text="add to course template"
             android:onClick="verifyAndAddAssessmentToCourse"
             />
         <Button

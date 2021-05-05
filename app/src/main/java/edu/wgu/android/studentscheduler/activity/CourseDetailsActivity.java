@@ -35,9 +35,9 @@ import static android.view.View.generateViewId;
 public class CourseDetailsActivity extends StudentSchedulerActivity {
 
     private static final int GET_ASSESSMENT_RESULT = 0;
+    private static final int GET_NOTE_RESULT = 1;
     private static final String TO_BE_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
-    private static final String USE_STANDARD_STYLES_KEY = "edu.wgu.android.studentscheduler.activity.useStandardStyles";
-    private static final String BANNER_CONNECTOR_ID_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
+    private static final String TO_BE_COURSE_NOTES_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeCourseNotes";
 
     public CourseDetailsActivity() {
         super(R.layout.activity_course_detail);
@@ -47,12 +47,16 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     private Course course;
     // Transient (all will be lost if course is not stored prior to closing app)
     private List<Assessment> toBeAssessments;
+    private List<String> toBeNotes;
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         if (toBeAssessments != null) {
             savedInstanceState.putSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY, (Serializable) toBeAssessments);
+        }
+        if(toBeAssessments != null) {
+            savedInstanceState.putSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY, (Serializable) toBeNotes);
         }
     }
 
@@ -62,6 +66,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
         if (savedInstanceState != null) {
             toBeAssessments = (ArrayList) savedInstanceState.getSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY);
+            toBeNotes = (ArrayList) savedInstanceState.getSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY);
         }
         init();
         Bundle extras = getIntent().getExtras();
@@ -87,7 +92,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             ((EditText) findViewById(R.id.instructorEmailEditText)).setText(instructor.getEmail());
 
             // ensure transient (not yet persisted) assessments if they exist
-            //TODO remove: this method was from an old approach
+            //TODO remove: this method was from an old approach (but what about flipping the phone/orientation change?)
 //            if (toBeAssessments != null && toBeAssessments.size() > 0) {
 //                course.getAssessments().addAll(toBeAssessments);
 //            }
@@ -147,6 +152,35 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
 
         constraintSet.applyTo(layout);
+    }
+
+    private void insertNotes(List<String> notes) {
+        ConstraintLayout layout = findViewById(R.id.courseNotesContainer);
+        Context context = layout.getContext();
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(layout);
+
+        int viewIndex = 0;  //TODO to be used for accessing notes to be modified later....
+        int bannerConnectorId = layout.getId();
+        for(String note: notes) {
+            //TODO add view for title and an image to delete?
+            TextView noteView = new TextView(context);
+            noteView.setId(generateViewId());
+            noteView.setText(note);
+            layout.addView(noteView);
+
+            int noteViewId = noteView.getId();
+            constraintSet.connect(noteViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+            if(bannerConnectorId == layout.getId()) {
+                constraintSet.connect(noteViewId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+            } else {
+                constraintSet.connect(noteViewId, ConstraintSet.TOP, bannerConnectorId, ConstraintSet.BOTTOM);
+            }
+            constraintSet.constrainHeight(noteViewId, ConstraintSet.WRAP_CONTENT);
+            constraintSet.setMargin(noteViewId, ConstraintSet.START, marginStart);
+
+            bannerConnectorId = noteViewId;
+        }
     }
 
     private void setStatusButton(Course course) {
@@ -232,7 +266,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
         } else {
             long courseId;
-            if(course == null) {
+            if (course == null) {
                 //new course needs to be created
                 long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
                 courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
@@ -242,18 +276,21 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 courseId = course.getId();
                 String phoneNumber = instructorPhoneAreaCode + "-" + instructorPhonePrefix + "-" + instructorPhoneSuffix;
                 CourseInstructor modifiedInstructor = new CourseInstructor(course.getInstructor().getId(), instructorFirstName, instructorLastName, phoneNumber, instructorEmail);
-                if(!course.getInstructor().equals(modifiedInstructor)) {
-                    Log.d("UPDATE","Updating course instructor information from \n" + course.getInstructor() + " \n to \n" + modifiedInstructor);
+                if (!course.getInstructor().equals(modifiedInstructor)) {
+                    Log.i("UPDATE", "Updating course instructor information from \n" + course.getInstructor() + " \n to \n" + modifiedInstructor);
                     repositoryManager.updateCourseInstructor(modifiedInstructor);
                 }
                 Course modifiedCourse = new Course(courseId, courseName, courseCode, DateTimeUtil.getDateString(courseStartDate), DateTimeUtil.getDateString(courseEndDate), selectedStatus, null, null, null);
-                if(!course.equals(modifiedCourse)) {
-                    Log.d("UPDATE","Updating course information from \n" + course + " \n to \n" + modifiedCourse);
+                if (!course.equals(modifiedCourse)) {
+                    Log.i("UPDATE", "Updating course information from \n" + course + " \n to \n" + modifiedCourse);
                     repositoryManager.updateCourse(courseId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
                 }
             }
             if (toBeAssessments != null) {
-                long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments);
+                long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments); //TODO what about modifications/upates to courses?
+            }
+            if (toBeNotes != null) {
+                long[] ids = repositoryManager.insertCourseNotes(courseId, toBeNotes); //TODO what about modifications/updates to course notes?
             }
             finish();
         }
@@ -317,24 +354,41 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == GET_ASSESSMENT_RESULT && data != null) {
-            Assessment newAssessment = (Assessment) data.getExtras().getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
-            if (newAssessment != null) {
-                if (toBeAssessments == null) {
-                    toBeAssessments = new ArrayList<>();
+        if (resultCode == RESULT_OK && data != null) {
+            if(requestCode == GET_ASSESSMENT_RESULT) {
+                Assessment newAssessment = (Assessment) data.getExtras().getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
+                if (newAssessment != null) {
+                    if (toBeAssessments == null) {
+                        toBeAssessments = new ArrayList<>();
+                    }
+                    toBeAssessments.add(newAssessment);
+                    if (course != null) {
+                        course.getAssessments().add(newAssessment);
+                        insertAssessments(course.getAssessments());
+                    } else {
+                        //otherwise, it's a new course which hasn't been saved yet
+                        insertAssessments(toBeAssessments);
+                    }
                 }
-                toBeAssessments.add(newAssessment);
+            } else if (requestCode == GET_NOTE_RESULT) {
+                String newNote = data.getExtras().getString(COURSE_NOTE_BUNDLE_KEY);
+                if(newNote != null) {
+                    if(toBeNotes == null) {
+                        toBeNotes = new ArrayList<>();
+                    }
+                    toBeNotes.add(newNote);
+                }
                 if(course != null) {
-                    course.getAssessments().add(newAssessment);
-                    insertAssessments(course.getAssessments());
+                    course.getCourseNotes().add(newNote);
+                    insertNotes(course.getCourseNotes());
                 } else {
-                    //otherwise, it's a new course which hasn't been saved yet
-                    insertAssessments(toBeAssessments);
+                    insertNotes(toBeNotes);
                 }
             }
         }
     }
 
+    //TODO add similar functionality for notes....
     private class ModifyAssessmentAction implements View.OnClickListener {
 
         ModifyAssessmentAction(int viewIndex) {
@@ -347,10 +401,10 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         public void onClick(View v) {
 
             Assessment assessment;
-            if(course != null) {
+            if (course != null) {
                 assessment = course.getAssessments().get(this.viewIndex / VIEWS_PER_PLAN);
             } else {
-                assessment = toBeAssessments.get(this.viewIndex/VIEWS_PER_PLAN);
+                assessment = toBeAssessments.get(this.viewIndex / VIEWS_PER_PLAN);
             }
 
             //TODO this is not very DRY... should probably create an nested class that manages all of this
@@ -380,7 +434,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     }
 
     public void createNoteAction(View view) {
-        //TODO how to implement?
+        startActivityForResult(new Intent(getApplicationContext(), CourseNoteActivity.class), GET_NOTE_RESULT);
     }
 
 }
