@@ -4,6 +4,7 @@ package edu.wgu.android.studentscheduler;
 import org.junit.Assert;
 import org.junit.Test;
 
+import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.util.StringUtil;
 
 public class StringUtilTest {
@@ -73,6 +74,9 @@ public class StringUtilTest {
         Assert.assertEquals(3, 9/3);
         Assert.assertEquals(3, 10/3);
         Assert.assertEquals(3, 11/3);
+
+
+        System.out.println(CourseStatus.IN_PROGRESS.name());
     }
 
 }

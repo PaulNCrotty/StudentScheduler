@@ -35,6 +35,8 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     public static final String TERM_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.termId";
     public static final String TERM_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.termObject";
     public static final String COURSE_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
+    public static final String COURSE_START_DATE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseStartDate";
+    public static final String COURSE_END_DATE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseEndDate";
     public static final String COURSE_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
     public static final String ASSESSMENT_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.assessmentObject";
 
@@ -166,22 +168,8 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         return textValue;
     }
 
-    void verifyDates(int startDateSeconds, int endDateSeconds,
-                     @IdRes int startDateId, @IdRes int endDateId,
-                     Set<Integer> invalidValues, Set<Integer> validValues) {
-        if (startDateSeconds != 0 && endDateSeconds != 0) {
-            if (startDateSeconds > endDateSeconds) {
-                invalidValues.add(startDateId);
-                invalidValues.add(endDateId);
-                String title = "INVALID TERM DATES";
-                String message = "The term start date must be before the term end date";
-                GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, message);
-                errorDialog.show(getSupportFragmentManager(), "dateErrors");
-            } else {
-                validValues.add(startDateId);
-                validValues.add(endDateId);
-            }
-        }
+    int getDate(@IdRes int dateEditTextId) {
+        return getSecondsSinceEpoch(getEditTextValue(dateEditTextId));
     }
 
     int getRequiredDate(@IdRes int dateEditTextId, Set<Integer> invalidValues) {

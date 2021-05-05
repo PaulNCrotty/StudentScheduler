@@ -72,7 +72,7 @@ public class DegreePlanContract {
                 CODE + " text not null, " +
                 START_DATE + " integer, " +
                 END_DATE + " integer, " +
-                STATUS + " text CHECK(" + STATUS + " IN ('PLANNED', 'ENROLLED', 'DROPPED', 'PASSED', 'FAILED', 'INCOMPLETE')), " +
+                STATUS + " text CHECK(" + STATUS + " IN ('PLANNED', 'ENROLLED', 'DROPPED', 'PASSED', 'FAILED', 'INCOMPLETE', 'IN PROGRESS')), " +
                 INSTRUCTOR + " integer not null references " + Instructor.TABLE_NAME + "(" + ID + ") on delete set null)";
     }
 

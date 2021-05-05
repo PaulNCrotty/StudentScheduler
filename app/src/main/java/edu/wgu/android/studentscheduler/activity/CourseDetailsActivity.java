@@ -171,14 +171,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         CourseStatus status = CourseStatus.PLANNED;
         if (((RadioButton) findViewById(R.id.plannedStatusButton)).isChecked()) {
             status = CourseStatus.PLANNED;
-        }
-        else if(((RadioButton) findViewById(R.id.droppedStatusButton)).isChecked()) {
+        } else if (((RadioButton) findViewById(R.id.droppedStatusButton)).isChecked()) {
             status = CourseStatus.DROPPED;
-        }
-        else if (((RadioButton) findViewById(R.id.inProgressStatusButton)).isChecked()) {
+        } else if (((RadioButton) findViewById(R.id.inProgressStatusButton)).isChecked()) {
             status = CourseStatus.IN_PROGRESS;
-        }
-        else if(((RadioButton) findViewById(R.id.passedStatusButton)).isChecked()) {
+        } else if (((RadioButton) findViewById(R.id.passedStatusButton)).isChecked()) {
             status = CourseStatus.PASSED;
         }
 
@@ -213,6 +210,34 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         int courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
 
         //Make course sure start date is on or before end date
+        String errorMessage = verifyDates(invalidValues, courseStartDate, courseEndDate);
+
+        if (invalidValues.size() > 0) {
+            for (Integer id : invalidValues) {
+                findViewById(id).setBackground(errorBorder);
+            }
+            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment("Invalid Fields", errorMessage);
+            errorDialog.show(getSupportFragmentManager(), "courseSubmissionErrors");
+
+            for (Integer id : requiredFields) {
+                if (!invalidValues.contains(id)) {
+                    findViewById(id).setBackground(null);
+                }
+            }
+
+        } else {
+            long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
+            long courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, getStatusValue().getStatus());
+
+            if (toBeAssessments != null) {
+                long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments);
+            }
+            //TODO add toast or something?
+            finish();
+        }
+    }
+
+    private String verifyDates(Set<Integer> invalidValues, int courseStartDate, int courseEndDate) {
         String errorMessage = null;
         if (courseStartDate > courseEndDate) {
             invalidValues.add(R.id.courseStartDateEditText);
@@ -237,34 +262,36 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             }
             errorMessage = "The course end date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
         }
-
-        if (invalidValues.size() > 0) {
-            for (Integer id : invalidValues) {
-                findViewById(id).setBackground(errorBorder);
-            }
-            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment("Invalid Fields", errorMessage);
-            errorDialog.show(getSupportFragmentManager(), "courseSubmissionErrors");
-
-            for (Integer id : requiredFields) {
-                if (!invalidValues.contains(id)) {
-                    findViewById(id).setBackground(null);
-                }
-            }
-
-        } else {
-            long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
-            long courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, getStatusValue().getStatus());
-
-            if (toBeAssessments != null) {
-                long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments);
-            }
-        }
+        return errorMessage;
     }
 
     public void createAssessmentAction(View view) {
-        Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
-        assessmentDetailsActivity.putExtra(COURSE_OBJECT_BUNDLE_KEY, course);
-        startActivity(assessmentDetailsActivity);
+        Set<Integer> invalidValues = new HashSet<>();
+        int courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
+        int courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
+        String errorMessage = verifyDates(invalidValues, courseStartDate, courseEndDate);
+
+
+        if(invalidValues.size() > 0) {
+            for (Integer id : invalidValues) {
+                findViewById(id).setBackground(errorBorder);
+            }
+            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment("Invalid Course Dates", errorMessage);
+            errorDialog.show(getSupportFragmentManager(), "courseDateErrors");
+        } else {
+//            registerForActivityResult(new CreateAssessmentContract(), assessment -> {
+//                if (assessment != null) {
+//                    if (toBeAssessments == null) {
+//                        toBeAssessments = new ArrayList<>();
+//                    }
+//                    toBeAssessments.add(assessment);
+//                }
+//            });
+            Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
+            assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, courseStartDate);
+            assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, courseEndDate);
+            startActivity(assessmentDetailsActivity);
+        }
     }
 
     public void createNoteAction(View view) {
@@ -282,13 +309,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         @Override
         public void onClick(View v) {
             Assessment assessment = course.getAssessments().get(this.viewIndex / VIEWS_PER_PLAN);
-
             //TODO get rid of this once we verify it works well
-            String message = "You bonked on " + assessment;
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(getApplicationContext(), "You bonked on " + assessment, Toast.LENGTH_SHORT).show();
             Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
-            assessmentDetailsActivity.putExtra(COURSE_OBJECT_BUNDLE_KEY, course);
+            assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, getSecondsSinceEpoch(course.getStartDate()));
+            assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, getSecondsSinceEpoch(course.getEndDate()));
             assessmentDetailsActivity.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
             startActivity(assessmentDetailsActivity);
         }

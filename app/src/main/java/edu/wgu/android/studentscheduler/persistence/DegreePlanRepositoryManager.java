@@ -168,7 +168,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         data.put(DegreePlanContract.Course.INSTRUCTOR, instructorId);
         data.put(DegreePlanContract.Course.NAME, courseName);
         data.put(DegreePlanContract.Course.CODE, courseCode);
-        data.put(DegreePlanContract.Course.STATUS, status);
+        data.put(DegreePlanContract.Course.STATUS, status.toUpperCase());
 
         if(courseStartDate !=  0) {
             data.put(DegreePlanContract.Course.START_DATE, courseStartDate);

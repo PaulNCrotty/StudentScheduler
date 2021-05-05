@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.IdRes;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import edu.wgu.android.studentscheduler.R;
+import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.MissingRequiredValueDialogFragment;
 
 public class DegreePlanCreationActivity extends StudentSchedulerActivity {
@@ -38,7 +41,7 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
         String termName = getRequiredTextValue(R.id.termNameEditText, invalidValues, validValues);
         int termStartDateSeconds = getRequiredDate(R.id.termStartDateEditText, invalidValues);
         int termEndDateSeconds = getRequiredDate(R.id.termEndDateEditText, invalidValues);
-        verifyDates(termStartDateSeconds, termEndDateSeconds, R.id.termStartDateEditText, R.id.termEndDateEditText, invalidValues, validValues);
+        verifyDates(termStartDateSeconds, termEndDateSeconds, invalidValues, validValues);
 
 //        // must set to null explicitly for null check prior to date comparison below
 //        int termStartDateSeconds = 0;
@@ -98,6 +101,23 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
             finish();
         }
 
+    }
+
+    private void verifyDates(int startDateSeconds, int endDateSeconds,
+                     Set<Integer> invalidValues, Set<Integer> validValues) {
+        if (startDateSeconds != 0 && endDateSeconds != 0) {
+            if (startDateSeconds > endDateSeconds) {
+                invalidValues.add(R.id.termStartDateEditText);
+                invalidValues.add(R.id.termEndDateEditText);
+                String title = "INVALID TERM DATES";
+                String message = "The term start date must be before the term end date";
+                GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, message);
+                errorDialog.show(getSupportFragmentManager(), "dateErrors");
+            } else {
+                validValues.add(R.id.termStartDateEditText);
+                validValues.add(R.id.termEndDateEditText);
+            }
+        }
     }
 
 }
