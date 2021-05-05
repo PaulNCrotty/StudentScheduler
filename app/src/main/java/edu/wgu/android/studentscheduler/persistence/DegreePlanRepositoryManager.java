@@ -14,6 +14,7 @@ import java.util.List;
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.course.Course;
+import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
@@ -87,6 +88,39 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return DegreePlanExtractor.extract(cursor); //extractor will close cursor #TODO verify
     }
 
+    public Course getCourseDetails(long courseId) {
+        String query =
+                "select " +
+                        "c.id as course_id, " +
+                        "c.name as course_name, " +
+                        "c.code as course_code, " +
+                        "c.start_date as course_start_date, " +
+                        "c.end_date as course_end_date, " +
+                        "c.status as course_status, " +
+                        "i.id as instructor_id, " +
+                        "i.first_name as instructor_first, " +
+                        "i.last_name as instructor_last, " +
+                        "i.phone as instructor_phone, " +
+                        "i.email as instructor_email, " +
+                        "a.id as assessment_id, " +
+                        "a.name as assessment_name, " +
+                        "a.code as assessment_code, " +
+                        "a.date as assessment_date, " +
+                        "a.type as assessment_type, " +
+                        "n.id as course_note_id, " +
+                        "n.note as course_note " +
+                        "from course c " +
+                        "left join instructor i on i.id = c.instructor_id " +
+                        "left join assessment a on a.course_id = c.id " +
+                        "left join course_note n on n.course_id = c.id " +
+                        "where c.id = ? ";
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
+        return CourseDetailsExtractor.extract(cursor); //extractor will close cursor #TODO verify
+    }
+
     public List<DegreePlanDao> getBasicDegreePlanDataForAllPlans() {
         String query = "SELECT * FROM " + DegreePlanContract.DegreePlan.TABLE_NAME;
 
@@ -136,7 +170,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return db.insert(DegreePlanContract.DegreePlan.TABLE_NAME, null, data);
     }
 
-    public long insertTerm(long degreePlanId, String termName, int startDate, int endDate, String status) {
+    public long insertTerm(long degreePlanId, String termName, long startDate, long endDate, String status) {
         Log.d("SQLITE_INSERT", "Inserting Term " + termName + " into Database for Degree Plan " + degreePlanId);
         SQLiteDatabase db = getWritableDatabase();
         ContentValues data = new ContentValues();
@@ -150,6 +184,18 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return db.insert(DegreePlanContract.Term.TABLE_NAME, null, data);
     }
 
+    public int updateTerm(long termId, String termName, long startDate, long endDate, String status) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues data = new ContentValues();
+        data.put(DegreePlanContract.Term.NAME, termName);
+        data.put(DegreePlanContract.Term.START_DATE, startDate);
+        data.put(DegreePlanContract.Term.END_DATE, endDate);
+        if (!isEmpty(status)) {
+            data.put(DegreePlanContract.Term.STATUS, status);
+        }
+        return db.update(DegreePlanContract.Term.TABLE_NAME, data, "WHERE ID = ?", new String[]{Long.valueOf(termId).toString()});
+    }
+
     public long insertInstructor(String firstName, String lastName, String phoneArea, String phonePrefix, String phoneSuffix, String email) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues data = new ContentValues();
@@ -159,6 +205,17 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         data.put(DegreePlanContract.Instructor.EMAIL, email);
 
         return db.insert(DegreePlanContract.Instructor.TABLE_NAME, null, data);
+    }
+
+    public int updateCourseInstructor(CourseInstructor instructor) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues data = new ContentValues();
+        data.put(DegreePlanContract.Instructor.FIRST_NAME, instructor.getFirstName());
+        data.put(DegreePlanContract.Instructor.LAST_NAME, instructor.getLastName());
+        data.put(DegreePlanContract.Instructor.PHONE_NUMBER, instructor.getPhoneNumber());
+        data.put(DegreePlanContract.Instructor.EMAIL, instructor.getEmail());
+
+        return db.update(DegreePlanContract.Instructor.TABLE_NAME, data, "WHERE ID = ?", new String[]{instructor.getId().toString()});
     }
 
     public long insertCourse(long termId, long instructorId, String courseName, String courseCode, long courseStartDate, long courseEndDate, String status) {
@@ -179,6 +236,23 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return db.insert(DegreePlanContract.Course.TABLE_NAME, null, data);
     }
 
+    public int updateCourse(long courseId, String courseName, String courseCode, long courseStartDate, long courseEndDate, String status) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues data = new ContentValues();
+        data.put(DegreePlanContract.Course.NAME, courseName);
+        data.put(DegreePlanContract.Course.CODE, courseCode);
+        data.put(DegreePlanContract.Course.STATUS, status.toUpperCase());
+
+        if(courseStartDate !=  0) {
+            data.put(DegreePlanContract.Course.START_DATE, courseStartDate);
+        }
+        if(courseEndDate != 0) {
+            data.put(DegreePlanContract.Course.END_DATE, courseEndDate);
+        }
+
+        return db.update(DegreePlanContract.Course.TABLE_NAME, data, "WHERE ID = ?", new String[]{Long.valueOf(courseId).toString()});
+    }
+
     public long[] insertAssessments(long courseId, List<Assessment> assessments) {
         long[] ids = new long[assessments.size()];
         SQLiteDatabase db = getWritableDatabase();
@@ -190,7 +264,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
                 data.put(DegreePlanContract.Assessment.COURSE_ID, courseId);
                 data.put(DegreePlanContract.Assessment.NAME, a.getName());
                 data.put(DegreePlanContract.Assessment.CODE, a.getCode());
-                data.put(DegreePlanContract.Assessment.DATE, a.getAssessmentDate()); //TODO this is in String format.. should translate to Dao first
+                data.put(DegreePlanContract.Assessment.DATE, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()));
                 data.put(DegreePlanContract.Assessment.TYPE, a.getType().getType());
                 ids[i] = db.insert(DegreePlanContract.Assessment.TABLE_NAME, null, data);
             }
@@ -201,36 +275,25 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return ids;
     }
 
-    public Course getCourseDetails(long courseId) {
-        String query =
-            "select " +
-                "c.id as course_id, " +
-                "c.name as course_name, " +
-                "c.code as course_code, " +
-                "c.start_date as course_start_date, " +
-                "c.end_date as course_end_date, " +
-                "c.status as course_status, " +
-                "i.id as instructor_id, " +
-                "i.first_name as instructor_first, " +
-                "i.last_name as instructor_last, " +
-                "i.phone as instructor_phone, " +
-                "i.email as instructor_email, " +
-                "a.id as assessment_id, " +
-                "a.name as assessment_name, " +
-                "a.code as assessment_code, " +
-                "a.date as assessment_date, " +
-                "a.type as assessment_type, " +
-                "n.id as course_note_id, " +
-                "n.note as course_note " +
-            "from course c " +
-            "left join instructor i on i.id = c.instructor_id " +
-            "left join assessment a on a.course_id = c.id " +
-            "left join course_note n on n.course_id = c.id " +
-            "where c.id = ? ";
-
-        SQLiteDatabase db = getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
-        return CourseDetailsExtractor.extract(cursor); //extractor will close cursor #TODO verify
+    public int[] updateAssessments(List<Assessment> assessments) {
+        int[] ids = new int[assessments.size()];
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            int i = 0;
+            ContentValues data = new ContentValues();
+            for(Assessment a: assessments) {
+                data.put(DegreePlanContract.Assessment.NAME, a.getName());
+                data.put(DegreePlanContract.Assessment.CODE, a.getCode());
+                data.put(DegreePlanContract.Assessment.DATE, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()));
+                data.put(DegreePlanContract.Assessment.TYPE, a.getType().getType());
+                ids[i] = db.update(DegreePlanContract.Assessment.TABLE_NAME, data, "WHERE ID = ?", new String[]{a.getId().toString()});
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return ids;
     }
+
 }

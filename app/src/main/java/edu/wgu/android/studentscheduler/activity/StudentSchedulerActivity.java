@@ -87,26 +87,26 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         return true;
     }
 
-    /***
-     * Returns the seconds since epoch (1970-01-01'T'00:00:00.000) from a properly formatted
-     * ISO8601 date string (yyyy-MM-dd). This more robust wrapper method exists here (rather than
-     * in the utils class) to allow for an dialog fragment to be used during parsing errors.
-     *
-     * @param dateString - the date string to parse; should be in ISO8601 format
-     * @return seconds since epoch as an integer
-     */
-    int getSecondsSinceEpoch(String dateString) {
-        int secondsSinceEpoch = 0;
-        try {
-            secondsSinceEpoch = (int) DateTimeUtil.getSecondsSinceEpoch(dateString);
-        } catch (java.text.ParseException pe) {
-            String title = "INVALID DATE";
-            String errorMessage = "There was an error trying to parse the date \"" + dateString + "\". Is it in the proper ISO8601 date format?";
-            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, errorMessage);
-            errorDialog.show(getSupportFragmentManager(), "dateError");
-        }
-        return secondsSinceEpoch;
-    }
+//    /***
+//     * Returns the seconds since epoch (1970-01-01'T'00:00:00.000) from a properly formatted
+//     * ISO8601 date string (yyyy-MM-dd). This more robust wrapper method exists here (rather than
+//     * in the utils class) to allow for an dialog fragment to be used during parsing errors.
+//     *
+//     * @param dateString - the date string to parse; should be in ISO8601 format
+//     * @return seconds since epoch as an integer
+//     */
+//    int getSecondsSinceEpoch(String dateString) {
+//        int secondsSinceEpoch = 0;
+//        try {
+//            secondsSinceEpoch = (int) DateTimeUtil.getSecondsSinceEpoch(dateString);
+//        } catch (java.text.ParseException pe) {
+//            String title = "INVALID DATE";
+//            String errorMessage = "There was an error trying to parse the date \"" + dateString + "\". Is it in the proper ISO8601 date format?";
+//            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, errorMessage);
+//            errorDialog.show(getSupportFragmentManager(), "dateError");
+//        }
+//        return secondsSinceEpoch;
+//    }
 
     /**
      * @param view - the edit text view which calls the date picker fragment
@@ -168,17 +168,13 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         return textValue;
     }
 
-    int getDate(@IdRes int dateEditTextId) {
-        return getSecondsSinceEpoch(getEditTextValue(dateEditTextId));
-    }
-
-    int getRequiredDate(@IdRes int dateEditTextId, Set<Integer> invalidValues) {
+    long getRequiredDate(@IdRes int dateEditTextId, Set<Integer> invalidValues) {
         String startDate = getEditTextValue(dateEditTextId);
-        int startDateSeconds = 0;
+        long startDateSeconds = 0;
         if (isEmpty(startDate)) {
             invalidValues.add(dateEditTextId);
         } else {
-            startDateSeconds = getSecondsSinceEpoch(startDate);
+            startDateSeconds = DateTimeUtil.getSecondsSinceEpoch(startDate);
             if (startDateSeconds == 0) {
                 invalidValues.add(dateEditTextId);
             }

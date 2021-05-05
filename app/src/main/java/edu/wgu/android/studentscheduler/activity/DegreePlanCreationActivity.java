@@ -39,8 +39,8 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
         Set<Integer> invalidValues = new HashSet<>();
         String planName = getRequiredTextValue(R.id.planNameEditText, invalidValues, validValues);
         String termName = getRequiredTextValue(R.id.termNameEditText, invalidValues, validValues);
-        int termStartDateSeconds = getRequiredDate(R.id.termStartDateEditText, invalidValues);
-        int termEndDateSeconds = getRequiredDate(R.id.termEndDateEditText, invalidValues);
+        long termStartDateSeconds = getRequiredDate(R.id.termStartDateEditText, invalidValues);
+        long termEndDateSeconds = getRequiredDate(R.id.termEndDateEditText, invalidValues);
         verifyDates(termStartDateSeconds, termEndDateSeconds, invalidValues, validValues);
 
 //        // must set to null explicitly for null check prior to date comparison below
@@ -103,7 +103,7 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
 
     }
 
-    private void verifyDates(int startDateSeconds, int endDateSeconds,
+    private void verifyDates(long startDateSeconds, long endDateSeconds,
                      Set<Integer> invalidValues, Set<Integer> validValues) {
         if (startDateSeconds != 0 && endDateSeconds != 0) {
             if (startDateSeconds > endDateSeconds) {

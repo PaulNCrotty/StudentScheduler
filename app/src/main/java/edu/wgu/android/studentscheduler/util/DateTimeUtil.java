@@ -1,14 +1,14 @@
 package edu.wgu.android.studentscheduler.util;
 
 import android.os.Build;
+import android.util.Log;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 
 public class DateTimeUtil {
 
@@ -21,8 +21,22 @@ public class DateTimeUtil {
         return new Date().getTime() / MILLISECONDS_PER_SECOND;
     }
 
-    public static long getSecondsSinceEpoch(String isoDate) throws java.text.ParseException {
-        return DATE_FORMATTER_ISO_8601.parse(isoDate).getTime() / MILLISECONDS_PER_SECOND;
+    /***
+     * Returns the seconds since epoch (1970-01-01'T'00:00:00.000) from a properly formatted
+     * ISO8601 date string (yyyy-MM-dd).
+     *
+     * @param dateString - the date string to parse; should be in ISO8601 format
+     * @return seconds since epoch as an integer
+     */
+    public static long getSecondsSinceEpoch(String dateString) {
+        long secondsSinceEpoch = 0;
+        try {
+            secondsSinceEpoch = DATE_FORMATTER_ISO_8601.parse(dateString).getTime() / MILLISECONDS_PER_SECOND;
+        } catch (ParseException | NullPointerException pe) {
+            Log.e("REPOSITORY_MANAGER", "ERROR Parsing Assessment Date");
+            pe.printStackTrace();
+        }
+        return secondsSinceEpoch;
     }
 
     /**

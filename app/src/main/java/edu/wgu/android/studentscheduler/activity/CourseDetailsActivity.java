@@ -3,6 +3,7 @@ package edu.wgu.android.studentscheduler.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -27,6 +28,7 @@ import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
+import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 import static android.view.View.generateViewId;
 
@@ -34,6 +36,8 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
     private static final int GET_ASSESSMENT_RESULT = 0;
     private static final String TO_BE_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
+    private static final String USE_STANDARD_STYLES_KEY = "edu.wgu.android.studentscheduler.activity.useStandardStyles";
+    private static final String BANNER_CONNECTOR_ID_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
 
     public CourseDetailsActivity() {
         super(R.layout.activity_course_detail);
@@ -64,6 +68,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         term = (Term) extras.getSerializable(TERM_OBJECT_BUNDLE_KEY); //TODO pass termId, termStartDate and termEndDate only
         long courseId = extras.getLong(COURSE_ID_BUNDLE_KEY);
         if (courseId > 0) {
+            //we are editing an existing course; grab the details from the persistence store
             course = repositoryManager.getCourseDetails(courseId);
             ((EditText) findViewById(R.id.courseNameEditText)).setText(course.getCourseName());
             ((EditText) findViewById(R.id.courseCodeEditText)).setText(course.getCourseCode());
@@ -82,61 +87,66 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             ((EditText) findViewById(R.id.instructorEmailEditText)).setText(instructor.getEmail());
 
             // ensure transient (not yet persisted) assessments if they exist
-            if (toBeAssessments.size() > 0) {
-                course.getAssessments().addAll(toBeAssessments);
-            }
+            //TODO remove: this method was from an old approach
+//            if (toBeAssessments != null && toBeAssessments.size() > 0) {
+//                course.getAssessments().addAll(toBeAssessments);
+//            }
             // Dynamically add assessments if they exist
             if (course.getAssessments().size() > 0) {
-                ConstraintLayout layout = findViewById(R.id.assessmentContainer);
-                Context context = layout.getContext();
-                ConstraintSet constraintSet = new ConstraintSet();
-                constraintSet.clone(layout);
-
-                int viewIndex = 0;
-                int bannerConnectorId = layout.getId();
-                boolean useStandardStyles = true;
-                for (Assessment a : course.getAssessments()) {
-                    //declare views and prep for basic color styles
-                    TextView banner;
-                    TextView assessmentName;
-                    TextView assessmentDate;
-                    if (useStandardStyles) {
-                        banner = new TextView(context, null, 0, R.style.listOptionBanner);
-                        assessmentName = new TextView(context, null, 0, R.style.listOptionDetails);
-                        assessmentDate = new TextView(context, null, 0, R.style.listOptionDates);
-                    } else {
-                        banner = new TextView(context, null, 0, R.style.listOptionBannerAlt);
-                        assessmentName = new TextView(context, null, 0, R.style.listOptionDetailsAlt);
-                        assessmentDate = new TextView(context, null, 0, R.style.listOptionDatesAlt);
-                    }
-                    //set content
-                    banner.setId(generateViewId());
-                    banner.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
-                    layout.addView(banner);
-
-                    assessmentName.setId(generateViewId());
-                    assessmentName.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
-                    assessmentName.setText(a.getName());
-                    layout.addView(assessmentName);
-
-                    assessmentDate.setId(generateViewId());
-                    assessmentDate.setText(a.getAssessmentDate());
-                    assessmentDate.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
-                    layout.addView(assessmentDate);
-
-                    // add constraints
-                    addBannerConstraints(constraintSet, layout.getId(), banner.getId(), bannerConnectorId);
-                    addPlanNamesConstraints(constraintSet, assessmentName.getId(), banner.getId());
-                    addModifiedDatesConstraints(constraintSet, assessmentDate.getId(), banner.getId());
-
-                    //prep for next iteration
-                    bannerConnectorId = banner.getId();
-                    useStandardStyles = !useStandardStyles;
-                }
-
-                constraintSet.applyTo(layout);
+                insertAssessments(course.getAssessments());
             }
         }
+    }
+
+    private void insertAssessments(List<Assessment> assessments) {
+        ConstraintLayout layout = findViewById(R.id.assessmentContainer);
+        Context context = layout.getContext();
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(layout);
+
+        int viewIndex = 0;
+        int bannerConnectorId = layout.getId();
+        boolean useStandardStyles = true;
+        for (Assessment a : assessments) {
+            //declare views and prep for basic color styles
+            TextView banner;
+            TextView assessmentName;
+            TextView assessmentDate;
+            if (useStandardStyles) {
+                banner = new TextView(context, null, 0, R.style.listOptionBanner);
+                assessmentName = new TextView(context, null, 0, R.style.listOptionDetails);
+                assessmentDate = new TextView(context, null, 0, R.style.listOptionDates);
+            } else {
+                banner = new TextView(context, null, 0, R.style.listOptionBannerAlt);
+                assessmentName = new TextView(context, null, 0, R.style.listOptionDetailsAlt);
+                assessmentDate = new TextView(context, null, 0, R.style.listOptionDatesAlt);
+            }
+            //set content
+            banner.setId(generateViewId());
+            banner.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
+            layout.addView(banner);
+
+            assessmentName.setId(generateViewId());
+            assessmentName.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
+            assessmentName.setText(a.getName());
+            layout.addView(assessmentName);
+
+            assessmentDate.setId(generateViewId());
+            assessmentDate.setText(a.getAssessmentDate());
+            assessmentDate.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
+            layout.addView(assessmentDate);
+
+            // add constraints
+            addBannerConstraints(constraintSet, layout.getId(), banner.getId(), bannerConnectorId);
+            addPlanNamesConstraints(constraintSet, assessmentName.getId(), banner.getId());
+            addModifiedDatesConstraints(constraintSet, assessmentDate.getId(), banner.getId());
+
+            //prep for next iteration
+            bannerConnectorId = banner.getId();
+            useStandardStyles = !useStandardStyles;
+        }
+
+        constraintSet.applyTo(layout);
     }
 
     private void setStatusButton(Course course) {
@@ -161,7 +171,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
-    private CourseStatus getStatusValue() {
+    private CourseStatus getSelectedStatus() {
         CourseStatus status = CourseStatus.PLANNED;
         if (((RadioButton) findViewById(R.id.plannedStatusButton)).isChecked()) {
             status = CourseStatus.PLANNED;
@@ -199,9 +209,10 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         String instructorPhonePrefix = getRequiredTextValue(R.id.instructorPhonePrefixEditText, invalidValues);
         String instructorPhoneSuffix = getRequiredTextValue(R.id.instructorPhoneSuffixEditText, invalidValues);
         String instructorEmail = getRequiredTextValue(R.id.instructorEmailEditText, invalidValues);
+        CourseStatus selectedStatus = getSelectedStatus();
 
-        int courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
-        int courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
+        long courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
+        long courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
 
         //Make course sure start date is on or before end date
         String errorMessage = verifyDates(invalidValues, courseStartDate, courseEndDate);
@@ -220,18 +231,35 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             }
 
         } else {
-            long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
-            long courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, getStatusValue().getStatus());
-
+            long courseId;
+            if(course == null) {
+                //new course needs to be created
+                long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
+                courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
+                //TODO add toast or something?
+            } else {
+                // run updates
+                courseId = course.getId();
+                String phoneNumber = instructorPhoneAreaCode + "-" + instructorPhonePrefix + "-" + instructorPhoneSuffix;
+                CourseInstructor modifiedInstructor = new CourseInstructor(course.getInstructor().getId(), instructorFirstName, instructorLastName, phoneNumber, instructorEmail);
+                if(!course.getInstructor().equals(modifiedInstructor)) {
+                    Log.d("UPDATE","Updating course instructor information from \n" + course.getInstructor() + " \n to \n" + modifiedInstructor);
+                    repositoryManager.updateCourseInstructor(modifiedInstructor);
+                }
+                Course modifiedCourse = new Course(courseId, courseName, courseCode, DateTimeUtil.getDateString(courseStartDate), DateTimeUtil.getDateString(courseEndDate), selectedStatus, null, null, null);
+                if(!course.equals(modifiedCourse)) {
+                    Log.d("UPDATE","Updating course information from \n" + course + " \n to \n" + modifiedCourse);
+                    repositoryManager.updateCourse(courseId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
+                }
+            }
             if (toBeAssessments != null) {
                 long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments);
             }
-            //TODO add toast or something?
             finish();
         }
     }
 
-    private String verifyDates(Set<Integer> invalidValues, int courseStartDate, int courseEndDate) {
+    private String verifyDates(Set<Integer> invalidValues, long courseStartDate, long courseEndDate) {
         String errorMessage = null;
         if (courseStartDate > courseEndDate) {
             invalidValues.add(R.id.courseStartDateEditText);
@@ -240,29 +268,27 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
 
         //Make sure dates are within confines of term limits
-        int termStartDate = getSecondsSinceEpoch(term.getStartDate());
-        int termEndDate = getSecondsSinceEpoch(term.getEndDate());
+        long termStartDate = DateTimeUtil.getSecondsSinceEpoch(term.getStartDate());
+        long termEndDate = DateTimeUtil.getSecondsSinceEpoch(term.getEndDate());
         if (termStartDate > courseStartDate || termEndDate < courseStartDate) {
             invalidValues.add(R.id.courseStartDateEditText);
-            if (errorMessage != null) {
-                errorMessage += "\n";  //put a visible space between errors
-            }
-            errorMessage = "The course start date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+
+            String error = "The course start date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+            errorMessage = errorMessage == null ? error : errorMessage + "\n" + error;
         }
+
         if (termStartDate > courseEndDate || termEndDate < courseEndDate) {
             invalidValues.add(R.id.courseStartDateEditText);
-            if (errorMessage != null) {
-                errorMessage += "\n";  //put a visible space between errors
-            }
-            errorMessage = "The course end date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+            String error = "The course end date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+            errorMessage = errorMessage == null ? error : errorMessage + "\n" + error;
         }
         return errorMessage;
     }
 
     public void createAssessmentAction(View view) {
         Set<Integer> invalidValues = new HashSet<>();
-        int courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
-        int courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
+        long courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
+        long courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
         String errorMessage = verifyDates(invalidValues, courseStartDate, courseEndDate);
 
 
@@ -298,12 +324,15 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     toBeAssessments = new ArrayList<>();
                 }
                 toBeAssessments.add(newAssessment);
+                if(course != null) {
+                    course.getAssessments().add(newAssessment);
+                    insertAssessments(course.getAssessments());
+                } else {
+                    //otherwise, it's a new course which hasn't been saved yet
+                    insertAssessments(toBeAssessments);
+                }
             }
         }
-    }
-
-    public void createNoteAction(View view) {
-        //TODO how to implement?
     }
 
     private class ModifyAssessmentAction implements View.OnClickListener {
@@ -316,15 +345,42 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
         @Override
         public void onClick(View v) {
-            Assessment assessment = course.getAssessments().get(this.viewIndex / VIEWS_PER_PLAN);
-            //TODO get rid of this once we verify it works well
-            Toast.makeText(getApplicationContext(), "You bonked on " + assessment, Toast.LENGTH_SHORT).show();
-            Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
-            assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, getSecondsSinceEpoch(course.getStartDate()));
-            assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, getSecondsSinceEpoch(course.getEndDate()));
-            assessmentDetailsActivity.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
-            startActivity(assessmentDetailsActivity);
+
+            Assessment assessment;
+            if(course != null) {
+                assessment = course.getAssessments().get(this.viewIndex / VIEWS_PER_PLAN);
+            } else {
+                assessment = toBeAssessments.get(this.viewIndex/VIEWS_PER_PLAN);
+            }
+
+            //TODO this is not very DRY... should probably create an nested class that manages all of this
+            Set<Integer> invalidValues = new HashSet<>();
+            //always take current dates as those will be what we will save (eventually)
+            long courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
+            long courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
+            String errorMessage = verifyDates(invalidValues, courseStartDate, courseEndDate);
+
+
+            if (invalidValues.size() > 0) {
+                for (Integer id : invalidValues) {
+                    findViewById(id).setBackground(errorBorder);
+                }
+                GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment("Invalid Course Dates", errorMessage);
+                errorDialog.show(getSupportFragmentManager(), "courseDateErrors");
+            } else {
+                //TODO get rid of this once we verify it works well
+                Toast.makeText(getApplicationContext(), "You bonked on " + assessment, Toast.LENGTH_SHORT).show();
+                Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
+                assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, courseStartDate);
+                assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, courseEndDate);
+                assessmentDetailsActivity.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
+                startActivity(assessmentDetailsActivity);
+            }
         }
+    }
+
+    public void createNoteAction(View view) {
+        //TODO how to implement?
     }
 
 }

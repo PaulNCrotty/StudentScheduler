@@ -77,9 +77,13 @@ public class AssessmentDetailsActivity extends StudentSchedulerActivity {
         String code = getRequiredTextValue(R.id.assessmentCodeEditText, invalidValues);
         String date = getRequiredTextValue(R.id.assessmentDateEditText, invalidValues);
 
-        int dateInSeconds = getSecondsSinceEpoch(date);
+        long dateInSeconds = DateTimeUtil.getSecondsSinceEpoch(date);
         String message = null;
-        if(dateInSeconds < courseStartDate || dateInSeconds > courseEndDate) {
+        if(dateInSeconds == 0) {
+            invalidValues.add(R.id.assessmentDateEditText);
+            message = "Please provide an assessment date.";
+        } else if(dateInSeconds < courseStartDate || dateInSeconds > courseEndDate) {
+            invalidValues.add(R.id.assessmentDateEditText);
             message = "Assessment Date must be within course start and end dates: " +
                     DateTimeUtil.getDateString(courseStartDate) + " - " + DateTimeUtil.getDateString(courseEndDate) + ".";
         }

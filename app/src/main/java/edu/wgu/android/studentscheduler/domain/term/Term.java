@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,14 +13,18 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class Term implements Serializable {
 
     private Long id;
     private String termName;
     private String startDate;
     private String endDate;
+
     @Setter
+    @EqualsAndHashCode.Exclude
     private List<Course> courses;
+
     private TermStatus status;
 
     //TODO add functionality that allows the user to enter term titles, start dates, and end dates
