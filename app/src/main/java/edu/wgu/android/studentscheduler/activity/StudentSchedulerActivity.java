@@ -2,6 +2,7 @@ package edu.wgu.android.studentscheduler.activity;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.Set;
@@ -51,6 +53,8 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     int orangeColor;
     int whiteColor;
 
+    Drawable errorBorder;
+
 
     StudentSchedulerActivity(@LayoutRes int id) {
         super(id);
@@ -71,6 +75,8 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         validEntryColor = resources.getColor(R.color.white);
         orangeColor = resources.getColor(R.color.orange);
         whiteColor = resources.getColor(R.color.white);
+
+        errorBorder = ResourcesCompat.getDrawable(resources, R.drawable.error_border, null);
     }
 
     @Override
@@ -145,11 +151,15 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         return viewModified;
     }
 
-    String getRequiredTextValue(@IdRes int editTextField, Set<Integer> validValues, Set<Integer> invalidValues) {
+    String getRequiredTextValue(@IdRes int editTextField, Set<Integer> invalidValues) {
+        return getRequiredTextValue(editTextField, invalidValues, null);
+    }
+
+    String getRequiredTextValue(@IdRes int editTextField, Set<Integer> invalidValues, Set<Integer> validValues) {
         String textValue = getEditTextValue(editTextField);
         if (isEmpty(textValue)) {
             invalidValues.add(editTextField);
-        } else {
+        } else if(validValues != null) {
             validValues.add(editTextField);
         }
 

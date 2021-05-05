@@ -34,8 +34,8 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
 
         Set<Integer> validValues = new HashSet<>();
         Set<Integer> invalidValues = new HashSet<>();
-        String planName = getRequiredTextValue(R.id.planNameEditText, validValues, invalidValues);
-        String termName = getRequiredTextValue(R.id.termNameEditText, validValues, invalidValues);
+        String planName = getRequiredTextValue(R.id.planNameEditText, invalidValues, validValues);
+        String termName = getRequiredTextValue(R.id.termNameEditText, invalidValues, validValues);
         int termStartDateSeconds = getRequiredDate(R.id.termStartDateEditText, invalidValues);
         int termEndDateSeconds = getRequiredDate(R.id.termEndDateEditText, invalidValues);
         verifyDates(termStartDateSeconds, termEndDateSeconds, R.id.termStartDateEditText, R.id.termEndDateEditText, invalidValues, validValues);
@@ -77,15 +77,14 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
 //        }
 
         if (invalidValues.size() > 0) {
-            System.out.println("!!!!!!!!!INVALID VALUES FOUND!!!!!!");
             for (Integer id : invalidValues) {
-                findViewById(id).setBackgroundColor(invalidEntryColor);
+                findViewById(id).setBackground(errorBorder);
             }
 
             // only reset background if there are still valid values; otherwise the form will be submitted
             // and the activity closes so the changes won't be noticeable
             for (Integer id : validValues) {
-                findViewById(id).setBackgroundColor(validEntryColor);
+                findViewById(id).setBackground(null);
             }
 
             MissingRequiredValueDialogFragment missingDialog = new MissingRequiredValueDialogFragment();

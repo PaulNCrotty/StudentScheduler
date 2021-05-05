@@ -9,8 +9,15 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
@@ -18,10 +25,13 @@ import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.term.Term;
+import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 
 import static android.view.View.generateViewId;
 
 public class CourseDetailsActivity extends StudentSchedulerActivity {
+
+    private static final String TO_BE_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
 
     public CourseDetailsActivity() {
         super(R.layout.activity_course_detail);
@@ -29,13 +39,35 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
     private Term term;
     private Course course;
+    // Transient (all will be lost if course is not stored prior to closing app)
+    private List<Assessment> toBeAssessments = new ArrayList<>();
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        if (toBeAssessments != null) {
+            savedInstanceState.putSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY, (Serializable) toBeAssessments);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            toBeAssessments = (ArrayList) savedInstanceState.getSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY);
+        }
         init();
         Bundle extras = getIntent().getExtras();
-        term = (Term) extras.getSerializable(TERM_OBJECT_BUNDLE_KEY);
+        term = (Term) extras.getSerializable(TERM_OBJECT_BUNDLE_KEY); //TODO pass termId, termStartDate and termEndDate only
+        Assessment newAssessment = (Assessment) extras.getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
+        if (newAssessment != null) {
+            if (toBeAssessments == null) {
+                toBeAssessments = new ArrayList<>();
+            }
+            toBeAssessments.add(newAssessment);
+        }
+
         long courseId = extras.getLong(COURSE_ID_BUNDLE_KEY);
         if (courseId > 0) {
             course = repositoryManager.getCourseDetails(courseId);
@@ -55,6 +87,10 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             ((EditText) findViewById(R.id.instructorPhoneSuffixEditText)).setText(phone[phone.length - 1]);
             ((EditText) findViewById(R.id.instructorEmailEditText)).setText(instructor.getEmail());
 
+            // ensure transient (not yet persisted) assessments if they exist
+            if (toBeAssessments.size() > 0) {
+                course.getAssessments().addAll(toBeAssessments);
+            }
             // Dynamically add assessments if they exist
             if (course.getAssessments().size() > 0) {
                 ConstraintLayout layout = findViewById(R.id.assessmentContainer);
@@ -65,7 +101,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 int viewIndex = 0;
                 int bannerConnectorId = layout.getId();
                 boolean useStandardStyles = true;
-                for (Assessment assessment : course.getAssessments()) {
+                for (Assessment a : course.getAssessments()) {
                     //declare views and prep for basic color styles
                     TextView banner;
                     TextView assessmentName;
@@ -86,11 +122,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
                     assessmentName.setId(generateViewId());
                     assessmentName.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
-                    assessmentName.setText(assessment.getName());
+                    assessmentName.setText(a.getName());
                     layout.addView(assessmentName);
 
                     assessmentDate.setId(generateViewId());
-                    assessmentDate.setText(assessment.getAssessmentDate());
+                    assessmentDate.setText(a.getAssessmentDate());
                     assessmentDate.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
                     layout.addView(assessmentDate);
 
@@ -131,9 +167,98 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
+    private CourseStatus getStatusValue() {
+        CourseStatus status = CourseStatus.PLANNED;
+        if (((RadioButton) findViewById(R.id.plannedStatusButton)).isChecked()) {
+            status = CourseStatus.PLANNED;
+        }
+        else if(((RadioButton) findViewById(R.id.droppedStatusButton)).isChecked()) {
+            status = CourseStatus.DROPPED;
+        }
+        else if (((RadioButton) findViewById(R.id.inProgressStatusButton)).isChecked()) {
+            status = CourseStatus.IN_PROGRESS;
+        }
+        else if(((RadioButton) findViewById(R.id.passedStatusButton)).isChecked()) {
+            status = CourseStatus.PASSED;
+        }
+
+        return status;
+    }
+
 
     public void verifyAndSubmitCourse(View view) {
+        Set<Integer> invalidValues = new HashSet<>();
+        Set<Integer> requiredFields = new HashSet<>();
+        requiredFields.add(R.id.courseNameEditText);
+        requiredFields.add(R.id.courseCodeEditText);
+        requiredFields.add(R.id.courseStartDateEditText);
+        requiredFields.add(R.id.courseEndDateEditText);
+        requiredFields.add(R.id.instructorFirstNameEditText);
+        requiredFields.add(R.id.instructorLastNameEditText);
+        requiredFields.add(R.id.instructorPhoneAreaCodeEditText);
+        requiredFields.add(R.id.instructorPhonePrefixEditText);
+        requiredFields.add(R.id.instructorPhoneSuffixEditText);
+        requiredFields.add(R.id.instructorEmailEditText);
 
+        String courseName = getRequiredTextValue(R.id.courseNameEditText, invalidValues);
+        String courseCode = getRequiredTextValue(R.id.courseCodeEditText, invalidValues);
+        String instructorFirstName = getRequiredTextValue(R.id.instructorFirstNameEditText, invalidValues);
+        String instructorLastName = getRequiredTextValue(R.id.instructorLastNameEditText, invalidValues);
+        String instructorPhoneAreaCode = getRequiredTextValue(R.id.instructorPhoneAreaCodeEditText, invalidValues);
+        String instructorPhonePrefix = getRequiredTextValue(R.id.instructorPhonePrefixEditText, invalidValues);
+        String instructorPhoneSuffix = getRequiredTextValue(R.id.instructorPhoneSuffixEditText, invalidValues);
+        String instructorEmail = getRequiredTextValue(R.id.instructorEmailEditText, invalidValues);
+
+        int courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
+        int courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
+
+        //Make course sure start date is on or before end date
+        String errorMessage = null;
+        if (courseStartDate > courseEndDate) {
+            invalidValues.add(R.id.courseStartDateEditText);
+            invalidValues.add(R.id.courseEndDateEditText);
+            errorMessage = "The planned course start date must be on or before the course end date.";
+        }
+
+        //Make sure dates are within confines of term limits
+        int termStartDate = getSecondsSinceEpoch(term.getStartDate());
+        int termEndDate = getSecondsSinceEpoch(term.getEndDate());
+        if (termStartDate > courseStartDate || termEndDate < courseStartDate) {
+            invalidValues.add(R.id.courseStartDateEditText);
+            if (errorMessage != null) {
+                errorMessage += "\n";  //put a visible space between errors
+            }
+            errorMessage = "The course start date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+        }
+        if (termStartDate > courseEndDate || termEndDate < courseEndDate) {
+            invalidValues.add(R.id.courseStartDateEditText);
+            if (errorMessage != null) {
+                errorMessage += "\n";  //put a visible space between errors
+            }
+            errorMessage = "The course end date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+        }
+
+        if (invalidValues.size() > 0) {
+            for (Integer id : invalidValues) {
+                findViewById(id).setBackground(errorBorder);
+            }
+            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment("Invalid Fields", errorMessage);
+            errorDialog.show(getSupportFragmentManager(), "courseSubmissionErrors");
+
+            for (Integer id : requiredFields) {
+                if (!invalidValues.contains(id)) {
+                    findViewById(id).setBackground(null);
+                }
+            }
+
+        } else {
+            long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
+            long courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, getStatusValue().getStatus());
+
+            if (toBeAssessments != null) {
+                long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments);
+            }
+        }
     }
 
     public void createAssessmentAction(View view) {

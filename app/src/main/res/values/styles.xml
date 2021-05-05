@@ -70,7 +70,7 @@
     <style name="listViewContainer">
         <item name="android:layout_marginStart">25dp</item>
         <item name="android:layout_marginEnd">25dp</item>
-        <item name="android:background">@drawable/simple_border</item>
+        <item name="android:background">@drawable/orange_border</item>
 <!--        <item name="android:layout_width">match_parent</item>-->
 <!--        <item name="android:layout_height">wrap_content</item>-->
     </style>

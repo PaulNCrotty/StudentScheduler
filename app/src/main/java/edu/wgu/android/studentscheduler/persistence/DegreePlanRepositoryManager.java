@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
+import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
@@ -147,6 +148,57 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
             data.put(DegreePlanContract.Term.STATUS, status);
         }
         return db.insert(DegreePlanContract.Term.TABLE_NAME, null, data);
+    }
+
+    public long insertInstructor(String firstName, String lastName, String phoneArea, String phonePrefix, String phoneSuffix, String email) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues data = new ContentValues();
+        data.put(DegreePlanContract.Instructor.FIRST_NAME, firstName);
+        data.put(DegreePlanContract.Instructor.LAST_NAME, lastName);
+        data.put(DegreePlanContract.Instructor.PHONE_NUMBER, phoneArea + "-" + phonePrefix + "-" + phoneSuffix);
+        data.put(DegreePlanContract.Instructor.EMAIL, email);
+
+        return db.insert(DegreePlanContract.Instructor.TABLE_NAME, null, data);
+    }
+
+    public long insertCourse(long termId, long instructorId, String courseName, String courseCode, long courseStartDate, long courseEndDate, String status) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues data = new ContentValues();
+        data.put(DegreePlanContract.Course.TERM_ID, termId);
+        data.put(DegreePlanContract.Course.INSTRUCTOR, instructorId);
+        data.put(DegreePlanContract.Course.NAME, courseName);
+        data.put(DegreePlanContract.Course.CODE, courseCode);
+        data.put(DegreePlanContract.Course.STATUS, status);
+
+        if(courseStartDate !=  0) {
+            data.put(DegreePlanContract.Course.START_DATE, courseStartDate);
+        }
+        if(courseEndDate != 0) {
+            data.put(DegreePlanContract.Course.END_DATE, courseEndDate);
+        }
+        return db.insert(DegreePlanContract.Course.TABLE_NAME, null, data);
+    }
+
+    public long[] insertAssessments(long courseId, List<Assessment> assessments) {
+        long[] ids = new long[assessments.size()];
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            int i = 0;
+            ContentValues data = new ContentValues();
+            for(Assessment a: assessments) {
+                data.put(DegreePlanContract.Assessment.COURSE_ID, courseId);
+                data.put(DegreePlanContract.Assessment.NAME, a.getName());
+                data.put(DegreePlanContract.Assessment.CODE, a.getCode());
+                data.put(DegreePlanContract.Assessment.DATE, a.getAssessmentDate()); //TODO this is in String format.. should translate to Dao first
+                data.put(DegreePlanContract.Assessment.TYPE, a.getType().getType());
+                ids[i] = db.insert(DegreePlanContract.Assessment.TABLE_NAME, null, data);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return ids;
     }
 
     public Course getCourseDetails(long courseId) {
