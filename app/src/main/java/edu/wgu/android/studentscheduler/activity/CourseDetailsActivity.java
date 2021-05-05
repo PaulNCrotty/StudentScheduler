@@ -100,6 +100,9 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             if (course.getAssessments().size() > 0) {
                 insertAssessments(course.getAssessments());
             }
+            if(course.getCourseNotes().size() > 0) {
+                insertNotes(course.getCourseNotes());
+            }
         }
     }
 
@@ -181,6 +184,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
             bannerConnectorId = noteViewId;
         }
+        constraintSet.applyTo(layout);
     }
 
     private void setStatusButton(Course course) {

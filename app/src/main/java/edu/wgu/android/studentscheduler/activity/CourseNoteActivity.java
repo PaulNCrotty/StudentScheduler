@@ -12,7 +12,7 @@ import edu.wgu.android.studentscheduler.R;
 
 public class CourseNoteActivity extends StudentSchedulerActivity {
 
-    CourseNoteActivity() {
+    public CourseNoteActivity() {
         super(R.layout.activity_course_note);
     }
 
@@ -21,11 +21,13 @@ public class CourseNoteActivity extends StudentSchedulerActivity {
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        String note = extras.getString(COURSE_NOTE_BUNDLE_KEY);  // TODO will probably change to an object to contain a title? Maybe not... IDK
+        if(extras != null) {
+            String note = extras.getString(COURSE_NOTE_BUNDLE_KEY);  // TODO will probably change to an object to contain a title? Maybe not... IDK
 
-        if(note != null) {
-            EditText noteEditText = (EditText) findViewById(R.id.courseNoteEditText);
-            noteEditText.setText(note);
+            if (note != null) {
+                EditText noteEditText = (EditText) findViewById(R.id.courseNoteEditText);
+                noteEditText.setText(note);
+            }
         }
     }
 

@@ -88,6 +88,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return DegreePlanExtractor.extract(cursor); //extractor will close cursor #TODO verify
     }
 
+    //TODO fix this join in the morning.... giving cartesian product; however, need to still get data from course when assessment and or notes (etc...) empty
     public Course getCourseDetails(long courseId) {
         String query =
                 "select " +
