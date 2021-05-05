@@ -13,6 +13,8 @@ import java.util.Set;
 import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.assessment.AssessmentType;
+import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
+import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 public class AssessmentDetailsActivity extends StudentSchedulerActivity {
 
@@ -74,16 +76,35 @@ public class AssessmentDetailsActivity extends StudentSchedulerActivity {
         String name = getRequiredTextValue(R.id.assessmentNameEditText, invalidValues);
         String code = getRequiredTextValue(R.id.assessmentCodeEditText, invalidValues);
         String date = getRequiredTextValue(R.id.assessmentDateEditText, invalidValues);
+
+        int dateInSeconds = getSecondsSinceEpoch(date);
+        String message = null;
+        if(dateInSeconds < courseStartDate || dateInSeconds > courseEndDate) {
+            message = "Assessment Date must be within course start and end dates: " +
+                    DateTimeUtil.getDateString(courseStartDate) + " - " + DateTimeUtil.getDateString(courseEndDate) + ".";
+        }
+
         AssessmentType type = getType();
         if(type == null) {
             invalidValues.add(R.id.assessmentTypeSelectionGroup);
         }
 
-        Assessment assessment = new Assessment(null, name, code, date, type);
-        Intent intent = getIntent();
-        intent.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
-        setResult(RESULT_OK, intent);
-        finish();
+        if(invalidValues.size() > 0) {
+            for(Integer id: invalidValues) {
+                findViewById(id).setBackground(errorBorder);
+            }
+            String title = "INVALID OR  MISSING FIELDS";
+            String generalMessage = "Please update the invalid or missing fields then re-submit.";
+            message = message == null ? generalMessage : generalMessage + "\n Also note that " + message;
+            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, message);
+            errorDialog.show(getSupportFragmentManager(), "missingAssessmentFields");
+        } else {
+            Assessment assessment = new Assessment(null, name, code, date, type);
+            Intent intent = getIntent();
+            intent.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 
 }

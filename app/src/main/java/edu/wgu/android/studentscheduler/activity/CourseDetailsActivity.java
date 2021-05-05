@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
@@ -31,6 +32,7 @@ import static android.view.View.generateViewId;
 
 public class CourseDetailsActivity extends StudentSchedulerActivity {
 
+    private static final int GET_ASSESSMENT_RESULT = 0;
     private static final String TO_BE_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
 
     public CourseDetailsActivity() {
@@ -40,7 +42,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     private Term term;
     private Course course;
     // Transient (all will be lost if course is not stored prior to closing app)
-    private List<Assessment> toBeAssessments = new ArrayList<>();
+    private List<Assessment> toBeAssessments;
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
@@ -60,14 +62,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         init();
         Bundle extras = getIntent().getExtras();
         term = (Term) extras.getSerializable(TERM_OBJECT_BUNDLE_KEY); //TODO pass termId, termStartDate and termEndDate only
-        Assessment newAssessment = (Assessment) extras.getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
-        if (newAssessment != null) {
-            if (toBeAssessments == null) {
-                toBeAssessments = new ArrayList<>();
-            }
-            toBeAssessments.add(newAssessment);
-        }
-
         long courseId = extras.getLong(COURSE_ID_BUNDLE_KEY);
         if (courseId > 0) {
             course = repositoryManager.getCourseDetails(courseId);
@@ -272,7 +266,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         String errorMessage = verifyDates(invalidValues, courseStartDate, courseEndDate);
 
 
-        if(invalidValues.size() > 0) {
+        if (invalidValues.size() > 0) {
             for (Integer id : invalidValues) {
                 findViewById(id).setBackground(errorBorder);
             }
@@ -290,7 +284,21 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
             assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, courseStartDate);
             assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, courseEndDate);
-            startActivity(assessmentDetailsActivity);
+            startActivityForResult(assessmentDetailsActivity, GET_ASSESSMENT_RESULT);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == GET_ASSESSMENT_RESULT && data != null) {
+            Assessment newAssessment = (Assessment) data.getExtras().getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
+            if (newAssessment != null) {
+                if (toBeAssessments == null) {
+                    toBeAssessments = new ArrayList<>();
+                }
+                toBeAssessments.add(newAssessment);
+            }
         }
     }
 
