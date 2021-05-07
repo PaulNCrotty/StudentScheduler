@@ -319,6 +319,11 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return ids;
     }
 
+    public int deleteAssessment(Assessment assessment) {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(DegreePlanContract.Assessment.TABLE_NAME, "ID = ?", new String[]{assessment.getId().toString()});
+    }
+
     public long[] insertCourseNotes(long courseId, List<String> notes) {
         long[] ids = new long[notes.size()];
         SQLiteDatabase db = getWritableDatabase();

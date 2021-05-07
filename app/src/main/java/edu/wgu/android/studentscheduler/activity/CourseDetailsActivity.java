@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +52,9 @@ import static android.view.View.generateViewId;
  *
  */
 public class CourseDetailsActivity extends StudentSchedulerActivity {
-
+    //TODO override for now... until we get all UIs in sync with 4 views per row
+    static final int VIEWS_PER_ROW = 4;
+    
     private static final int GET_ASSESSMENT_RESULT = 0;
     private static final int GET_NOTE_RESULT = 1;
     private static final int MODIFY_ASSESSMENT_RESULT = 2;
@@ -172,14 +176,18 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         for (Assessment a : assessments) {
             //declare views and prep for basic color styles
             TextView banner;
+            CheckBox removeIcon;
             TextView assessmentName;
             TextView assessmentDate;
             if (useStandardStyles) {
                 banner = new TextView(context, null, 0, R.style.listOptionBanner);
+                removeIcon = new CheckBox(context);
+                removeIcon.setBackgroundColor(orangeColor);
                 assessmentName = new TextView(context, null, 0, R.style.listOptionDetails);
                 assessmentDate = new TextView(context, null, 0, R.style.listOptionDates);
             } else {
                 banner = new TextView(context, null, 0, R.style.listOptionBannerAlt);
+                removeIcon = new CheckBox(context);
                 assessmentName = new TextView(context, null, 0, R.style.listOptionDetailsAlt);
                 assessmentDate = new TextView(context, null, 0, R.style.listOptionDatesAlt);
             }
@@ -187,6 +195,10 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             banner.setId(generateViewId());
             banner.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
             layout.addView(banner);
+            
+            removeIcon.setId(generateViewId());
+            removeIcon.setPadding(21,21,5,21);
+            layout.addView(removeIcon);
 
             assessmentName.setId(generateViewId());
             assessmentName.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
@@ -199,7 +211,8 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             layout.addView(assessmentDate);
 
             // add constraints
-            addBannerConstraints(constraintSet, layout.getId(), banner.getId(), bannerConnectorId);
+            addBannerConstraints(constraintSet, layout.getId(), banner.getId(), removeIcon.getId(), bannerConnectorId);
+            addRemoveIconConstraint(constraintSet, removeIcon.getId(), banner.getId());
             addPlanNamesConstraints(constraintSet, assessmentName.getId(), banner.getId());
             addModifiedDatesConstraints(constraintSet, assessmentDate.getId(), banner.getId());
 
@@ -431,12 +444,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                         toBeAssessments = new ArrayList<>();
                     }
                     toBeAssessments.add(newAssessment);
-                    if (course != null) {
-                        insertAssessments(CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments));
-                    } else {
-                        //otherwise, it's a new course which hasn't been saved yet
-                        insertAssessments(toBeAssessments);
-                    }
+                    insertAllAvailableAssessments();
                 }
             } else if (requestCode == GET_NOTE_RESULT) {
                 String newNote = data.getExtras().getString(COURSE_NOTE_BUNDLE_KEY);
@@ -465,15 +473,71 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                         assessments.remove(collectionIndex);
                         assessments.add(collectionIndex, modifiedAssessment);
                     }
-                    if (course != null) {
-                        insertAssessments(CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments));
-                    } else {
-                        insertAssessments(toBeAssessments);
-                    }
+                    insertAllAvailableAssessments();
                 }
             }
         }
     }
+
+
+    private void insertAllAvailableAssessments() {
+        if (course != null) {
+            insertAssessments(CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments));
+        } else {
+            //otherwise, it's a new course which hasn't been saved yet
+            insertAssessments(toBeAssessments);
+        }
+    }
+
+    public void createNoteAction(View view) {
+        startActivityForResult(new Intent(getApplicationContext(), CourseNoteActivity.class), GET_NOTE_RESULT);
+    }
+
+
+
+    //////ADD BELOW BACK TO PARENT CLASS WHEN DONE WITH POC HERE  //////////
+    void addRemoveIconConstraint(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
+        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
+        //height and margins are not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
+    }
+
+    void addBannerConstraints(ConstraintSet constraintSet, int containerId, int constrainedViewId, int removeIconId, int connectorId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.START, removeIconId, ConstraintSet.END);
+        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+        if (connectorId == containerId) {
+            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.TOP);
+        } else {
+            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.BOTTOM);
+        }
+        //height is not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, bannerHeight);
+    }
+
+    void addPlanNamesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.START, bannerId, ConstraintSet.START);
+        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
+        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
+        //height and margins are not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
+//        constraintSet.setMargin(constrainedViewId, ConstraintSet.START, marginStart);
+    }
+
+    void addModifiedDatesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
+        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
+        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+        //height and margins are not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
+        constraintSet.setMargin(constrainedViewId, ConstraintSet.END, marginEnd);
+    }
+    //////ADD ABOVE BACK TO PARENT CLASS WHEN DONE WITH POC HERE  //////////
+
+
+
+
 
     //TODO add similar functionality for notes....
     private class ModifyAssessmentAction implements View.OnClickListener {
@@ -481,12 +545,45 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         ModifyAssessmentAction(int viewIndex) {
             this.viewIndex = viewIndex;
         }
+        
+        ModifyAssessmentAction(int viewIndex, boolean requestRemoval) {
+            this.viewIndex = viewIndex;
+            this.requestRemoval = true;
+        }
 
         private final int viewIndex;
+        
+        private boolean requestRemoval = false;
 
         @Override
         public void onClick(View v) {
-            //TODO this is not very DRY... should probably create an nested class that manages all of this
+            if(requestRemoval) {
+                Assessment assessment;
+                int collectionIndex = this.viewIndex / VIEWS_PER_ROW;
+                boolean isNewItem = false;
+                if (course != null && course.getAssessments().size() > collectionIndex) {
+                    assessment = course.getAssessments().get(collectionIndex);
+                } else {
+                    isNewItem = true;
+                    //adjust collection index as the view initially treats pre-saved and toBe assessments as one whole collection.
+                    collectionIndex = course == null ? collectionIndex : collectionIndex - course.getAssessments().size();
+                    assessment = toBeAssessments.get(collectionIndex);
+                }
+
+                //TODO add confirmation dialog here ('You sure you wanna delete this thing?')
+
+                if(isNewItem) {
+                    toBeAssessments.remove(collectionIndex);
+                } else {
+                    repositoryManager.deleteAssessment(assessment);
+                    course.getAssessments().remove(collectionIndex);
+                }
+
+                insertAllAvailableAssessments(); //TODO... this won't re-draw... this will just add, no?
+
+            }
+            
+            
             Set<Integer> invalidValues = new HashSet<>();
             //always take current dates as those will be what we will save (eventually)
             long courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
@@ -501,7 +598,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             } else {
                 //capture assessment to modify and some meta data for tracking between activities
                 Assessment assessment;
-                int collectionIndex = this.viewIndex / VIEWS_PER_PLAN;
+                int collectionIndex = this.viewIndex / VIEWS_PER_ROW;
                 boolean isNewItem = false;
                 if (course != null && course.getAssessments().size() > collectionIndex) {
                     assessment = course.getAssessments().get(collectionIndex);
@@ -523,10 +620,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 startActivityForResult(assessmentDetailsActivity, MODIFY_ASSESSMENT_RESULT);
             }
         }
-    }
-
-    public void createNoteAction(View view) {
-        startActivityForResult(new Intent(getApplicationContext(), CourseNoteActivity.class), GET_NOTE_RESULT);
     }
 
 }
