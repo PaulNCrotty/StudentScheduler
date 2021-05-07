@@ -28,14 +28,35 @@ import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
+import edu.wgu.android.studentscheduler.util.CollectionUtil;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 import static android.view.View.generateViewId;
 
+
+/***
+ * Bugs and missing features:
+ * when one toggles the screen, any recently added assessments (or notes?) are still in  memory thanks to the onSaveInstanceState...
+ * but they do not get redrawn on the screen. Need to redraw them ... once.
+ *   After submitting with this approach.... only one of the assessments was saved... twice
+ *
+ * Cartesian join when multiple notes and assessments exist.
+ *
+ * No way to delete plans, terms, courses, assessments, or notes just yet
+ *
+ * Regular DegreePlanView issues:
+ *  When submitting course, it takes you back to the degree plan view but the course is not visible
+ *  Once one course is created, no option exists to create another course....
+ *
+ */
 public class CourseDetailsActivity extends StudentSchedulerActivity {
 
     private static final int GET_ASSESSMENT_RESULT = 0;
     private static final int GET_NOTE_RESULT = 1;
+    private static final int MODIFY_ASSESSMENT_RESULT = 2;
+    private static final int MODIFY_NOTE_RESULT = 3;
+    private static final String ORIGINAL_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.originalAssessments";
+    private static final String ORIGINAL_COURSE_NOTES_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.originalNotes";
     private static final String TO_BE_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
     private static final String TO_BE_COURSE_NOTES_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeCourseNotes";
 
@@ -43,11 +64,13 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         super(R.layout.activity_course_detail);
     }
 
+    private boolean isFirstLoad = true;
     private Term term;
     private Course course;
-    // Transient (all will be lost if course is not stored prior to closing app)
-    private List<Assessment> toBeAssessments;
-    private List<String> toBeNotes;
+    private List<Assessment> originalAssessments;   //used to track and compare if assessments have changed
+    private List<String> originalNotes;             //used to track and compare if notes have changed
+    private List<Assessment> toBeAssessments;       //transient assessments; must be saved at end of activity
+    private List<String> toBeNotes;                 //transient assessments; must be saved at end of activity
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
@@ -58,6 +81,8 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         if(toBeAssessments != null) {
             savedInstanceState.putSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY, (Serializable) toBeNotes);
         }
+        savedInstanceState.putSerializable(ORIGINAL_ASSESSMENTS_ARRAY_KEY, (Serializable) originalAssessments);
+        savedInstanceState.putSerializable(ORIGINAL_COURSE_NOTES_ARRAY_KEY, (Serializable) originalNotes);
     }
 
     @Override
@@ -65,9 +90,20 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            toBeAssessments = (ArrayList) savedInstanceState.getSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY);
-            toBeNotes = (ArrayList) savedInstanceState.getSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY);
+            Serializable nAssessments = savedInstanceState.getSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY);
+            if(nAssessments instanceof ArrayList) {
+                toBeAssessments = (ArrayList<Assessment>) nAssessments;
+            }
+            Serializable notes = savedInstanceState.getSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY);
+            if(notes instanceof ArrayList) {
+                toBeNotes = (ArrayList<String>) notes;
+            }
+            Serializable oAssessments = savedInstanceState.getSerializable(ORIGINAL_ASSESSMENTS_ARRAY_KEY);
+            if(oAssessments instanceof ArrayList) {
+                originalAssessments = (ArrayList<Assessment>) oAssessments;
+            }
         }
+
         init();
         Bundle extras = getIntent().getExtras();
         term = (Term) extras.getSerializable(TERM_OBJECT_BUNDLE_KEY); //TODO pass termId, termStartDate and termEndDate only
@@ -75,6 +111,14 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         if (courseId > 0) {
             //we are editing an existing course; grab the details from the persistence store
             course = repositoryManager.getCourseDetails(courseId);
+            course.getCourseNotes().addAll(repositoryManager.getCourseNotes(courseId));
+
+            if(originalAssessments == null) {
+                // should only be set on first creation (not on orientation changes, etc...)
+                Log.i("COURSE_DETAILS", "setting original assessments");
+                originalAssessments = course.getAssessments();
+            }
+
             ((EditText) findViewById(R.id.courseNameEditText)).setText(course.getCourseName());
             ((EditText) findViewById(R.id.courseCodeEditText)).setText(course.getCourseCode());
             ((EditText) findViewById(R.id.courseStartDateEditText)).setText(course.getStartDate());
@@ -91,17 +135,16 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             ((EditText) findViewById(R.id.instructorPhoneSuffixEditText)).setText(phone[phone.length - 1]);
             ((EditText) findViewById(R.id.instructorEmailEditText)).setText(instructor.getEmail());
 
-            // ensure transient (not yet persisted) assessments if they exist
-            //TODO remove: this method was from an old approach (but what about flipping the phone/orientation change?)
-//            if (toBeAssessments != null && toBeAssessments.size() > 0) {
-//                course.getAssessments().addAll(toBeAssessments);
-//            }
-            // Dynamically add assessments if they exist
-            if (course.getAssessments().size() > 0) {
-                insertAssessments(course.getAssessments());
+            // Dynamically add assessments and notes to layout if they exist
+            // Note: copyAndAdd returns a deep copy of the collections
+            List<Assessment> assessmentsToDisplay = CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments);
+            if (assessmentsToDisplay.size() > 0) {
+                insertAssessments(assessmentsToDisplay);
             }
-            if(course.getCourseNotes().size() > 0) {
-                insertNotes(course.getCourseNotes());
+
+            List<String> notesToDisplay = CollectionUtil.copyAndAdd(course.getCourseNotes(), toBeNotes);
+            if(notesToDisplay.size() > 0) {
+                insertNotes(notesToDisplay);
             }
         }
     }
@@ -289,6 +332,25 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     Log.i("UPDATE", "Updating course information from \n" + course + " \n to \n" + modifiedCourse);
                     repositoryManager.updateCourse(courseId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
                 }
+
+                List<Assessment> modifiedAssessments = new ArrayList<>();
+                List<Assessment> currentAssessments = course.getAssessments();
+                for(int i = 0; i < currentAssessments.size(); i++) {
+                    Assessment cAssessment = currentAssessments.get(i);
+                    Assessment oAssessment = originalAssessments.get(i);
+                    if(cAssessment.getId().equals(oAssessment.getId())) {
+                        if(!cAssessment.equals(oAssessment)) {
+                            modifiedAssessments.add(cAssessment);
+                        } else {
+                            Log.e("INDEXING_ERROR", "IDs should be the same for saved assessments with same indexes: " +
+                                    "\n Original Assessment Details" + oAssessment + "\n Current Assessment Details " + cAssessment);
+                        }
+                    }
+                }
+                if(modifiedAssessments.size() > 0) {
+                    Log.d("UPDATE", "updating assessment details for modified assessments.");
+                    int[] ids = repositoryManager.updateAssessments(modifiedAssessments);
+                }
             }
             if (toBeAssessments != null) {
                 long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments); //TODO what about modifications/upates to courses?
@@ -340,14 +402,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment("Invalid Course Dates", errorMessage);
             errorDialog.show(getSupportFragmentManager(), "courseDateErrors");
         } else {
-//            registerForActivityResult(new CreateAssessmentContract(), assessment -> {
-//                if (assessment != null) {
-//                    if (toBeAssessments == null) {
-//                        toBeAssessments = new ArrayList<>();
-//                    }
-//                    toBeAssessments.add(assessment);
-//                }
-//            });
             Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
             assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, courseStartDate);
             assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, courseEndDate);
@@ -367,8 +421,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     }
                     toBeAssessments.add(newAssessment);
                     if (course != null) {
-                        course.getAssessments().add(newAssessment);
-                        insertAssessments(course.getAssessments());
+                        insertAssessments(CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments));
                     } else {
                         //otherwise, it's a new course which hasn't been saved yet
                         insertAssessments(toBeAssessments);
@@ -388,6 +441,25 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 } else {
                     insertNotes(toBeNotes);
                 }
+            } else if (requestCode == MODIFY_ASSESSMENT_RESULT) {
+                if (course != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras.getBoolean(IS_MODIFIED)) {
+                        int collectionIndex = extras.getInt(ARRAY_INDEX_KEY);
+                        //get target collection reference
+                        List<Assessment> assessments = extras.getBoolean(IS_NEW_ITEM) ? toBeAssessments : course.getAssessments();
+                        //get modified assessment
+                        Assessment modifiedAssessment = (Assessment) extras.getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
+                        //modify collection by replacing old value with new modified value
+                        assessments.remove(collectionIndex);
+                        assessments.add(collectionIndex, modifiedAssessment);
+                    }
+                    if(course != null) {
+                        insertAssessments(CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments));
+                    } else {
+                        insertAssessments(toBeAssessments);
+                    }
+                }
             }
         }
     }
@@ -403,22 +475,12 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
         @Override
         public void onClick(View v) {
-
-            Assessment assessment;
-            if (course != null) {
-                assessment = course.getAssessments().get(this.viewIndex / VIEWS_PER_PLAN);
-            } else {
-                assessment = toBeAssessments.get(this.viewIndex / VIEWS_PER_PLAN);
-            }
-
             //TODO this is not very DRY... should probably create an nested class that manages all of this
             Set<Integer> invalidValues = new HashSet<>();
             //always take current dates as those will be what we will save (eventually)
             long courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
             long courseEndDate = getRequiredDate(R.id.courseEndDateEditText, invalidValues);
             String errorMessage = verifyDates(invalidValues, courseStartDate, courseEndDate);
-
-
             if (invalidValues.size() > 0) {
                 for (Integer id : invalidValues) {
                     findViewById(id).setBackground(errorBorder);
@@ -426,13 +488,28 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment("Invalid Course Dates", errorMessage);
                 errorDialog.show(getSupportFragmentManager(), "courseDateErrors");
             } else {
+                //capture assessment to modify and some meta data for tracking between activities
+                Assessment assessment;
+                int collectionIndex = this.viewIndex / VIEWS_PER_PLAN;
+                boolean isNewItem = false;
+                if (course != null && course.getAssessments().size() > collectionIndex) {
+                    assessment = course.getAssessments().get(collectionIndex);
+                } else {
+                    isNewItem = true;
+                    //adjust collection index as the view initially treats pre-saved and toBe assessments as one whole collection.
+                    collectionIndex = course == null ? collectionIndex : collectionIndex - course.getAssessments().size();
+                    assessment = toBeAssessments.get(collectionIndex);
+                }
+
                 //TODO get rid of this once we verify it works well
                 Toast.makeText(getApplicationContext(), "You bonked on " + assessment, Toast.LENGTH_SHORT).show();
                 Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
                 assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, courseStartDate);
                 assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, courseEndDate);
                 assessmentDetailsActivity.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);
-                startActivity(assessmentDetailsActivity);
+                assessmentDetailsActivity.putExtra(ARRAY_INDEX_KEY, collectionIndex);
+                assessmentDetailsActivity.putExtra(IS_NEW_ITEM, isNewItem);
+                startActivityForResult(assessmentDetailsActivity, MODIFY_ASSESSMENT_RESULT);
             }
         }
     }

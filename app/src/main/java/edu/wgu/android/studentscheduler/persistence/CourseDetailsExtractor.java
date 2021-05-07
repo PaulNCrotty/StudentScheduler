@@ -13,32 +13,6 @@ import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 public class CourseDetailsExtractor {
 
-    /***
-     * select
-     * c.id as course_id,
-     * c.name as course_name,
-     * c.code as course_code,
-     * c.start_date as course_start_date,
-     * c.end_date as course_end_date,
-     * c.status as course_status,
-     * i.id as instructor_id,
-     * i.first_name as instructor_first,
-     * i.last_name as instructor_last,
-     * i.phone as instructor_phone,
-     * i.email as instructor_email,
-     * a.id as assessment_id,
-     * a.name as assessment_name,
-     * a.code as assessment_code,
-     * a.date as assessment_date,
-     * a.type as assessment_type,
-     * n.note as course_note
-     * from course c
-     * left join instructor i on i.id = c.instructor_id
-     * left join assessment a on a.course_id = c.id
-     * left join course_note n on n.course_id = c.id
-     * where c.id = ?
-     */
-
     private static int COURSE_ID_COLUMN;
     private static int COURSE_NAME_COLUMN;
     private static int COURSE_CODE_COLUMN;
@@ -55,8 +29,6 @@ public class CourseDetailsExtractor {
     private static int ASSESSMENT_CODE_COLUMN;
     private static int ASSESSMENT_DATE_COLUMN;
     private static int ASSESSMENT_TYPE_COLUMN;
-    private static int COURSE_NOTE_ID_COLUMN;
-    private static int COURSE_NOTE_COLUMN;
 
     public static Course extract(Cursor cursor) {
         init(cursor);
@@ -90,11 +62,6 @@ public class CourseDetailsExtractor {
                 long assessmentId = cursor.getLong(ASSESSMENT_ID_COLUMN);
                 if (assessmentId > 0) {
                     assessments.add(extractAssessment(assessmentId, cursor));
-                }
-
-                long noteId = cursor.getLong(COURSE_NOTE_ID_COLUMN);
-                if (noteId > 0) {
-                    courseNotes.add(cursor.getString(COURSE_NOTE_COLUMN));
                 }
             } while(cursor.moveToNext());
         }
@@ -130,8 +97,5 @@ public class CourseDetailsExtractor {
         ASSESSMENT_CODE_COLUMN = cursor.getColumnIndex("assessment_code");
         ASSESSMENT_DATE_COLUMN = cursor.getColumnIndex("assessment_date");
         ASSESSMENT_TYPE_COLUMN = cursor.getColumnIndex("assessment_type");
-        COURSE_NOTE_ID_COLUMN = cursor.getColumnIndex("course_note_id");
-        COURSE_NOTE_COLUMN = cursor.getColumnIndex("course_note");
-
     }
 }

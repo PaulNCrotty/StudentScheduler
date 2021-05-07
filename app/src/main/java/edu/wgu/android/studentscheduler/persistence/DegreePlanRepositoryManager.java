@@ -80,7 +80,6 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
             "left join course c on c.term_id = t.id " +
             "left join assessment a on a.course_id = c.id " +
             "where dp.id = ? ";
-//            "order by t.id, c.id"; //do I really need to order by?
 
         SQLiteDatabase db = getReadableDatabase();
 
@@ -88,38 +87,61 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return DegreePlanExtractor.extract(cursor); //extractor will close cursor #TODO verify
     }
 
-    //TODO fix this join in the morning.... giving cartesian product; however, need to still get data from course when assessment and or notes (etc...) empty
     public Course getCourseDetails(long courseId) {
         String query =
                 "select " +
-                        "c.id as course_id, " +
-                        "c.name as course_name, " +
-                        "c.code as course_code, " +
-                        "c.start_date as course_start_date, " +
-                        "c.end_date as course_end_date, " +
-                        "c.status as course_status, " +
-                        "i.id as instructor_id, " +
-                        "i.first_name as instructor_first, " +
-                        "i.last_name as instructor_last, " +
-                        "i.phone as instructor_phone, " +
-                        "i.email as instructor_email, " +
-                        "a.id as assessment_id, " +
-                        "a.name as assessment_name, " +
-                        "a.code as assessment_code, " +
-                        "a.date as assessment_date, " +
-                        "a.type as assessment_type, " +
-                        "n.id as course_note_id, " +
-                        "n.note as course_note " +
-                        "from course c " +
-                        "left join instructor i on i.id = c.instructor_id " +
-                        "left join assessment a on a.course_id = c.id " +
-                        "left join course_note n on n.course_id = c.id " +
-                        "where c.id = ? ";
+                    "c.id as course_id, " +
+                    "c.name as course_name, " +
+                    "c.code as course_code, " +
+                    "c.start_date as course_start_date, " +
+                    "c.end_date as course_end_date, " +
+                    "c.status as course_status, " +
+                    "i.id as instructor_id, " +
+                    "i.first_name as instructor_first, " +
+                    "i.last_name as instructor_last, " +
+                    "i.phone as instructor_phone, " +
+                    "i.email as instructor_email, " +
+                    "a.id as assessment_id, " +
+                    "a.name as assessment_name, " +
+                    "a.code as assessment_code, " +
+                    "a.date as assessment_date, " +
+                    "a.type as assessment_type " +
+                "from course c " +
+                    "left join instructor i on i.id = c.instructor_id " +
+                    "left join assessment a on a.course_id = c.id " +
+                "where c.id = ? ";
+
 
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
         return CourseDetailsExtractor.extract(cursor); //extractor will close cursor #TODO verify
+    }
+
+    public List<String> getCourseNotes(long courseId) {
+        String query =
+                "select " +
+                    "id as course_note_id, " +
+                    "note as course_note " +
+                "from course_note where course_id = ? ";
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
+
+        List<String> notes = new ArrayList<>(cursor.getCount());
+        if(cursor.moveToFirst()) {
+            int courseNoteIdColumn = cursor.getColumnIndex("course_note_id");
+            int courseNoteColumn = cursor.getColumnIndex("course_note");
+            do {
+                long noteId = cursor.getLong(courseNoteIdColumn);
+                if (noteId > 0) {
+                    notes.add(cursor.getString(courseNoteColumn));
+                }
+            }while(cursor.moveToNext());
+        }
+
+        cursor.close();
+        return notes;
     }
 
     public List<DegreePlanDao> getBasicDegreePlanDataForAllPlans() {

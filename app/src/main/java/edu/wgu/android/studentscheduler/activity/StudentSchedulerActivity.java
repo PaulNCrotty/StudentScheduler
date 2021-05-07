@@ -23,7 +23,6 @@ import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.fragment.ConfirmationDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
-import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 import edu.wgu.android.studentscheduler.persistence.DegreePlanRepositoryManager;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
@@ -32,6 +31,10 @@ import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
 public class StudentSchedulerActivity extends AppCompatActivity implements ConfirmationDialogFragment.ConfirmationDialogListener {
 
     public static final String DEGREE_PLAN_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanId";
+    public static final String IS_FIRST_LOAD_KEY = "edu.wgu.android.studentscheduler.activity.isFirstLoad";
+    public static final String IS_MODIFIED = "edu.wgu.android.studentscheduler.activity.isModified";
+    public static final String ARRAY_INDEX_KEY = "edu.wgu.android.studentscheduler.activity.arrayIndexKey";
+    public static final String IS_NEW_ITEM = "edu.wgu.android.studentscheduler.activity.isNewItem";
     public static final String TERM_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.termId";
     public static final String TERM_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.termObject";
     public static final String COURSE_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
@@ -87,27 +90,6 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         getMenuInflater().inflate(R.menu.main_appbar_menu, menu);
         return true;
     }
-
-//    /***
-//     * Returns the seconds since epoch (1970-01-01'T'00:00:00.000) from a properly formatted
-//     * ISO8601 date string (yyyy-MM-dd). This more robust wrapper method exists here (rather than
-//     * in the utils class) to allow for an dialog fragment to be used during parsing errors.
-//     *
-//     * @param dateString - the date string to parse; should be in ISO8601 format
-//     * @return seconds since epoch as an integer
-//     */
-//    int getSecondsSinceEpoch(String dateString) {
-//        int secondsSinceEpoch = 0;
-//        try {
-//            secondsSinceEpoch = (int) DateTimeUtil.getSecondsSinceEpoch(dateString);
-//        } catch (java.text.ParseException pe) {
-//            String title = "INVALID DATE";
-//            String errorMessage = "There was an error trying to parse the date \"" + dateString + "\". Is it in the proper ISO8601 date format?";
-//            GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, errorMessage);
-//            errorDialog.show(getSupportFragmentManager(), "dateError");
-//        }
-//        return secondsSinceEpoch;
-//    }
 
     /**
      * @param view - the edit text view which calls the date picker fragment
