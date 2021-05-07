@@ -68,7 +68,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         super(R.layout.activity_course_detail);
     }
 
-    private boolean isFirstLoad = true;
     private Term term;
     private Course course;
     private List<Assessment> originalAssessments;   //used to track and compare if assessments have changed
@@ -291,6 +290,23 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         return status;
     }
 
+    @Override
+    public void cancel(View view) {
+        if(course != null) {
+            String courseName = getEditTextValue(R.id.courseNameEditText);
+            String courseCode = getEditTextValue(R.id.courseCodeEditText);
+            String courseStartDate = getEditTextValue(R.id.courseStartDateEditText);
+            String courseEndDate = getEditTextValue(R.id.courseEndDateEditText);
+            Course modifiedCourse = new Course(course.getId(), courseName, courseCode, courseStartDate, courseEndDate, getSelectedStatus(), null, null, null);
+            if(!course.equals(modifiedCourse)) {
+                confirmCancel();
+            } else {
+                finish();
+            }
+        } else {
+            super.cancel(view);
+        }
+    }
 
     public void verifyAndSubmitCourse(View view) {
         Set<Integer> invalidValues = new HashSet<>();
@@ -395,18 +411,20 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
 
         //Make sure dates are within confines of term limits
-        long termStartDate = DateTimeUtil.getSecondsSinceEpoch(term.getStartDate());
-        long termEndDate = DateTimeUtil.getSecondsSinceEpoch(term.getEndDate());
+        String termStartDateString = term.getStartDate();
+        String termEndDateString = term.getEndDate();
+        long termStartDate = DateTimeUtil.getSecondsSinceEpoch(termStartDateString);
+        long termEndDate = DateTimeUtil.getSecondsSinceEpoch(termEndDateString);
         if (termStartDate > courseStartDate || termEndDate < courseStartDate) {
             invalidValues.add(R.id.courseStartDateEditText);
 
-            String error = "The course start date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+            String error = "The course start date must be within the planned term dates " + termStartDateString + " - " + termEndDateString + ".";
             errorMessage = errorMessage == null ? error : errorMessage + "\n" + error;
         }
 
         if (termStartDate > courseEndDate || termEndDate < courseEndDate) {
             invalidValues.add(R.id.courseStartDateEditText);
-            String error = "The course end date must be within the planned term dates " + termStartDate + " - " + termEndDate + ".";
+            String error = "The course end date must be within the planned term dates " + termStartDateString + " - " + termEndDateString + ".";
             errorMessage = errorMessage == null ? error : errorMessage + "\n" + error;
         }
         return errorMessage;

@@ -104,13 +104,16 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         boolean viewModified = isViewModified(view);
 
         if (viewModified) {
-            FragmentManager supportFragmentManager = getSupportFragmentManager();
-            ConfirmationDialogFragment confirmation = new ConfirmationDialogFragment();
-            confirmation.show(supportFragmentManager, "cancelConfirmation");
+            confirmCancel();
         } else {
-
             finish();  //TODO causes issues is someone bonks cancel twice in the same activity (because this one closes)
         }
+    }
+
+    void confirmCancel() {
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        ConfirmationDialogFragment confirmation = new ConfirmationDialogFragment();
+        confirmation.show(supportFragmentManager, "cancelConfirmation");
     }
 
     boolean isViewModified(View view) {
