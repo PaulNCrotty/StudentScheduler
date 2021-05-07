@@ -78,9 +78,13 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         if (toBeAssessments != null) {
             savedInstanceState.putSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY, (Serializable) toBeAssessments);
         }
-        if(toBeAssessments != null) {
+        if (toBeNotes != null) {
             savedInstanceState.putSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY, (Serializable) toBeNotes);
         }
+        if(course != null) {
+            savedInstanceState.putSerializable(COURSE_OBJECT_BUNDLE_KEY, (Serializable) course);
+        }
+
         savedInstanceState.putSerializable(ORIGINAL_ASSESSMENTS_ARRAY_KEY, (Serializable) originalAssessments);
         savedInstanceState.putSerializable(ORIGINAL_COURSE_NOTES_ARRAY_KEY, (Serializable) originalNotes);
     }
@@ -91,17 +95,21 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
         if (savedInstanceState != null) {
             Serializable nAssessments = savedInstanceState.getSerializable(TO_BE_ASSESSMENTS_ARRAY_KEY);
-            if(nAssessments instanceof ArrayList) {
+            if (nAssessments instanceof ArrayList) {
                 toBeAssessments = (ArrayList<Assessment>) nAssessments;
             }
+
             Serializable notes = savedInstanceState.getSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY);
-            if(notes instanceof ArrayList) {
+            if (notes instanceof ArrayList) {
                 toBeNotes = (ArrayList<String>) notes;
             }
+
             Serializable oAssessments = savedInstanceState.getSerializable(ORIGINAL_ASSESSMENTS_ARRAY_KEY);
-            if(oAssessments instanceof ArrayList) {
+            if (oAssessments instanceof ArrayList) {
                 originalAssessments = (ArrayList<Assessment>) oAssessments;
             }
+
+            course = (Course) savedInstanceState.getSerializable(COURSE_OBJECT_BUNDLE_KEY);
         }
 
         init();
@@ -110,13 +118,16 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         long courseId = extras.getLong(COURSE_ID_BUNDLE_KEY);
         if (courseId > 0) {
             //we are editing an existing course; grab the details from the persistence store
-            course = repositoryManager.getCourseDetails(courseId);
-            course.getCourseNotes().addAll(repositoryManager.getCourseNotes(courseId));
+            if(course == null) {
+                course = repositoryManager.getCourseDetails(courseId);
+                course.getCourseNotes().addAll(repositoryManager.getCourseNotes(courseId));
+            }
 
-            if(originalAssessments == null) {
+            if (originalAssessments == null) {
                 // should only be set on first creation (not on orientation changes, etc...)
+                //create a copy... otherwise its just an alias
                 Log.i("COURSE_DETAILS", "setting original assessments");
-                originalAssessments = course.getAssessments();
+                originalAssessments = new ArrayList<>(course.getAssessments());
             }
 
             ((EditText) findViewById(R.id.courseNameEditText)).setText(course.getCourseName());
@@ -143,7 +154,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             }
 
             List<String> notesToDisplay = CollectionUtil.copyAndAdd(course.getCourseNotes(), toBeNotes);
-            if(notesToDisplay.size() > 0) {
+            if (notesToDisplay.size() > 0) {
                 insertNotes(notesToDisplay);
             }
         }
@@ -208,7 +219,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
         int viewIndex = 0;  //TODO to be used for accessing notes to be modified later....
         int bannerConnectorId = layout.getId();
-        for(String note: notes) {
+        for (String note : notes) {
             //TODO add view for title and an image to delete?
             TextView noteView = new TextView(context);
             noteView.setId(generateViewId());
@@ -217,7 +228,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
             int noteViewId = noteView.getId();
             constraintSet.connect(noteViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-            if(bannerConnectorId == layout.getId()) {
+            if (bannerConnectorId == layout.getId()) {
                 constraintSet.connect(noteViewId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
             } else {
                 constraintSet.connect(noteViewId, ConstraintSet.TOP, bannerConnectorId, ConstraintSet.BOTTOM);
@@ -335,19 +346,19 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
                 List<Assessment> modifiedAssessments = new ArrayList<>();
                 List<Assessment> currentAssessments = course.getAssessments();
-                for(int i = 0; i < currentAssessments.size(); i++) {
+                for (int i = 0; i < currentAssessments.size(); i++) {
                     Assessment cAssessment = currentAssessments.get(i);
                     Assessment oAssessment = originalAssessments.get(i);
-                    if(cAssessment.getId().equals(oAssessment.getId())) {
-                        if(!cAssessment.equals(oAssessment)) {
+                    if (cAssessment.getId().equals(oAssessment.getId())) {
+                        if (!cAssessment.equals(oAssessment)) {
                             modifiedAssessments.add(cAssessment);
-                        } else {
-                            Log.e("INDEXING_ERROR", "IDs should be the same for saved assessments with same indexes: " +
-                                    "\n Original Assessment Details" + oAssessment + "\n Current Assessment Details " + cAssessment);
                         }
+                    } else {
+                        Log.e("INDEXING_ERROR", "IDs should be the same for saved assessments with same indexes: " +
+                                "\n Original Assessment Details" + oAssessment + "\n Current Assessment Details " + cAssessment);
                     }
                 }
-                if(modifiedAssessments.size() > 0) {
+                if (modifiedAssessments.size() > 0) {
                     Log.d("UPDATE", "updating assessment details for modified assessments.");
                     int[] ids = repositoryManager.updateAssessments(modifiedAssessments);
                 }
@@ -413,7 +424,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null) {
-            if(requestCode == GET_ASSESSMENT_RESULT) {
+            if (requestCode == GET_ASSESSMENT_RESULT) {
                 Assessment newAssessment = (Assessment) data.getExtras().getSerializable(ASSESSMENT_OBJECT_BUNDLE_KEY);
                 if (newAssessment != null) {
                     if (toBeAssessments == null) {
@@ -429,13 +440,13 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 }
             } else if (requestCode == GET_NOTE_RESULT) {
                 String newNote = data.getExtras().getString(COURSE_NOTE_BUNDLE_KEY);
-                if(newNote != null) {
-                    if(toBeNotes == null) {
+                if (newNote != null) {
+                    if (toBeNotes == null) {
                         toBeNotes = new ArrayList<>();
                     }
                     toBeNotes.add(newNote);
                 }
-                if(course != null) {
+                if (course != null) {
                     course.getCourseNotes().add(newNote);
                     insertNotes(course.getCourseNotes());
                 } else {
@@ -454,7 +465,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                         assessments.remove(collectionIndex);
                         assessments.add(collectionIndex, modifiedAssessment);
                     }
-                    if(course != null) {
+                    if (course != null) {
                         insertAssessments(CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments));
                     } else {
                         insertAssessments(toBeAssessments);
