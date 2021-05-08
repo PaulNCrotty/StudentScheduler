@@ -211,7 +211,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             layout.addView(banner);
 
             removeIcon.setId(generateViewId());
-            removeIcon.setPadding(21, 21, 5, 21);
+//            removeIcon.setPadding(checkboxPadding, checkboxPadding, checkboxPadding, checkboxPadding);
             removeIcon.setViewIndex(viewIndex++);
             removeIcon.setChecked(false);
             layout.addView(removeIcon);
@@ -380,7 +380,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
     public void deleteSelectedNotes(View view) {
         ConstraintLayout notesLayout = findViewById(R.id.courseNotesContainer);
-
     }
 
     @Override
@@ -590,16 +589,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
-
-    private void insertAllAvailableAssessments() {
-        if (course != null) {
-            insertAssessments(CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments));
-        } else {
-            //otherwise, it's a new course which hasn't been saved yet
-            insertAssessments(toBeAssessments);
-        }
-    }
-
     private List<Assessment> getSessionAssessments() {
         List<Assessment> sessionAssessments;
         if (course == null && toBeAssessments == null) {
@@ -625,7 +614,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
         constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
         //height and margins are not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
+        constraintSet.constrainHeight(constrainedViewId, checkboxHeight);
     }
 
     void addBannerConstraints(ConstraintSet constraintSet, int containerId, int constrainedViewId, int removeIconId, int connectorId) {
@@ -671,33 +660,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
         @Override
         public void onClick(View v) {
-//            if (requestRemoval) {
-//                Assessment assessment;
-//                int collectionIndex = this.viewIndex / VIEWS_PER_ROW;
-//                boolean isNewItem = false;
-//                if (course != null && course.getAssessments().size() > collectionIndex) {
-//                    assessment = course.getAssessments().get(collectionIndex);
-//                } else {
-//                    isNewItem = true;
-//                    //adjust collection index as the view initially treats pre-saved and toBe assessments as one whole collection.
-//                    collectionIndex = course == null ? collectionIndex : collectionIndex - course.getAssessments().size();
-//                    assessment = toBeAssessments.get(collectionIndex);
-//                }
-//
-//                //TODO add confirmation dialog here ('You sure you wanna delete this thing?')
-//
-//                if (isNewItem) {
-//                    toBeAssessments.remove(collectionIndex);
-//                } else {
-//                    repositoryManager.deleteAssessment(assessment);
-//                    course.getAssessments().remove(collectionIndex);
-//                }
-//
-//                insertAssessments(getSessionAssessments()); //TODO... this won't re-draw... this will just add, no?
-//
-//            }
-
-
             Set<Integer> invalidValues = new HashSet<>();
             //always take current dates as those will be what we will save (eventually)
             long courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);

@@ -1,7 +1,9 @@
 package edu.wgu.android.studentscheduler.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
 
@@ -37,6 +39,18 @@ public class MainActivity extends StudentSchedulerActivity {
 
     public void loadExistingPlans(View view) {
         startActivity(new Intent(this, DegreePlanListActivity.class));
+    }
+
+    //TODO remove when done....
+    /**
+     * This method converts device specific pixels to density independent pixels.
+     *
+     * @param px A value in px (pixels) unit. Which we need to convert into db
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent dp equivalent to px value
+     */
+    public static float convertPixelsToDp(float px, Context context) {
+        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
 }

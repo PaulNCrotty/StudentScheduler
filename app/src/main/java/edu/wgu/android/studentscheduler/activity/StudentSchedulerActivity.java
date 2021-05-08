@@ -53,6 +53,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     int bannerHeight;
     int marginStart;
     int marginEnd;
+    int checkboxHeight;
 
     int invalidEntryColor;
     int validEntryColor;
@@ -76,6 +77,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         bannerHeight = resources.getDimensionPixelSize(R.dimen.text_view_list_layout_height);
         marginStart = resources.getDimensionPixelSize(R.dimen.text_view_list_layout_marginStart);
         marginEnd = resources.getDimensionPixelSize(R.dimen.text_view_list_layout_marginEnd);
+        checkboxHeight = resources.getDimensionPixelSize(R.dimen.check_box_height);
 
         invalidEntryColor = resources.getColor(R.color.red_orange);
         validEntryColor = resources.getColor(R.color.white);

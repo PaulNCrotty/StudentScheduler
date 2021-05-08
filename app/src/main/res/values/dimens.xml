@@ -10,4 +10,5 @@
     <dimen name="text_view_list_layout_height">35dp</dimen>
     <dimen name="text_view_list_layout_marginStart">10dp</dimen>
     <dimen name="text_view_list_layout_marginEnd">10dp</dimen>
+    <dimen name="check_box_height">35dp</dimen>
 </resources>
