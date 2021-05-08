@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +30,7 @@ import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
 import edu.wgu.android.studentscheduler.util.CollectionUtil;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
+import edu.wgu.android.studentscheduler.widget.IndexedCheckBox;
 
 import static android.view.View.generateViewId;
 
@@ -54,14 +53,16 @@ import static android.view.View.generateViewId;
 public class CourseDetailsActivity extends StudentSchedulerActivity {
     //TODO override for now... until we get all UIs in sync with 4 views per row
     static final int VIEWS_PER_ROW = 4;
-    
+
     private static final int GET_ASSESSMENT_RESULT = 0;
     private static final int GET_NOTE_RESULT = 1;
     private static final int MODIFY_ASSESSMENT_RESULT = 2;
     private static final int MODIFY_NOTE_RESULT = 3;
+    private static final int DELETE_ASSESSMENT_KEY = 4;
     private static final String ORIGINAL_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.originalAssessments";
     private static final String ORIGINAL_COURSE_NOTES_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.originalNotes";
     private static final String TO_BE_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeAssessments";
+    private static final String TO_BE_DELETED_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeDeletedAssessments";
     private static final String TO_BE_COURSE_NOTES_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeCourseNotes";
 
     public CourseDetailsActivity() {
@@ -73,6 +74,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     private List<Assessment> originalAssessments;   //used to track and compare if assessments have changed
     private List<String> originalNotes;             //used to track and compare if notes have changed
     private List<Assessment> toBeAssessments;       //transient assessments; must be saved at end of activity
+    private List<Assessment> toBeDeletedAssessment; //transient assessments to be deleted; must be saved at end of activity for deletion to be permanent
     private List<String> toBeNotes;                 //transient assessments; must be saved at end of activity
 
     @Override
@@ -84,8 +86,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         if (toBeNotes != null) {
             savedInstanceState.putSerializable(TO_BE_COURSE_NOTES_ARRAY_KEY, (Serializable) toBeNotes);
         }
-        if(course != null) {
-            savedInstanceState.putSerializable(COURSE_OBJECT_BUNDLE_KEY, (Serializable) course);
+        if (course != null) {
+            savedInstanceState.putSerializable(COURSE_OBJECT_BUNDLE_KEY, course);
+        }
+        if (toBeDeletedAssessment != null) {
+            savedInstanceState.putSerializable(TO_BE_DELETED_ASSESSMENTS_ARRAY_KEY, (Serializable) toBeDeletedAssessment);
         }
 
         savedInstanceState.putSerializable(ORIGINAL_ASSESSMENTS_ARRAY_KEY, (Serializable) originalAssessments);
@@ -112,6 +117,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 originalAssessments = (ArrayList<Assessment>) oAssessments;
             }
 
+            Serializable dAssessments = savedInstanceState.getSerializable(TO_BE_DELETED_ASSESSMENTS_ARRAY_KEY);
+            if (dAssessments instanceof ArrayList) {
+                toBeDeletedAssessment = (ArrayList<Assessment>) dAssessments;
+            }
+
             course = (Course) savedInstanceState.getSerializable(COURSE_OBJECT_BUNDLE_KEY);
         }
 
@@ -121,7 +131,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         long courseId = extras.getLong(COURSE_ID_BUNDLE_KEY);
         if (courseId > 0) {
             //we are editing an existing course; grab the details from the persistence store
-            if(course == null) {
+            if (course == null) {
                 course = repositoryManager.getCourseDetails(courseId);
                 course.getCourseNotes().addAll(repositoryManager.getCourseNotes(courseId));
             }
@@ -163,6 +173,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
+    private void clearAssessments() {
+        ConstraintLayout layout = findViewById(R.id.assessmentContainer);
+        layout.removeAllViews();
+    }
+
     private void insertAssessments(List<Assessment> assessments) {
         ConstraintLayout layout = findViewById(R.id.assessmentContainer);
         Context context = layout.getContext();
@@ -175,18 +190,18 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         for (Assessment a : assessments) {
             //declare views and prep for basic color styles
             TextView banner;
-            CheckBox removeIcon;
+            IndexedCheckBox removeIcon;
             TextView assessmentName;
             TextView assessmentDate;
             if (useStandardStyles) {
                 banner = new TextView(context, null, 0, R.style.listOptionBanner);
-                removeIcon = new CheckBox(context);
+                removeIcon = new IndexedCheckBox(context);
                 removeIcon.setBackgroundColor(orangeColor);
                 assessmentName = new TextView(context, null, 0, R.style.listOptionDetails);
                 assessmentDate = new TextView(context, null, 0, R.style.listOptionDates);
             } else {
                 banner = new TextView(context, null, 0, R.style.listOptionBannerAlt);
-                removeIcon = new CheckBox(context);
+                removeIcon = new IndexedCheckBox(context);
                 assessmentName = new TextView(context, null, 0, R.style.listOptionDetailsAlt);
                 assessmentDate = new TextView(context, null, 0, R.style.listOptionDatesAlt);
             }
@@ -194,9 +209,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             banner.setId(generateViewId());
             banner.setOnClickListener(new ModifyAssessmentAction(viewIndex++));
             layout.addView(banner);
-            
+
             removeIcon.setId(generateViewId());
-            removeIcon.setPadding(21,21,5,21);
+            removeIcon.setPadding(21, 21, 5, 21);
+            removeIcon.setViewIndex(viewIndex++);
+            removeIcon.setChecked(false);
             layout.addView(removeIcon);
 
             assessmentName.setId(generateViewId());
@@ -290,15 +307,91 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         return status;
     }
 
+    public void deleteSelectedAssessments(View view) {
+        List<Integer> indices = new ArrayList<>();
+        ConstraintLayout notesLayout = findViewById(R.id.assessmentContainer);
+        for (int i = 0; i < notesLayout.getChildCount(); i++) {
+            View child = notesLayout.getChildAt(i);
+            if (child instanceof IndexedCheckBox) {
+                IndexedCheckBox checkBox = (IndexedCheckBox) child;
+                if (checkBox.isChecked()) {
+                    indices.add(checkBox.getViewIndex());
+                }
+            }
+        }
+
+        String toastMessage;
+        if (indices.size() > 0) {
+            StringBuilder warning = new StringBuilder("You are preparing to delete the following: \n");
+
+            toBeDeletedAssessment = toBeDeletedAssessment == null ? new ArrayList<>(indices.size()) : toBeDeletedAssessment;
+            List<Assessment> savedAssessments = course == null ? new ArrayList<>() : course.getAssessments();
+            for (Integer index : indices) {
+                int collectionIndex = index / VIEWS_PER_ROW;
+                Assessment a;
+                if (savedAssessments.size() > collectionIndex) {
+                    a = savedAssessments.get(collectionIndex);
+                    //prep for removal in a latter iteration; can't remove now, otherwise indices will be out of sync
+                    savedAssessments.set(collectionIndex, null);
+                    toBeDeletedAssessment.add(a);
+                } else {
+                    collectionIndex = course == null ? collectionIndex : collectionIndex - course.getAssessments().size();
+                    a = toBeAssessments.get(collectionIndex);
+                    //prep for removal in a latter iteration; can't remove now, otherwise indices will be out of sync
+                    toBeAssessments.set(collectionIndex, null);
+                }
+                warning.append("\"").append(a.getName()).append("\", ");
+            }
+            warning.deleteCharAt(warning.lastIndexOf(","));
+            warning.append("\nNOTE: MODIFICATIONS to assessments will NOT be permanent until you SAVE.");
+            toastMessage = warning.toString();
+
+            //copy non-nulls over to new array in preparation to replace old
+            List<Assessment> newSavedAssessments = new ArrayList<>();
+            for (int i = 0; i < savedAssessments.size(); i++) {
+                Assessment a = savedAssessments.get(i);
+                if (a != null) {
+                    newSavedAssessments.add(a);
+                }
+            }
+            if (course != null) {
+                course.setAssessments(newSavedAssessments);
+            }
+
+            //copy non-nulls over to new array in preparation to replace old
+            if (toBeAssessments != null) {
+                List<Assessment> newToBeAssessments = new ArrayList<>();
+                for (int i = 0; i < toBeAssessments.size(); i++) {
+                    Assessment a = toBeAssessments.get(i);
+                    if (a != null) {
+                        newToBeAssessments.add(a);
+                    }
+                }
+                toBeAssessments = newToBeAssessments;
+            }
+
+            clearAssessments();
+            insertAssessments(getSessionAssessments());
+        } else {
+            toastMessage = "Please select a course as a candidate for deletion";
+        }
+        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show();
+    }
+
+    public void deleteSelectedNotes(View view) {
+        ConstraintLayout notesLayout = findViewById(R.id.courseNotesContainer);
+
+    }
+
     @Override
     public void cancel(View view) {
-        if(course != null) {
+        if (course != null) {
             String courseName = getEditTextValue(R.id.courseNameEditText);
             String courseCode = getEditTextValue(R.id.courseCodeEditText);
             String courseStartDate = getEditTextValue(R.id.courseStartDateEditText);
             String courseEndDate = getEditTextValue(R.id.courseEndDateEditText);
-            Course modifiedCourse = new Course(course.getId(), courseName, courseCode, courseStartDate, courseEndDate, getSelectedStatus(), null, null, null);
-            if(!course.equals(modifiedCourse)) {
+            Course modifiedCourse = new Course(course.getId(), courseName, courseCode, courseStartDate, courseEndDate, getSelectedStatus());
+            if (!course.equals(modifiedCourse) || toBeAssessments != null || toBeNotes != null) {
                 confirmCancel();
             } else {
                 finish();
@@ -367,7 +460,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     Log.i("UPDATE", "Updating course instructor information from \n" + course.getInstructor() + " \n to \n" + modifiedInstructor);
                     repositoryManager.updateCourseInstructor(modifiedInstructor);
                 }
-                Course modifiedCourse = new Course(courseId, courseName, courseCode, DateTimeUtil.getDateString(courseStartDate), DateTimeUtil.getDateString(courseEndDate), selectedStatus, null, null, null);
+                Course modifiedCourse = new Course(courseId, courseName, courseCode, DateTimeUtil.getDateString(courseStartDate), DateTimeUtil.getDateString(courseEndDate), selectedStatus);
                 if (!course.equals(modifiedCourse)) {
                     Log.i("UPDATE", "Updating course information from \n" + course + " \n to \n" + modifiedCourse);
                     repositoryManager.updateCourse(courseId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
@@ -462,7 +555,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                         toBeAssessments = new ArrayList<>();
                     }
                     toBeAssessments.add(newAssessment);
-                    insertAllAvailableAssessments();
+                    insertAssessments(getSessionAssessments());
                 }
             } else if (requestCode == GET_NOTE_RESULT) {
                 String newNote = data.getExtras().getString(COURSE_NOTE_BUNDLE_KEY);
@@ -491,7 +584,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                         assessments.remove(collectionIndex);
                         assessments.add(collectionIndex, modifiedAssessment);
                     }
-                    insertAllAvailableAssessments();
+                    insertAssessments(getSessionAssessments());
                 }
             }
         }
@@ -507,10 +600,23 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
+    private List<Assessment> getSessionAssessments() {
+        List<Assessment> sessionAssessments;
+        if (course == null && toBeAssessments == null) {
+            sessionAssessments = new ArrayList<>();
+        } else if (course == null) {
+            sessionAssessments = toBeAssessments;
+        } else if (toBeAssessments == null) {
+            sessionAssessments = course.getAssessments();
+        } else {
+            sessionAssessments = CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments);
+        }
+        return sessionAssessments;
+    }
+
     public void createNoteAction(View view) {
         startActivityForResult(new Intent(getApplicationContext(), CourseNoteActivity.class), GET_NOTE_RESULT);
     }
-
 
 
     //////ADD BELOW BACK TO PARENT CLASS WHEN DONE WITH POC HERE  //////////
@@ -554,54 +660,44 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     //////ADD ABOVE BACK TO PARENT CLASS WHEN DONE WITH POC HERE  //////////
 
 
-
-
-
     //TODO add similar functionality for notes....
     private class ModifyAssessmentAction implements View.OnClickListener {
 
         ModifyAssessmentAction(int viewIndex) {
             this.viewIndex = viewIndex;
         }
-        
-        ModifyAssessmentAction(int viewIndex, boolean requestRemoval) {
-            this.viewIndex = viewIndex;
-            this.requestRemoval = true;
-        }
 
         private final int viewIndex;
-        
-        private boolean requestRemoval = false;
 
         @Override
         public void onClick(View v) {
-            if(requestRemoval) {
-                Assessment assessment;
-                int collectionIndex = this.viewIndex / VIEWS_PER_ROW;
-                boolean isNewItem = false;
-                if (course != null && course.getAssessments().size() > collectionIndex) {
-                    assessment = course.getAssessments().get(collectionIndex);
-                } else {
-                    isNewItem = true;
-                    //adjust collection index as the view initially treats pre-saved and toBe assessments as one whole collection.
-                    collectionIndex = course == null ? collectionIndex : collectionIndex - course.getAssessments().size();
-                    assessment = toBeAssessments.get(collectionIndex);
-                }
+//            if (requestRemoval) {
+//                Assessment assessment;
+//                int collectionIndex = this.viewIndex / VIEWS_PER_ROW;
+//                boolean isNewItem = false;
+//                if (course != null && course.getAssessments().size() > collectionIndex) {
+//                    assessment = course.getAssessments().get(collectionIndex);
+//                } else {
+//                    isNewItem = true;
+//                    //adjust collection index as the view initially treats pre-saved and toBe assessments as one whole collection.
+//                    collectionIndex = course == null ? collectionIndex : collectionIndex - course.getAssessments().size();
+//                    assessment = toBeAssessments.get(collectionIndex);
+//                }
+//
+//                //TODO add confirmation dialog here ('You sure you wanna delete this thing?')
+//
+//                if (isNewItem) {
+//                    toBeAssessments.remove(collectionIndex);
+//                } else {
+//                    repositoryManager.deleteAssessment(assessment);
+//                    course.getAssessments().remove(collectionIndex);
+//                }
+//
+//                insertAssessments(getSessionAssessments()); //TODO... this won't re-draw... this will just add, no?
+//
+//            }
 
-                //TODO add confirmation dialog here ('You sure you wanna delete this thing?')
 
-                if(isNewItem) {
-                    toBeAssessments.remove(collectionIndex);
-                } else {
-                    repositoryManager.deleteAssessment(assessment);
-                    course.getAssessments().remove(collectionIndex);
-                }
-
-                insertAllAvailableAssessments(); //TODO... this won't re-draw... this will just add, no?
-
-            }
-            
-            
             Set<Integer> invalidValues = new HashSet<>();
             //always take current dates as those will be what we will save (eventually)
             long courseStartDate = getRequiredDate(R.id.courseStartDateEditText, invalidValues);
@@ -627,8 +723,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     assessment = toBeAssessments.get(collectionIndex);
                 }
 
-                //TODO get rid of this once we verify it works well
-                Toast.makeText(getApplicationContext(), "You bonked on " + assessment, Toast.LENGTH_SHORT).show();
                 Intent assessmentDetailsActivity = new Intent(getApplicationContext(), AssessmentDetailsActivity.class);
                 assessmentDetailsActivity.putExtra(COURSE_START_DATE_BUNDLE_KEY, courseStartDate);
                 assessmentDetailsActivity.putExtra(COURSE_END_DATE_BUNDLE_KEY, courseEndDate);

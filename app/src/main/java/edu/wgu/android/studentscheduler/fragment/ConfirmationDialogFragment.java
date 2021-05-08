@@ -2,22 +2,43 @@ package edu.wgu.android.studentscheduler.fragment;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+
 public class ConfirmationDialogFragment extends DialogFragment {
+
+    private int key;
+    private String title;
+    private String message;
+    private String positiveButton;
+    private String negativeButton;
 
     private ConfirmationDialogListener dialogListener;
 
+    public ConfirmationDialogFragment() {
+        this.key = 0;
+        this.title = "Confirm Leaving";
+        this.message = "Any changes will be lost. Are you sure you want to quit?";
+        this.positiveButton = "Yes";
+        this.negativeButton = "Continue Editing";
+    }
+
+    public ConfirmationDialogFragment(int key, String title, String message, String positiveButton, String negativeButton) {
+        this.key = key;
+        this.title = title;
+        this.message = message;
+        this.positiveButton = positiveButton;
+        this.negativeButton = negativeButton;
+    }
+
     public interface ConfirmationDialogListener {
 
-        void onPositive();
+        void onPositive(int key);
 
-//        void onNegative(DialogFragment dialog);
     }
 
     /**
@@ -40,16 +61,10 @@ public class ConfirmationDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
-                .setMessage("Are you sure you want to quit?")
-                .setPositiveButton("Yes", (dialog, which) -> dialogListener.onPositive())
-                .setNegativeButton("Continue Editing", null
-//                        new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialogListener.onNegative(ConfirmationDialogFragment.this);
-//                    }
-//                }
-                )
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(positiveButton, (dialog, which) -> dialogListener.onPositive(key))
+                .setNegativeButton(negativeButton, null)
                 .create();
     }
 }

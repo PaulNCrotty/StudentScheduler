@@ -280,6 +280,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/instructorEmail" />
         <ImageButton
+            android:id="@+id/deleteAssessmentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/addAssessmentButton"
+            app:layout_constraintTop_toTopOf="@+id/assessmentHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/assessmentHeader"
+            android:src="@drawable/subtract_icon"
+            android:background="#FFFFFF"
+            android:onClick="deleteSelectedAssessments" />
+        <ImageButton
             android:id="@+id/addAssessmentButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -310,6 +320,16 @@
             android:text="Notes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/assessmentContainer" />
+        <ImageButton
+            android:id="@+id/deleteNoteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/addNoteButton"
+            app:layout_constraintTop_toTopOf="@+id/courseNotesHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/courseNotesHeader"
+            android:src="@drawable/subtract_icon"
+            android:background="#FFFFFF"
+            android:onClick="deleteSelectedNotes" />
         <ImageButton
             android:id="@+id/addNoteButton"
             android:layout_width="wrap_content"

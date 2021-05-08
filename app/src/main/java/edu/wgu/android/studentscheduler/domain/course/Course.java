@@ -7,6 +7,7 @@ import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -15,16 +16,30 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Course implements Serializable {
 
+    public Course(Long id, String courseName, String courseCode, String startDate, String endDate, CourseStatus status) {
+        this.id = id;
+        this.courseName = courseName;
+        this.courseCode = courseCode;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
+    }
+
     private Long id;
     private String courseName;
     private String courseCode;
     private String startDate;
     private String endDate;
     private CourseStatus status;
+
     @EqualsAndHashCode.Exclude
     private CourseInstructor instructor;
+
+    @Setter
     @EqualsAndHashCode.Exclude
     private List<Assessment> assessments;
+
+    @Setter
     @EqualsAndHashCode.Exclude
     private List<String> courseNotes; //optional display field
 

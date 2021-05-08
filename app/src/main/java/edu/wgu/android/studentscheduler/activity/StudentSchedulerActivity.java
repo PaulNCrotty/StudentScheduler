@@ -224,7 +224,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     }
 
     @Override
-    public void onPositive() {
+    public void onPositive(int key) {
         finish(); // close the activity
     }
 
