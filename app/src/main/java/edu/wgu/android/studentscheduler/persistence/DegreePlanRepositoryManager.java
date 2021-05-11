@@ -15,6 +15,7 @@ import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
+import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
@@ -85,6 +86,25 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(degreePlanId).toString()});
         return DegreePlanExtractor.extract(cursor); //extractor will close cursor #TODO verify
+    }
+
+    public List<Term> getPlanTerms(long degreePlanId) {
+        String query =
+            "select " +
+                "t.id as term_id, " +
+                "t.name as term_name, " +
+                "t.start_date as term_start_date, " +
+                "t.end_date as term_end_date, " +
+                "t.status as term_status " +
+            "from degree_plan dp " +
+            "left join term t on t.plan_id = dp.id " +
+            "where dp.id = ? " +
+            "order by t.start_date";
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, new String[]{Long.valueOf(degreePlanId).toString()});
+        return DegreePlanTermsExtractor.extract(cursor);
     }
 
     public Course getCourseDetails(long courseId) {

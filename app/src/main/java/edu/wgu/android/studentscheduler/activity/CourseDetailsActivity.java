@@ -37,11 +37,10 @@ import static android.view.View.generateViewId;
 
 /***
  * Bugs and missing features:
- * when one toggles the screen, any recently added assessments (or notes?) are still in  memory thanks to the onSaveInstanceState...
- * but they do not get redrawn on the screen. Need to redraw them ... once.
- *   After submitting with this approach.... only one of the assessments was saved... twice
+ * With New COURSES: when one toggles the screen, any recently added assessments (or notes?) are still
+ * in  memory and will get saved thanks to the onSaveInstanceState...
+ * but they do not get redrawn on the screen. .
  *
- * Cartesian join when multiple notes and assessments exist.
  *
  * No way to delete plans, terms, courses, assessments, or notes just yet
  *
@@ -51,8 +50,6 @@ import static android.view.View.generateViewId;
  *
  */
 public class CourseDetailsActivity extends StudentSchedulerActivity {
-    //TODO override for now... until we get all UIs in sync with 4 views per row
-    static final int VIEWS_PER_ROW = 4;
 
     private static final int GET_ASSESSMENT_RESULT = 0;
     private static final int GET_NOTE_RESULT = 1;
@@ -158,18 +155,18 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             ((EditText) findViewById(R.id.instructorPhonePrefixEditText)).setText(phone[1]);
             ((EditText) findViewById(R.id.instructorPhoneSuffixEditText)).setText(phone[phone.length - 1]);
             ((EditText) findViewById(R.id.instructorEmailEditText)).setText(instructor.getEmail());
+        }
 
-            // Dynamically add assessments and notes to layout if they exist
-            // Note: copyAndAdd returns a deep copy of the collections
-            List<Assessment> assessmentsToDisplay = CollectionUtil.copyAndAdd(course.getAssessments(), toBeAssessments);
-            if (assessmentsToDisplay.size() > 0) {
-                insertAssessments(assessmentsToDisplay);
-            }
+        // Dynamically add assessments and notes to layout if they exist
+        // Note: copyAndAdd returns a deep copy of the collections
+        List<Assessment> assessmentsToDisplay = getSessionAssessments();
+        if (assessmentsToDisplay.size() > 0) {
+            insertAssessments(assessmentsToDisplay);
+        }
 
-            List<String> notesToDisplay = CollectionUtil.copyAndAdd(course.getCourseNotes(), toBeNotes);
-            if (notesToDisplay.size() > 0) {
-                insertNotes(notesToDisplay);
-            }
+        List<String> notesToDisplay = getSessionNotes();
+        if (notesToDisplay.size() > 0) {
+            insertNotes(notesToDisplay);
         }
     }
 
@@ -190,18 +187,16 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         for (Assessment a : assessments) {
             //declare views and prep for basic color styles
             TextView banner;
-            IndexedCheckBox removeIcon;
+            IndexedCheckBox removeIcon = new IndexedCheckBox(context);
             TextView assessmentName;
             TextView assessmentDate;
             if (useStandardStyles) {
                 banner = new TextView(context, null, 0, R.style.listOptionBanner);
-                removeIcon = new IndexedCheckBox(context);
                 removeIcon.setBackgroundColor(orangeColor);
                 assessmentName = new TextView(context, null, 0, R.style.listOptionDetails);
                 assessmentDate = new TextView(context, null, 0, R.style.listOptionDates);
             } else {
                 banner = new TextView(context, null, 0, R.style.listOptionBannerAlt);
-                removeIcon = new IndexedCheckBox(context);
                 assessmentName = new TextView(context, null, 0, R.style.listOptionDetailsAlt);
                 assessmentDate = new TextView(context, null, 0, R.style.listOptionDatesAlt);
             }
@@ -211,7 +206,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             layout.addView(banner);
 
             removeIcon.setId(generateViewId());
-//            removeIcon.setPadding(checkboxPadding, checkboxPadding, checkboxPadding, checkboxPadding);
             removeIcon.setViewIndex(viewIndex++);
             removeIcon.setChecked(false);
             layout.addView(removeIcon);
@@ -603,50 +597,23 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         return sessionAssessments;
     }
 
+    private List<String> getSessionNotes() {
+        List<String> sessionNotes;
+        if(course == null && toBeNotes == null) {
+            sessionNotes = new ArrayList<>();
+        } else if (course == null) {
+            sessionNotes = toBeNotes;
+        } else if (toBeNotes == null) {
+            sessionNotes = course.getCourseNotes();
+        } else {
+            sessionNotes = CollectionUtil.copyAndAdd(course.getCourseNotes(), toBeNotes);
+        }
+        return sessionNotes;
+    }
+
     public void createNoteAction(View view) {
         startActivityForResult(new Intent(getApplicationContext(), CourseNoteActivity.class), GET_NOTE_RESULT);
     }
-
-
-    //////ADD BELOW BACK TO PARENT CLASS WHEN DONE WITH POC HERE  //////////
-    void addRemoveIconConstraint(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
-        constraintSet.connect(constrainedViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
-        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
-        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
-        //height and margins are not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, checkboxHeight);
-    }
-
-    void addBannerConstraints(ConstraintSet constraintSet, int containerId, int constrainedViewId, int removeIconId, int connectorId) {
-        constraintSet.connect(constrainedViewId, ConstraintSet.START, removeIconId, ConstraintSet.END);
-        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        if (connectorId == containerId) {
-            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.TOP);
-        } else {
-            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.BOTTOM);
-        }
-        //height is not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, bannerHeight);
-    }
-
-    void addPlanNamesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
-        constraintSet.connect(constrainedViewId, ConstraintSet.START, bannerId, ConstraintSet.START);
-        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
-        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
-        //height and margins are not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
-//        constraintSet.setMargin(constrainedViewId, ConstraintSet.START, marginStart);
-    }
-
-    void addModifiedDatesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
-        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
-        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
-        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        //height and margins are not honored from styles in dynamic ConstraintLayouts
-        constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
-        constraintSet.setMargin(constrainedViewId, ConstraintSet.END, marginEnd);
-    }
-    //////ADD ABOVE BACK TO PARENT CLASS WHEN DONE WITH POC HERE  //////////
 
 
     //TODO add similar functionality for notes....

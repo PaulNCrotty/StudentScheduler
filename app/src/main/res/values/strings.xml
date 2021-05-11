@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">StudentScheduler</string>
-    <!-- Term Fragments   -->
+    <!-- Degree Plan View   -->
+    <string name="degree_plan_title">Degree Plan for %s</string>
+    <string name="degree_plan_subtitle">%s</string>
+    <!-- Term View   -->
     <string name="fragment_new_term">New Term</string>
     <string name="fragment_term_dates">%s until %s </string>
     <string name="course_title">%s - %s</string>

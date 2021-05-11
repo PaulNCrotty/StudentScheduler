@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/newTermContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/termDetailsEditMainHeader"
+            android:background="@color/light_orange"/>
+        <TextView
+            android:id="@+id/termDetailsEditMainHeader"
+            style="@style/detailsViewBanner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Term Creator"
+            app:layout_constraintEnd_toStartOf="@+id/editIconImage"
+            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/editIconImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/termDetailsEditMainHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/termDetailsEditMainHeader"
+            android:src="@drawable/edit_icon_white_medium" />
+
+        <!-- Extra padding for top on this first label because marginBottom for banner doesn't seem to be working -->
+        <TextView
+            android:id="@+id/generalDetailsHeader"
+            style="@style/detailsViewHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="General Term Details"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/termDetailsEditMainHeader" />
+
+        <TextView
+            android:id="@+id/termNameLabel"
+            style="@style/detailsViewTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Term Name: "
+            app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
+            app:layout_constraintTop_toBottomOf="@+id/generalDetailsHeader" />
+        <EditText
+            android:id="@+id/termNameEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Spring 2021"
+            app:layout_constraintTop_toTopOf="@+id/termNameLabel"
+            app:layout_constraintBottom_toBottomOf="@+id/termNameLabel"
+            app:layout_constraintStart_toEndOf="@+id/termNameLabel" />
+
+        <TextView
+            android:id="@+id/termStartDateLabel"
+            style="@style/detailsViewTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Date:"
+            app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
+            app:layout_constraintTop_toBottomOf="@+id/termNameLabel" />
+        <EditText
+            android:id="@+id/termStartDateEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:onClick="showDatePickerDialog"
+            android:hint="2021-04-15"
+            app:layout_constraintTop_toTopOf="@+id/termStartDateLabel"
+            app:layout_constraintBottom_toBottomOf="@+id/termStartDateLabel"
+            app:layout_constraintStart_toEndOf="@+id/termStartDateLabel" />
+
+        <TextView
+            android:id="@+id/termEndDateLabel"
+            style="@style/detailsViewTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="End Date:"
+            app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
+            app:layout_constraintTop_toBottomOf="@+id/termStartDateLabel" />
+
+        <EditText
+            android:id="@+id/termEndDateEditText"
+            style="@style/detailsViewEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:onClick="showDatePickerDialog"
+            android:hint="2021-05-31"
+            app:layout_constraintBottom_toBottomOf="@+id/termEndDateLabel"
+            app:layout_constraintStart_toEndOf="@+id/termEndDateLabel"
+            app:layout_constraintTop_toTopOf="@+id/termEndDateLabel" />
+
+        <TextView
+            android:id="@+id/termTypeHeader"
+            style="@style/detailsViewHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progress Status"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/termEndDateLabel" />
+
+        <RadioGroup
+            android:id="@+id/progressStatusSelectionGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/termTypeHeader">
+
+            <RadioButton
+                android:id="@+id/plannedStatusButton"
+                style="@style/detailsViewSmallRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:layout_marginStart="13dp"
+                android:text="Planned" />
+
+            <RadioButton
+                android:id="@+id/approvedStatusButton"
+                style="@style/detailsViewSmallRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="Approved" />
+
+            <RadioButton
+                android:id="@+id/enrolledStatusButton"
+                style="@style/detailsViewSmallRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="Enrolled" />
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/incompleteStatusButton"-->
+<!--                style="@style/detailsViewSmallRadioButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:checked="false"-->
+<!--                android:text="Incomplete" />-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/completedStatusButton"-->
+<!--                style="@style/detailsViewSmallRadioButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:checked="false"-->
+<!--                android:text="Completed" />-->
+        </RadioGroup>
+
+        <!-- Primary Action Buttons (submit or cancel transaction) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cancelButton"
+            app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
+            android:background="@color/light_orange"/>
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/progressStatusSelectionGroup"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="35dp"
+            android:text="save"
+            android:onClick="saveTerm" />
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/progressStatusSelectionGroup"
+            app:layout_constraintEnd_toStartOf="@+id/submitButton"
+            android:layout_marginEnd="15dp"
+            android:text="Cancel"
+            android:onClick="cancel" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

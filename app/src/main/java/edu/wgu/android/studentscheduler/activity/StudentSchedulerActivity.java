@@ -31,6 +31,8 @@ import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
 public class StudentSchedulerActivity extends AppCompatActivity implements ConfirmationDialogFragment.ConfirmationDialogListener {
 
     public static final String DEGREE_PLAN_ID_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanId";
+    public static final String DEGREE_PLAN_NAME_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanName";
+    public static final String DEGREE_PLAN_STUDENT_NAME_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.degreePlanStudentName";
     public static final String IS_FIRST_LOAD_KEY = "edu.wgu.android.studentscheduler.activity.isFirstLoad";
     public static final String IS_MODIFIED = "edu.wgu.android.studentscheduler.activity.isModified";
     public static final String ARRAY_INDEX_KEY = "edu.wgu.android.studentscheduler.activity.arrayIndexKey";
@@ -44,7 +46,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     public static final String COURSE_NOTE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseNote";
     public static final String ASSESSMENT_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.assessmentObject";
 
-    static final int VIEWS_PER_PLAN = 3;
+    static final int VIEWS_PER_ROW = 4;
 
     //TODO shouldn't be calling a repo from a view layer;  move this to a business layer and invoke that instead
     final DegreePlanRepositoryManager repositoryManager = DegreePlanRepositoryManager.getInstance(this);
@@ -195,6 +197,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         return selection;
     }
 
+    // used for the 3 per view setup
     void addBannerConstraints(ConstraintSet constraintSet, int containerId, int constrainedViewId, int connectorId) {
         constraintSet.connect(constrainedViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
         constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
@@ -207,13 +210,33 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         constraintSet.constrainHeight(constrainedViewId, bannerHeight);
     }
 
+    //used for the 4 per view setup
+    void addBannerConstraints(ConstraintSet constraintSet, int containerId, int constrainedViewId, int removeIconId, int connectorId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.START, removeIconId, ConstraintSet.END);
+        constraintSet.connect(constrainedViewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+        if (connectorId == containerId) {
+            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.TOP);
+        } else {
+            constraintSet.connect(constrainedViewId, ConstraintSet.TOP, connectorId, ConstraintSet.BOTTOM);
+        }
+        //height is not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, bannerHeight);
+    }
+
+    void addRemoveIconConstraint(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
+        constraintSet.connect(constrainedViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+        constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
+        constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
+        //height and margins are not honored from styles in dynamic ConstraintLayouts
+        constraintSet.constrainHeight(constrainedViewId, checkboxHeight);
+    }
+
     void addPlanNamesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
         constraintSet.connect(constrainedViewId, ConstraintSet.START, bannerId, ConstraintSet.START);
         constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
         constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);
         //height and margins are not honored from styles in dynamic ConstraintLayouts
         constraintSet.constrainHeight(constrainedViewId, ConstraintSet.WRAP_CONTENT);
-        constraintSet.setMargin(constrainedViewId, ConstraintSet.START, marginStart);
     }
 
     void addModifiedDatesConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {

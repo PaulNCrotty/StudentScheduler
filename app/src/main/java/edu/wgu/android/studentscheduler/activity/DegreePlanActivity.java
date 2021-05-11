@@ -1,6 +1,7 @@
 package edu.wgu.android.studentscheduler.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
@@ -29,17 +31,31 @@ import static android.view.View.generateViewId;
 
 public class DegreePlanActivity extends StudentSchedulerActivity {
 
+    private static final int MODIFY_TERM_RESULT = 0;
+
     private static final Map<CourseStatus, Integer> COURSE_STATUS_MAP = getCourseStatusMap();
+
+    private long degreePlanId;
 
     public DegreePlanActivity() {
         super(R.layout.activity_degree_plan);
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putLong(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // pull degree plan
-        long degreePlanId = getIntent().getExtras().getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
+        if(savedInstanceState != null) {
+            degreePlanId = savedInstanceState.getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
+        } else {
+            degreePlanId = getIntent().getExtras().getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
+        }
         DegreePlan degreePlan = getDegreePlan(degreePlanId);
         Gson gson = new Gson();
         Log.d("DEGREE_PLAN: ", gson.toJson(degreePlan));
@@ -81,6 +97,7 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
             ImageButton editIcon = new ImageButton(degreePlanContainerContext);
             editIcon.setId(generateViewId());
             editIcon.setBackgroundColor(termBannerBackgroundColor);
+//            editIcon.setOnClickListener(new ModifyTermAction(term));
             editIcon.setImageResource(R.drawable.edit_icon_white);
             degreePlanContainer.addView(editIcon);
 

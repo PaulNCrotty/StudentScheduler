@@ -17,7 +17,6 @@ import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 public class DegreePlanExtractor {
 
-
     private static int DEGREE_PLAN_ID_COLUMN;
     private static int STUDENT_NAME_COLUMN;
     private static int DEGREE_PLAN_NAME_COLUMN;

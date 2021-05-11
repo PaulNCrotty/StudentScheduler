@@ -2,7 +2,6 @@ package edu.wgu.android.studentscheduler.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -18,11 +17,13 @@ import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.fragment.NoDegreePlansDialogFragment;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
+import edu.wgu.android.studentscheduler.widget.IndexedCheckBox;
 
 import static android.view.View.generateViewId;
 
 public class DegreePlanListActivity extends StudentSchedulerActivity implements NoDegreePlansDialogFragment.Listener {
 
+    private static final int VIEWS_PER_ROW = 3;
     private static final int MAX_RECENT_TO_LIST = 3;
 
     private List<DegreePlanDao> planDAOs;
@@ -109,6 +110,9 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
             addPlanNamesConstraints(constraintSet, planNames.getId(), banner.getId());
             addModifiedDatesConstraints(constraintSet, modifiedDates.getId(), banner.getId());
 
+            //certain constraint overrides
+            constraintSet.setMargin(planNames.getId(), ConstraintSet.START, marginStart);
+
             //prep for next iteration
             bannerConnectorId = banner.getId();
             useStandardStyles = !useStandardStyles;
@@ -143,12 +147,15 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
 
         @Override
         public void onClick(View v) {
-            int index = this.viewIndex / VIEWS_PER_PLAN;
-            String message = "You bonked on " + planDAOs.get(index);
+            int index = this.viewIndex / VIEWS_PER_ROW;
+            DegreePlanDao targetPlan = planDAOs.get(index);
+            String message = "You bonked on " + targetPlan;
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            Intent degreePlanActivity = new Intent(getApplicationContext(), DegreePlanActivity.class);
-            degreePlanActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, planDAOs.get(index).getId());
-            startActivity(degreePlanActivity);
+            Intent termListActivity = new Intent(getApplicationContext(), TermListActivity.class);
+            termListActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, targetPlan.getId());
+            termListActivity.putExtra(DEGREE_PLAN_NAME_BUNDLE_KEY, targetPlan.getName());
+            termListActivity.putExtra(DEGREE_PLAN_STUDENT_NAME_BUNDLE_KEY, targetPlan.getStudentName());
+            startActivity(termListActivity);
         }
     }
 }
