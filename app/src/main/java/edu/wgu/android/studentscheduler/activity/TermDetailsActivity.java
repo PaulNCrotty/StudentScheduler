@@ -10,9 +10,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,11 +23,16 @@ import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.domain.term.TermStatus;
+import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.widget.IndexedCheckBox;
 
 import static android.view.View.generateViewId;
 
 public class TermDetailsActivity extends StudentSchedulerActivity {
+
+    private static int CREATE_NEW_COURSE_REQUEST = 0;
+
+    private static String TERM_COURSE_ARRAY_BUNDLE_KEY = "edu.wgu.android.studentscheduler.activity.termCourses";
 
     private long degreePlanId;
     private Term term;
@@ -39,9 +46,12 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putLong(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
-        if (term != null) {
-            savedInstanceState.putSerializable(TERM_OBJECT_BUNDLE_KEY, term);
-        }
+//        if (term != null) {
+//            savedInstanceState.putSerializable(TERM_OBJECT_BUNDLE_KEY, term);
+//        }
+//        if(termCourses != null) {
+//            savedInstanceState.putSerializable(TERM_COURSE_ARRAY_BUNDLE_KEY, (Serializable) termCourses);
+//        }
     }
 
     @Override
@@ -49,15 +59,19 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
         super.onCreate(savedInstanceState);
         init();
 
-        if (savedInstanceState != null) {
-            degreePlanId = savedInstanceState.getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
-            term = (Term) savedInstanceState.getSerializable(TERM_OBJECT_BUNDLE_KEY);
-        }
+//        if (savedInstanceState != null) {
+//            degreePlanId = savedInstanceState.getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
+//            term = (Term) savedInstanceState.getSerializable(TERM_OBJECT_BUNDLE_KEY);
+//            Serializable tCourses = savedInstanceState.getSerializable(TERM_COURSE_ARRAY_BUNDLE_KEY);
+//            if(tCourses instanceof ArrayList) {
+//                termCourses = (ArrayList<Course>) tCourses;
+//            }
+//        }
 
         Bundle extras = getIntent().getExtras();
         degreePlanId = (long) extras.get(DEGREE_PLAN_ID_BUNDLE_KEY);
 
-        Term term = (Term) extras.get(TERM_OBJECT_BUNDLE_KEY);
+        term = (Term) extras.get(TERM_OBJECT_BUNDLE_KEY);
         if (term != null) {
             ((EditText) findViewById(R.id.termNameEditText)).setText(term.getName());
             ((EditText) findViewById(R.id.termStartDateEditText)).setText(term.getStartDate());
@@ -69,7 +83,12 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
         }
     }
 
-    void insertCourses(List<Course> courses) {
+    private void clearCourses() {
+        ConstraintLayout layout = findViewById(R.id.courseContainer);
+        layout.removeAllViews();
+    }
+
+    private void insertCourses(List<Course> courses) {
         //dynamically set rows for courses
         ConstraintLayout layout = findViewById(R.id.courseContainer);
         Context context = layout.getContext();
@@ -79,13 +98,13 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
         int viewIndex = 0;
         int connectionId = layout.getId();
         boolean useStandardStyles = true;
-        for(Course c: courses) {
+        for (Course c : courses) {
             //High-level component one details
             TextView banner;
             IndexedCheckBox removeIcon = new IndexedCheckBox(context);
             TextView title;
             TextView dates;
-            if(useStandardStyles) {
+            if (useStandardStyles) {
                 banner = new TextView(context, null, 0, R.style.listOptionBanner);
                 removeIcon.setBackgroundColor(orangeColor);
                 title = new TextView(context, null, 0, R.style.listOptionDetails);
@@ -106,12 +125,12 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
             layout.addView(removeIcon);
 
             title.setId(generateViewId());
-            title.setOnClickListener(new ModifyCourseAction(viewIndex));
+            title.setOnClickListener(new ModifyCourseAction(viewIndex++));
             title.setText(getString(R.string.course_title, c.getCourseCode(), c.getCourseName()));
             layout.addView(title);
 
             dates.setId(generateViewId());
-            dates.setOnClickListener(new ModifyCourseAction(viewIndex));
+            dates.setOnClickListener(new ModifyCourseAction(viewIndex++));
             dates.setText(c.getStartDate());
             layout.addView(dates);
 
@@ -169,6 +188,24 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
         return repositoryManager.getTermCourses(termId);
     }
 
+    public void addCourseToTerm(View view) {
+        Intent courseDetailsActivity = new Intent(getApplicationContext(), CourseDetailsActivity.class);
+        courseDetailsActivity.putExtra(TERM_OBJECT_BUNDLE_KEY, term);
+        startActivityForResult(courseDetailsActivity, CREATE_NEW_COURSE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == CREATE_NEW_COURSE_REQUEST) {
+                termCourses = getTermCourses(term.getId()); //silver bullet (less efficient)
+                clearCourses();
+                insertCourses(termCourses);
+            }
+        }
+    }
+
     public void saveTerm(View view) {
         Set<Integer> invalidValues = new HashSet<>();
         Set<Integer> validValues = new HashSet<>();
@@ -198,6 +235,35 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
             finish();
         }
 
+    }
+    
+    public void deleteSelectedCourses(View view) {
+        List<Integer> indices = new ArrayList<>();
+        ConstraintLayout layout = findViewById(R.id.courseContainer);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            if (child instanceof IndexedCheckBox) {
+                IndexedCheckBox checkBox = (IndexedCheckBox) child;
+                if (checkBox.isChecked()) {
+                    indices.add(checkBox.getViewIndex());
+                }
+            }
+        }
+        
+        if(indices.size() > 0) {
+            List<Long> coursesToDelete = new ArrayList<>(indices.size());
+            for(Integer i: indices) {
+                Course c = termCourses.get(i / VIEWS_PER_ROW);
+                System.out.println("**** To DELETE: " + c.getCourseName());
+                coursesToDelete.add(c.getId());
+            }
+            repositoryManager.deleteEntries(coursesToDelete, DegreePlanContract.Course.TABLE_NAME);
+            clearCourses();
+            insertCourses(getTermCourses(term.getId()));
+        } else {
+            Toast.makeText(this, "Please check a course or courses to delete", Toast.LENGTH_LONG).show();
+        }
+        
     }
 
     private class ModifyCourseAction implements View.OnClickListener {

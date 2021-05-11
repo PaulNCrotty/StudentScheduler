@@ -359,11 +359,6 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return ids;
     }
 
-    public int deleteAssessment(Assessment assessment) {
-        SQLiteDatabase db = getWritableDatabase();
-        return db.delete(DegreePlanContract.Assessment.TABLE_NAME, "ID = ?", new String[]{assessment.getId().toString()});
-    }
-
     public long[] insertCourseNotes(long courseId, List<String> notes) {
         long[] ids = new long[notes.size()];
         SQLiteDatabase db = getWritableDatabase();
@@ -382,5 +377,21 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
             db.endTransaction();
         }
         return ids;
+    }
+
+    public int[] deleteEntries(List<Long> entryIds, String tableName) {
+        int[] rowsDeleted = new int[entryIds.size()];
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+
+        try {
+            for(int i = 0; i < entryIds.size(); i++) {
+                rowsDeleted[i] = db.delete(tableName, "ID = ? ", new String[]{entryIds.get(i).toString()});
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return rowsDeleted;
     }
 }

@@ -163,7 +163,6 @@
         </RadioGroup>
 
         <!-- Courses Section -->
-        <!-- TODO try to use RecycleView -->
         <TextView
             android:id="@+id/courseHeader"
             style="@style/detailsViewHeader"

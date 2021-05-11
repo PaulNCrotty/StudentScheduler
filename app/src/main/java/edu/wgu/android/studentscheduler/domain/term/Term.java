@@ -3,7 +3,6 @@ package edu.wgu.android.studentscheduler.domain.term;
 import java.io.Serializable;
 import java.util.List;
 
-import edu.wgu.android.studentscheduler.domain.PlanComponent;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class Term implements Serializable, PlanComponent {
+public class Term implements Serializable {
 
     private Long id;
     private String name;
@@ -28,15 +27,6 @@ public class Term implements Serializable, PlanComponent {
 
     private TermStatus status;
 
-    @Override
-    public String getTitle() {
-        return name;
-    }
-
-    @Override
-    public String getDates() {
-        return startDate + " - " + endDate;
-    }
 
     //TODO add functionality that allows the user to enter term titles, start dates, and end dates
 

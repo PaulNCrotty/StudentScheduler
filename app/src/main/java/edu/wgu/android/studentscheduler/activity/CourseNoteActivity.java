@@ -22,10 +22,10 @@ public class CourseNoteActivity extends StudentSchedulerActivity {
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            String note = extras.getString(COURSE_NOTE_BUNDLE_KEY);  // TODO will probably change to an object to contain a title? Maybe not... IDK
+            String note = extras.getString(COURSE_NOTE_BUNDLE_KEY);
 
             if (note != null) {
-                EditText noteEditText = (EditText) findViewById(R.id.courseNoteEditText);
+                EditText noteEditText = findViewById(R.id.courseNoteEditText);
                 noteEditText.setText(note);
             }
         }

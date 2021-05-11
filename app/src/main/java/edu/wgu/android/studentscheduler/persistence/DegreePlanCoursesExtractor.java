@@ -21,15 +21,18 @@ public class DegreePlanCoursesExtractor {
     public static List<Course> extract(Cursor cursor) {
         init(cursor);
         List<Course> courses = new ArrayList<>(cursor.getCount());
-        if(cursor.moveToFirst()) {
-            long id = cursor.getLong(COURSE_ID_COLUMN);
-            String name = cursor.getString(COURSE_NAME_COLUMN);
-            String code = cursor.getString(COURSE_CODE_COLUMN);
-            String startDate = DateTimeUtil.getDateString(cursor.getLong(COURSE_START_DATE_COLUMN));
-            String endDate = DateTimeUtil.getDateString(cursor.getLong(COURSE_END_DATE_COLUMN));
-            CourseStatus status = CourseStatus.fromStatus(cursor.getString(COURSE_STATUS_COLUMN));
+        if (cursor.moveToFirst()) {
 
-            courses.add(new Course(id, name, code, startDate, endDate, status));
+            do {
+                long id = cursor.getLong(COURSE_ID_COLUMN);
+                String name = cursor.getString(COURSE_NAME_COLUMN);
+                String code = cursor.getString(COURSE_CODE_COLUMN);
+                String startDate = DateTimeUtil.getDateString(cursor.getLong(COURSE_START_DATE_COLUMN));
+                String endDate = DateTimeUtil.getDateString(cursor.getLong(COURSE_END_DATE_COLUMN));
+                CourseStatus status = CourseStatus.fromStatus(cursor.getString(COURSE_STATUS_COLUMN));
+
+                courses.add(new Course(id, name, code, startDate, endDate, status));
+            } while (cursor.moveToNext());
         }
         return courses;
     }
