@@ -254,12 +254,12 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
             List<Long> coursesToDelete = new ArrayList<>(indices.size());
             for(Integer i: indices) {
                 Course c = termCourses.get(i / VIEWS_PER_ROW);
-                System.out.println("**** To DELETE: " + c.getCourseName());
                 coursesToDelete.add(c.getId());
             }
             repositoryManager.deleteEntries(coursesToDelete, DegreePlanContract.Course.TABLE_NAME);
+            termCourses = getTermCourses(term.getId());
             clearCourses();
-            insertCourses(getTermCourses(term.getId()));
+            insertCourses(termCourses);
         } else {
             Toast.makeText(this, "Please check a course or courses to delete", Toast.LENGTH_LONG).show();
         }

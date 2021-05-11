@@ -107,6 +107,41 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return DegreePlanTermsExtractor.extract(cursor);
     }
 
+    public List<Course> getTermCourses(List<Long> termIds) {
+        String idStringList = getIdStringList(termIds);
+        String query =
+            "select " +
+                "t.id as term_id, " +
+                "c.id as course_id, " +
+                "c.name as course_name, " +
+                "c.code as course_code, " +
+                "c.start_date as course_start_date, " +
+                "c.end_date as course_end_date, " +
+                "c.status as course_status " +
+                "from term t " +
+                "join course c on c.term_id = t.id " +
+                "where t.id IN (?)" +
+                "order by c.start_date";
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{idStringList});
+        return DegreePlanCoursesExtractor.extract(cursor);
+    }
+
+    private String getIdStringList(List<Long> ids) {
+        String idStringList = null;
+        if(ids.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(ids.get(0));
+            for (int i = 1; i < ids.size(); i++) {
+                    sb.append(", ").append(ids.get(i));
+            }
+            idStringList = sb.toString();
+        }
+
+        return idStringList;
+    }
+
     public List<Course> getTermCourses(long termId) {
         String query =
                 "select " +
@@ -242,7 +277,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         data.put(DegreePlanContract.Term.START_DATE, startDate);
         data.put(DegreePlanContract.Term.END_DATE, endDate);
         if (!isEmpty(status)) {
-            data.put(DegreePlanContract.Term.STATUS, status);
+            data.put(DegreePlanContract.Term.STATUS, status.toUpperCase());
         }
         return db.insert(DegreePlanContract.Term.TABLE_NAME, null, data);
     }

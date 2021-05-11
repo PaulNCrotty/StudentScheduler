@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,10 +13,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.wgu.android.studentscheduler.R;
+import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.term.Term;
+import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.widget.IndexedCheckBox;
 
 import static android.view.View.generateViewId;
@@ -60,6 +64,11 @@ public class TermListActivity extends StudentSchedulerActivity {
         TextView degreePlanSubtitle = findViewById(R.id.degreePlanDetailsSubtitle);
         degreePlanSubtitle.setText(planName);
         insertTerms(planTerms);
+    }
+
+    private void clearTerms() {
+        ConstraintLayout layout = findViewById(R.id.termContainer);
+        layout.removeAllViews();
     }
 
     private void insertTerms(List<Term> terms) {
@@ -129,12 +138,59 @@ public class TermListActivity extends StudentSchedulerActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK && data != null) {
+        if(resultCode == RESULT_OK) {
+            planTerms = getPlanTerms(degreePlanId);
+            clearTerms();
+            insertTerms(planTerms);
+        }
+    }
 
-            if(requestCode == MODIFY_TERM_RESULT) {
-                data.getExtras().getSerializable(TERM_OBJECT_BUNDLE_KEY);
+    public void deleteSelectedTerms(View view) {
+        List<Integer> indices = new ArrayList<>();
+        ConstraintLayout layout = findViewById(R.id.termContainer);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            if (child instanceof IndexedCheckBox) {
+                IndexedCheckBox checkBox = (IndexedCheckBox) child;
+                if (checkBox.isChecked()) {
+                    indices.add(checkBox.getViewIndex());
+                }
             }
         }
+
+        if(indices.size() > 0) {
+            List<Long> termsToDelete = new ArrayList<>(indices.size());
+            List<Long> termsWithCourses = new ArrayList<>(indices.size());
+            StringBuilder sb = new StringBuilder("Could not delete the following terms: \n");
+            for(Integer i: indices) {
+                Term t = planTerms.get(i / VIEWS_PER_ROW);
+                List<Course> courses = repositoryManager.getTermCourses(t.getId());
+                if(courses.size() > 0) {
+                    sb.append(t.getName()).append("\n");
+                    termsWithCourses.add(t.getId());
+                } else {
+                    System.out.println("*** DELETED " + t.getName()); //TODO remove once done debugging
+                    termsToDelete.add(t.getId());
+                }
+            }
+
+            if(termsWithCourses.size() > 0 ) {
+                sb.append("Please remove all courses therein and try again");
+                Toast.makeText(this, sb.toString(), Toast.LENGTH_LONG).show();
+            }
+//            repositoryManager.deleteEntries(termsToDelete, DegreePlanContract.Term.TABLE_NAME);
+            planTerms = getPlanTerms(degreePlanId);
+            clearTerms();
+            insertTerms(planTerms);
+        } else {
+            Toast.makeText(this, "Please check a course or courses to delete", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void addTermToPlan(View view) {
+        Intent newTermActivity = new Intent(getApplicationContext(), TermCreationActivity.class);
+        newTermActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
+        startActivityForResult(newTermActivity, CREATE_TERM_RESULT);
     }
 
     private class ModifyTermAction implements View.OnClickListener {

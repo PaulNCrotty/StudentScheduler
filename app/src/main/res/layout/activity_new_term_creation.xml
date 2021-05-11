@@ -21,7 +21,7 @@
             style="@style/detailsViewBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Term Creator"
+            android:text="New Term"
             app:layout_constraintEnd_toStartOf="@+id/editIconImage"
             app:layout_constraintTop_toTopOf="parent" />
         <ImageView
@@ -125,7 +125,7 @@
                 style="@style/detailsViewSmallRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false"
+                android:checked="true"
                 android:layout_marginStart="13dp"
                 android:text="Planned" />
 
@@ -144,22 +144,6 @@
                 android:layout_height="wrap_content"
                 android:checked="false"
                 android:text="Enrolled" />
-
-<!--            <RadioButton-->
-<!--                android:id="@+id/incompleteStatusButton"-->
-<!--                style="@style/detailsViewSmallRadioButton"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:checked="false"-->
-<!--                android:text="Incomplete" />-->
-
-<!--            <RadioButton-->
-<!--                android:id="@+id/completedStatusButton"-->
-<!--                style="@style/detailsViewSmallRadioButton"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:checked="false"-->
-<!--                android:text="Completed" />-->
         </RadioGroup>
 
         <!-- Primary Action Buttons (submit or cancel transaction) -->
@@ -177,8 +161,8 @@
             app:layout_constraintTop_toBottomOf="@id/progressStatusSelectionGroup"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="35dp"
-            android:text="save"
-            android:onClick="saveTerm" />
+            android:text="Save"
+            android:onClick="verifyAndSubmitTerm" />
         <Button
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"

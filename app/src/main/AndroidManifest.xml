@@ -19,6 +19,7 @@
         <activity android:name=".activity.DegreePlanActivity"/>
         <activity android:name=".activity.DegreePlanListActivity"/>
         <activity android:name=".activity.TermDetailsActivity"/>
+        <activity android:name=".activity.TermCreationActivity"/>
         <activity android:name=".activity.TermListActivity"/>
         <activity android:name=".activity.CourseDetailsActivity"/>
         <activity android:name=".activity.CourseNoteActivity"/>
