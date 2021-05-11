@@ -107,6 +107,26 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return DegreePlanTermsExtractor.extract(cursor);
     }
 
+    public List<Course> getTermCourses(long termId) {
+        String query =
+                "select " +
+                    "c.id as course_id, " +
+                    "c.name as course_name, " +
+                    "c.code as course_code, " +
+                    "c.start_date as course_start_date, " +
+                    "c.end_date as course_end_date, " +
+                    "c.status as course_status " +
+                "from term t " +
+                "join course c on c.term_id = t.id " +
+                "where t.id = ? " +
+                "order by c.start_date";
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, new String[]{Long.valueOf(termId).toString()});
+        return DegreePlanCoursesExtractor.extract(cursor);
+    }
+
     public Course getCourseDetails(long courseId) {
         String query =
                 "select " +

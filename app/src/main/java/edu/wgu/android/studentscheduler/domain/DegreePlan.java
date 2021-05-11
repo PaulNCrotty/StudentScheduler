@@ -15,4 +15,4 @@ public class DegreePlan {
     private String studentName;
     private List<Term> terms;
 
-}
+ }

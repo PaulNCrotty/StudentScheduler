@@ -1,11 +1,9 @@
 package edu.wgu.android.studentscheduler.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -84,14 +82,14 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
             title.setId(generateViewId());
             title.setBackgroundColor(termBannerBackgroundColor);
             title.setTextColor(defaultTextColor);
-            title.setText(term.getTermName());
+            title.setText(term.getName());
             degreePlanContainer.addView(title);
 
             TextView dates = new TextView(degreePlanContainerContext);
             dates.setId(generateViewId());
             dates.setBackgroundColor(termBannerBackgroundColor);
             dates.setTextColor(defaultTextColor);
-            dates.setText(getString(R.string.fragment_term_dates, term.getStartDate(), term.getEndDate()));
+            dates.setText(getString(R.string.start_and_end_dates, term.getStartDate(), term.getEndDate()));
             degreePlanContainer.addView(dates);
 
             ImageButton editIcon = new ImageButton(degreePlanContainerContext);

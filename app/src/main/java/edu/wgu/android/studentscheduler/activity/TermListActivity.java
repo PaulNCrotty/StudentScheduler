@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -101,12 +100,12 @@ public class TermListActivity extends StudentSchedulerActivity {
 
             title.setId(generateViewId());
             title.setOnClickListener(new ModifyTermAction(viewIndex++));
-            title.setText(term.getTermName());
+            title.setText(term.getName());
             layout.addView(title);
 
             dates.setId(generateViewId());
             dates.setOnClickListener(new ModifyTermAction(viewIndex++));
-            dates.setText(getString(R.string.fragment_term_dates, term.getStartDate(), term.getEndDate()));
+            dates.setText(getString(R.string.start_and_end_dates, term.getStartDate(), term.getEndDate()));
             layout.addView(dates);
 
             // add constraints
