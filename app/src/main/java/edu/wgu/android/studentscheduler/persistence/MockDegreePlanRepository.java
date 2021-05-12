@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import edu.wgu.android.studentscheduler.domain.CourseNote;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
@@ -161,7 +162,7 @@ public class MockDegreePlanRepository {
             List<Assessment> assessments = null; //TODO add fake assessments?
             CourseStatus status = courseStatuses[RANDOM.nextInt(courseStatuses.length)]; //TODO select course status from a smaller pool that make sense based upon specific course dates
             CourseInstructor instructor = null; //TODO add fake instructor?
-            List<String> courseNotes = null; //TODO add random notes?
+            List<CourseNote> courseNotes = null; //TODO add random notes?
 
             courses.add(new Course((long) (i + 1), courseName, courseCode, startDate, endDate, status, instructor, assessments, courseNotes));
 

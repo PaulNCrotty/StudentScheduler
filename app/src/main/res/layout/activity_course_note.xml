@@ -36,19 +36,58 @@
 
         <!-- Extra padding for top on this first label because marginBottom for banner doesn't seem to be working -->
         <TextView
-            android:id="@+id/generalDetailsHeader"
+            android:id="@+id/noteTitleHeader"
             style="@style/detailsViewHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Note: "
+            android:text="Title: "
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/courseNoteDetailsEditMainHeader" />
 
         <EditText
+            android:id="@+id/courseNoteTitleEditText"
+            style="@style/detailsViewEditText"
+            app:layout_constraintTop_toTopOf="@+id/noteTitleHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/noteTitleHeader"
+            app:layout_constraintStart_toEndOf="@+id/noteTitleHeader"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Summary Title"
+            android:maxLength="200" />
+
+        <TextView
+            android:id="@+id/modifiedDateHeader"
+            style="@style/detailsViewHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/modifiedDateText"
+            app:layout_constraintTop_toBottomOf="@+id/courseNoteDetailsEditMainHeader"
+            android:text="Modified Date: "/>
+        <TextView
+            android:id="@+id/modifiedDateText"
+            style="@style/detailsViewHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/courseNoteDetailsEditMainHeader"
+            android:text="2021-05-11"/>
+
+
+        <TextView
+            android:id="@+id/courseNoteHeader"
+            style="@style/detailsViewHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Note"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/noteTitleHeader" />
+
+        <EditText
             android:id="@+id/courseNoteEditText"
             style="@style/detailsViewEditText"
-            app:layout_constraintTop_toBottomOf="@+id/generalDetailsHeader"
-            app:layout_constraintStart_toStartOf="@+id/generalDetailsHeader"
+            app:layout_constraintTop_toBottomOf="@+id/courseNoteHeader"
+            app:layout_constraintStart_toStartOf="@+id/courseNoteHeader"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -67,12 +106,26 @@
             app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
             android:background="@color/light_orange"/>
         <Button
+            android:id="@+id/shareButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/courseNoteEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="10dp"
+            android:text="Share"
+            android:onClick="verifyAndAddNoteToCourse"
+            />
+        <Button
             android:id="@+id/submitButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/courseNoteEditText"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="35dp"
+            app:layout_constraintEnd_toStartOf="@+id/shareButton"
+            android:minWidth="0dp"
+            android:textSize="12sp"
+            android:layout_marginEnd="10dp"
             android:text="add to course template"
             android:onClick="verifyAndAddNoteToCourse"
             />
@@ -80,9 +133,11 @@
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:textSize="12sp"
             app:layout_constraintTop_toBottomOf="@id/courseNoteEditText"
             app:layout_constraintEnd_toStartOf="@+id/submitButton"
-            android:layout_marginEnd="15dp"
+            android:layout_marginEnd="10dp"
             android:text="Cancel"
             android:onClick="cancel" />
 

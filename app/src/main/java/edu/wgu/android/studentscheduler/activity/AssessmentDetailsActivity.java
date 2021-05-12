@@ -143,7 +143,6 @@ public class AssessmentDetailsActivity extends StudentSchedulerActivity {
             Assessment assessment = new Assessment(null, name, code, date, type);
             Intent intent = getIntent();
             if(originalAssessment != null) {
-                assessment.setId(originalAssessment.getId());
                 intent.putExtra(IS_MODIFIED, !assessment.equals(originalAssessment));
             }
             intent.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);

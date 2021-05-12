@@ -43,30 +43,9 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putLong(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
-//        if (term != null) {
-//            savedInstanceState.putSerializable(TERM_OBJECT_BUNDLE_KEY, term);
-//        }
-//        if(termCourses != null) {
-//            savedInstanceState.putSerializable(TERM_COURSE_ARRAY_BUNDLE_KEY, (Serializable) termCourses);
-//        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
-
-//        if (savedInstanceState != null) {
-//            degreePlanId = savedInstanceState.getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
-//            term = (Term) savedInstanceState.getSerializable(TERM_OBJECT_BUNDLE_KEY);
-//            Serializable tCourses = savedInstanceState.getSerializable(TERM_COURSE_ARRAY_BUNDLE_KEY);
-//            if(tCourses instanceof ArrayList) {
-//                termCourses = (ArrayList<Course>) tCourses;
-//            }
-//        }
 
         Bundle extras = getIntent().getExtras();
         degreePlanId = (long) extras.get(DEGREE_PLAN_ID_BUNDLE_KEY);
@@ -261,7 +240,7 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
             clearCourses();
             insertCourses(termCourses);
         } else {
-            Toast.makeText(this, "Please check a course or courses to delete", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please check a course or series of courses to delete", Toast.LENGTH_LONG).show();
         }
         
     }

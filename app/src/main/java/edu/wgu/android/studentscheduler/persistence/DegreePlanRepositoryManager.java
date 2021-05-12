@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.wgu.android.studentscheduler.domain.CourseNote;
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.course.Course;
@@ -18,6 +19,11 @@ import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
+import edu.wgu.android.studentscheduler.persistence.extractor.CourseDetailsExtractor;
+import edu.wgu.android.studentscheduler.persistence.extractor.CourseNoteExtractor;
+import edu.wgu.android.studentscheduler.persistence.extractor.DegreePlanCoursesExtractor;
+import edu.wgu.android.studentscheduler.persistence.extractor.DegreePlanExtractor;
+import edu.wgu.android.studentscheduler.persistence.extractor.DegreePlanTermsExtractor;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 import static edu.wgu.android.studentscheduler.util.StringUtil.isEmpty;
@@ -97,7 +103,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
                 "t.end_date as term_end_date, " +
                 "t.status as term_status " +
             "from degree_plan dp " +
-            "left join term t on t.plan_id = dp.id " +
+            "join term t on t.plan_id = dp.id " +
             "where dp.id = ? " +
             "order by t.start_date";
 
@@ -105,27 +111,6 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(query, new String[]{Long.valueOf(degreePlanId).toString()});
         return DegreePlanTermsExtractor.extract(cursor);
-    }
-
-    public List<Course> getTermCourses(List<Long> termIds) {
-        String idStringList = getIdStringList(termIds);
-        String query =
-            "select " +
-                "t.id as term_id, " +
-                "c.id as course_id, " +
-                "c.name as course_name, " +
-                "c.code as course_code, " +
-                "c.start_date as course_start_date, " +
-                "c.end_date as course_end_date, " +
-                "c.status as course_status " +
-                "from term t " +
-                "join course c on c.term_id = t.id " +
-                "where t.id IN (?)" +
-                "order by c.start_date";
-
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, new String[]{idStringList});
-        return DegreePlanCoursesExtractor.extract(cursor);
     }
 
     private String getIdStringList(List<Long> ids) {
@@ -191,32 +176,6 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
         return CourseDetailsExtractor.extract(cursor); //extractor will close cursor #TODO verify
-    }
-
-    public List<String> getCourseNotes(long courseId) {
-        String query =
-                "select " +
-                    "id as course_note_id, " +
-                    "note as course_note " +
-                "from course_note where course_id = ? ";
-
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
-
-        List<String> notes = new ArrayList<>(cursor.getCount());
-        if(cursor.moveToFirst()) {
-            int courseNoteIdColumn = cursor.getColumnIndex("course_note_id");
-            int courseNoteColumn = cursor.getColumnIndex("course_note");
-            do {
-                long noteId = cursor.getLong(courseNoteIdColumn);
-                if (noteId > 0) {
-                    notes.add(cursor.getString(courseNoteColumn));
-                }
-            }while(cursor.moveToNext());
-        }
-
-        cursor.close();
-        return notes;
     }
 
     public List<DegreePlanDao> getBasicDegreePlanDataForAllPlans() {
@@ -289,7 +248,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         data.put(DegreePlanContract.Term.START_DATE, startDate);
         data.put(DegreePlanContract.Term.END_DATE, endDate);
         if (!isEmpty(status)) {
-            data.put(DegreePlanContract.Term.STATUS, status);
+            data.put(DegreePlanContract.Term.STATUS, status.toUpperCase());
         }
         return db.update(DegreePlanContract.Term.TABLE_NAME, data, "ID = ?", new String[]{Long.valueOf(termId).toString()});
     }
@@ -394,18 +353,56 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return ids;
     }
 
-    public long[] insertCourseNotes(long courseId, List<String> notes) {
+    public List<CourseNote> getCourseNotes(long courseId) {
+        String query =
+            "select " +
+                "id as note_id, " +
+                "title as note_title, " +
+                "note as note_body, " +
+                "created_date as note_created_date, " +
+                "modified_date as note_modified_date " +
+            "from course_note where course_id = ? ";
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
+        return CourseNoteExtractor.extract(cursor);
+    }
+
+    public long[] insertCourseNotes(long courseId, List<CourseNote> notes) {
         long[] ids = new long[notes.size()];
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
             int i = 0;
             ContentValues data = new ContentValues();
-            for(String n: notes) {
+            for(CourseNote n: notes) {
                 data.put(DegreePlanContract.CourseNote.COURSE_ID, courseId);
-                data.put(DegreePlanContract.CourseNote.NOTE, n);
-                data.put(DegreePlanContract.CourseNote.CREATED_DATE, DateTimeUtil.getSecondsSinceEpoch());
+                data.put(DegreePlanContract.CourseNote.TITLE, n.getTitle());
+                data.put(DegreePlanContract.CourseNote.NOTE, n.getNoteBody());
+                data.put(DegreePlanContract.CourseNote.CREATED_DATE, n.getCreatedDate());
                 ids[i] = db.insert(DegreePlanContract.CourseNote.TABLE_NAME, null, data);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return ids;
+    }
+
+    // TODO make sure we only invoke this for previously saved notes! Otherwise... failure
+    public int[] updateCourseNotes(long courseId, List<CourseNote> notes) {
+        int[] ids = new int[notes.size()];
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            int i = 0;
+            ContentValues data = new ContentValues();
+            for(CourseNote n: notes) {
+                data.put(DegreePlanContract.CourseNote.COURSE_ID, courseId);
+                data.put(DegreePlanContract.CourseNote.TITLE, n.getTitle());
+                data.put(DegreePlanContract.CourseNote.NOTE, n.getNoteBody());
+                data.put(DegreePlanContract.CourseNote.MODIFIED_DATE, DateTimeUtil.getSecondsSinceEpoch());
+                ids[i] = db.update(DegreePlanContract.CourseNote.TABLE_NAME, data, "ID = ?", new String[]{Long.valueOf(n.getId()).toString()});
             }
             db.setTransactionSuccessful();
         } finally {

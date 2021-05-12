@@ -3,6 +3,7 @@ package edu.wgu.android.studentscheduler.domain.course;
 import java.io.Serializable;
 import java.util.List;
 
+import edu.wgu.android.studentscheduler.domain.CourseNote;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -41,7 +42,7 @@ public class Course implements Serializable {
 
     @Setter
     @EqualsAndHashCode.Exclude
-    private List<String> courseNotes; //optional display field
+    private List<CourseNote> courseNotes; //optional display field
 
     //TODO add functionality that allows the user to adjust list of assessments associated with course to their heart's desire
 

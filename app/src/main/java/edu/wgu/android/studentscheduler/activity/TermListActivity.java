@@ -178,12 +178,12 @@ public class TermListActivity extends StudentSchedulerActivity {
                 sb.append("Please remove all courses therein and try again");
                 Toast.makeText(this, sb.toString(), Toast.LENGTH_LONG).show();
             }
-//            repositoryManager.deleteEntries(termsToDelete, DegreePlanContract.Term.TABLE_NAME);
+            repositoryManager.deleteEntries(termsToDelete, DegreePlanContract.Term.TABLE_NAME);
             planTerms = getPlanTerms(degreePlanId);
             clearTerms();
             insertTerms(planTerms);
         } else {
-            Toast.makeText(this, "Please check a course or courses to delete", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please check a term or terms to delete", Toast.LENGTH_LONG).show();
         }
     }
 

@@ -1,4 +1,4 @@
-package edu.wgu.android.studentscheduler.persistence;
+package edu.wgu.android.studentscheduler.persistence.extractor;
 
 import android.database.Cursor;
 
@@ -34,6 +34,7 @@ public class DegreePlanCoursesExtractor {
                 courses.add(new Course(id, name, code, startDate, endDate, status));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return courses;
     }
 

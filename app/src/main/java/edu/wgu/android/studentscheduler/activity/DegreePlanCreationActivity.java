@@ -54,9 +54,9 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
         } else {
             long degreePlanId = repositoryManager.insertDegreePlan(planName, studentName);
             repositoryManager.insertTerm(degreePlanId, termName, termStartDateSeconds, termEndDateSeconds, termStatus.toUpperCase());
-            Intent degreePlanEditorActivity = new Intent(getApplicationContext(), DegreePlanActivity.class);
-            degreePlanEditorActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
-            startActivity(degreePlanEditorActivity);
+            Intent termListActivity = new Intent(getApplicationContext(), TermListActivity.class);
+            termListActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
+            startActivity(termListActivity);
             finish();
         }
 

@@ -1,9 +1,10 @@
-package edu.wgu.android.studentscheduler.persistence;
+package edu.wgu.android.studentscheduler.persistence.extractor;
 
 import android.database.Cursor;
 
 import java.util.ArrayList;
 
+import edu.wgu.android.studentscheduler.domain.CourseNote;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.assessment.AssessmentType;
 import edu.wgu.android.studentscheduler.domain.course.Course;
@@ -54,7 +55,7 @@ public class CourseDetailsExtractor {
             CourseInstructor instructor = new CourseInstructor(instructorId, firstName, lastName, phoneNumber, email);
 
             //create course
-            ArrayList<String> courseNotes = new ArrayList<>();
+            ArrayList<CourseNote> courseNotes = new ArrayList<>();
             ArrayList<Assessment> assessments = new ArrayList<>();
             course = new Course(courseId, courseName, courseCode, courseStartDate, courseEndDate, courseStatus, instructor, assessments, courseNotes);
 

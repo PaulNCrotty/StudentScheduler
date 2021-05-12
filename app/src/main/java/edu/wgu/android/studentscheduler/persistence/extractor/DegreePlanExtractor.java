@@ -1,4 +1,4 @@
-package edu.wgu.android.studentscheduler.persistence;
+package edu.wgu.android.studentscheduler.persistence.extractor;
 
 import android.database.Cursor;
 

@@ -79,14 +79,18 @@ public class DegreePlanContract {
     public static class CourseNote extends DegreePlanContract {
         public static final String TABLE_NAME = "COURSE_NOTE";
         public static final String COURSE_ID = "COURSE_ID";
+        public static final String TITLE = "TITLE";
         public static final String NOTE = "NOTE";
         public static final String CREATED_DATE = "CREATED_DATE";
+        public static final String MODIFIED_DATE = "MODIFIED_DATE";
 
         public static final String CREATE_TABLE_DDL = "create table " + TABLE_NAME + "(" +
                 ID + " " + ID_CONSTRAINTS + ", " +
                 COURSE_ID + " integer not null references " + Course.TABLE_NAME + "(" + ID + ") on delete cascade, " +
+                TITLE + " text not null, " +
                 NOTE + " text not null, " +
-                CREATED_DATE + " integer not null)";
+                CREATED_DATE + " integer not null, " +
+                MODIFIED_DATE + " integer)";
     }
 
     public static class Assessment extends DegreePlanContract {

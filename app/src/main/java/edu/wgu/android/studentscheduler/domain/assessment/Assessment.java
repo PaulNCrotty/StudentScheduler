@@ -16,7 +16,9 @@ import lombok.ToString;
 public class Assessment implements Serializable {
 
     @Setter
+    @EqualsAndHashCode.Exclude
     private Long id;
+
     private String name;
     private String code;
     private String assessmentDate;
