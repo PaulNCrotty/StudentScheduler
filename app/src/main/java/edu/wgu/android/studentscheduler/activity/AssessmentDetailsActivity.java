@@ -140,9 +140,12 @@ public class AssessmentDetailsActivity extends StudentSchedulerActivity {
             GeneralErrorDialogFragment errorDialog = new GeneralErrorDialogFragment(title, message);
             errorDialog.show(getSupportFragmentManager(), "missingAssessmentFields");
         } else {
-            Assessment assessment = new Assessment(null, name, code, date, type);
             Intent intent = getIntent();
+            Assessment assessment = new Assessment(null, name, code, date, type);
             if(originalAssessment != null) {
+                if(!isNewItem) {
+                    assessment.setId(originalAssessment.getId());  // needed for later comparisons in CourseDetailsActivity
+                }
                 intent.putExtra(IS_MODIFIED, !assessment.equals(originalAssessment));
             }
             intent.putExtra(ASSESSMENT_OBJECT_BUNDLE_KEY, assessment);

@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +18,10 @@ import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 public class CourseNoteActivity extends StudentSchedulerActivity {
 
+    private static final String ORIGINAL_NOTE_KEY = "edu.wgu.android.studentscheduler.activity.originalNote";
+
+    private boolean isNewItem;
+    private int arrayIndexKey;
     private CourseNote originalNote;
 
     public CourseNoteActivity() {
@@ -23,11 +29,25 @@ public class CourseNoteActivity extends StudentSchedulerActivity {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        if (originalNote != null) {
+            savedInstanceState.putSerializable(ORIGINAL_NOTE_KEY, originalNote);
+            savedInstanceState.putInt(ARRAY_INDEX_KEY, arrayIndexKey);
+            savedInstanceState.putBoolean(IS_NEW_ITEM, isNewItem);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
+        if(savedInstanceState != null) {
+            originalNote = (CourseNote) savedInstanceState.getSerializable(ORIGINAL_NOTE_KEY);
+            arrayIndexKey = savedInstanceState.getInt(ARRAY_INDEX_KEY);
+            isNewItem = savedInstanceState.getBoolean(IS_NEW_ITEM);
+        } else if (extras != null) {
             Serializable sNote = extras.getSerializable(COURSE_NOTE_BUNDLE_KEY);
             if (sNote instanceof CourseNote) {
                 originalNote = (CourseNote) sNote;
@@ -71,8 +91,11 @@ public class CourseNoteActivity extends StudentSchedulerActivity {
                 note = new CourseNote(0, noteTitle, noteBody, createdDate, null);
             } else {
                 note = new CourseNote(0, noteTitle, noteBody, null, null);
+                if(!isNewItem) {
+                    note.setId(originalNote.getId());
+                }
                 //only body and title are used to calculate equality at this point
-                intent.putExtra(IS_MODIFIED, originalNote.equals(note));
+                intent.putExtra(IS_MODIFIED, !originalNote.equals(note));
             }
             intent.putExtra(COURSE_NOTE_BUNDLE_KEY, note);
             setResult(RESULT_OK, intent);

@@ -87,6 +87,9 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         if (toBeDeletedNotes != null) {
             savedInstanceState.putSerializable(TO_BE_DELETED_NOTES_ARRAY_KEY, (Serializable) toBeDeletedNotes);
         }
+        if (originalNotes != null) {
+            savedInstanceState.putSerializable(ORIGINAL_COURSE_NOTES_ARRAY_KEY, (Serializable) originalNotes);
+        }
 
         savedInstanceState.putSerializable(ORIGINAL_ASSESSMENTS_ARRAY_KEY, (Serializable) originalAssessments);
         savedInstanceState.putSerializable(ORIGINAL_COURSE_NOTES_ARRAY_KEY, (Serializable) originalNotes);
@@ -122,6 +125,11 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 toBeDeletedNotes = (ArrayList<CourseNote>) dAssessments;
             }
 
+            Serializable oNotes = savedInstanceState.getSerializable(ORIGINAL_COURSE_NOTES_ARRAY_KEY);
+            if(oNotes instanceof ArrayList) {
+                originalNotes = (ArrayList<CourseNote>) oNotes;
+            }
+
             course = (Course) savedInstanceState.getSerializable(COURSE_OBJECT_BUNDLE_KEY);
         }
 
@@ -133,7 +141,10 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             //we are editing an existing course; grab the details from the persistence store
             if (course == null) {
                 course = repositoryManager.getCourseDetails(courseId);
-                course.getCourseNotes().addAll(repositoryManager.getCourseNotes(courseId));
+                List<CourseNote> notes = repositoryManager.getCourseNotes(courseId);
+                // deep copy ... otherwise, we'd just have an alias
+                originalNotes = new ArrayList<>(notes);
+                course.getCourseNotes().addAll(notes);
             }
 
             if (originalAssessments == null) {
@@ -563,6 +574,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     repositoryManager.updateCourse(courseId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
                 }
 
+                //check for and persiste (update) any modifications to existing assessments
                 List<Assessment> modifiedAssessments = new ArrayList<>();
                 List<Assessment> currentAssessments = course.getAssessments();
                 for (int i = 0; i < currentAssessments.size(); i++) {
@@ -581,6 +593,24 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     Log.d("UPDATE", "updating assessment details for modified assessments.");
                     int[] ids = repositoryManager.updateAssessments(modifiedAssessments);
                 }
+
+                //check for and persist (update) any modifications to existing notes
+                List<CourseNote> modifiedNotes = new ArrayList<>();
+                List<CourseNote> currentNotes = course.getCourseNotes();
+                for(int i = 0; i < currentNotes.size(); i++) {
+                    CourseNote cCourseNote = currentNotes.get(i);
+                    CourseNote oCourseNote = originalNotes.get(i);
+                    if(cCourseNote.getId() == oCourseNote.getId()) {
+                        if(!cCourseNote.equals(oCourseNote)) {
+                            modifiedNotes.add(cCourseNote);
+                        }
+                    }
+                }
+                if(modifiedNotes.size() > 0) {
+                    Log.d("UPDATE", "updating course details for modified notes.");
+                    int[] ids = repositoryManager.updateCourseNotes(courseId, modifiedNotes);
+                }
+
             }
             if (toBeAssessments != null) {
                 long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments); //TODO what about modifications/upates to courses?

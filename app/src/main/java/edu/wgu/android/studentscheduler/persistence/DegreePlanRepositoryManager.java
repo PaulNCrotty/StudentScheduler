@@ -389,7 +389,6 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         return ids;
     }
 
-    // TODO make sure we only invoke this for previously saved notes! Otherwise... failure
     public int[] updateCourseNotes(long courseId, List<CourseNote> notes) {
         int[] ids = new int[notes.size()];
         SQLiteDatabase db = getWritableDatabase();
