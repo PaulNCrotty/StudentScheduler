@@ -9,7 +9,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -31,6 +30,7 @@ import static android.view.View.generateViewId;
 public class TermDetailsActivity extends StudentSchedulerActivity {
 
     private static int CREATE_NEW_COURSE_REQUEST = 0;
+    private static int MODIFY_COURSE_REQUEST = 1;
 
     private static String TERM_COURSE_ARRAY_BUNDLE_KEY = "edu.wgu.android.studentscheduler.activity.termCourses";
 
@@ -177,8 +177,8 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == CREATE_NEW_COURSE_REQUEST) {
-                termCourses = getTermCourses(term.getId()); //silver bullet (less efficient)
+            if (requestCode == CREATE_NEW_COURSE_REQUEST || requestCode == MODIFY_COURSE_REQUEST) {
+                termCourses = getTermCourses(term.getId()); //silver bullet (less efficient?)
                 clearCourses();
                 insertCourses(termCourses);
             }
@@ -263,7 +263,7 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
             Intent courseDetailsActivity = new Intent(getApplicationContext(), CourseDetailsActivity.class);
             courseDetailsActivity.putExtra(TERM_OBJECT_BUNDLE_KEY, term);
             courseDetailsActivity.putExtra(COURSE_ID_BUNDLE_KEY, course.getId());
-            startActivity(courseDetailsActivity);
+            startActivityForResult(courseDetailsActivity, MODIFY_COURSE_REQUEST);
 
         }
     }

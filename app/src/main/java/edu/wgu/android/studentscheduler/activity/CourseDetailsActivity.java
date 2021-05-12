@@ -29,6 +29,7 @@ import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.fragment.GeneralErrorDialogFragment;
+import edu.wgu.android.studentscheduler.persistence.contract.DegreePlanContract;
 import edu.wgu.android.studentscheduler.util.CollectionUtil;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 import edu.wgu.android.studentscheduler.widget.IndexedCheckBox;
@@ -83,7 +84,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
         if (toBeDeletedAssessment != null) {
             savedInstanceState.putSerializable(TO_BE_DELETED_ASSESSMENTS_ARRAY_KEY, (Serializable) toBeDeletedAssessment);
         }
-        if(toBeDeletedNotes != null) {
+        if (toBeDeletedNotes != null) {
             savedInstanceState.putSerializable(TO_BE_DELETED_NOTES_ARRAY_KEY, (Serializable) toBeDeletedNotes);
         }
 
@@ -281,7 +282,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             assessmentName.setText(note.getTitle());
             layout.addView(assessmentName);
 
-            String date = note.getModifiedDate() == null ? note.getCreatedDate(): note.getModifiedDate();
+            String date = note.getModifiedDate() == null ? note.getCreatedDate() : note.getModifiedDate();
             assessmentDate.setId(generateViewId());
             assessmentDate.setText(date);
             assessmentDate.setOnClickListener(new ModifyNoteAction(viewIndex++));
@@ -587,6 +588,20 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             if (toBeNotes != null) {
                 long[] ids = repositoryManager.insertCourseNotes(courseId, toBeNotes); //TODO what about modifications/updates to course notes?
             }
+            if (toBeDeletedAssessment != null && toBeDeletedAssessment.size() > 0) {
+                List<Long> idsToDelete = new ArrayList<>(toBeDeletedAssessment.size());
+                for (Assessment a : toBeDeletedAssessment) {
+                    idsToDelete.add(a.getId());
+                }
+                repositoryManager.deleteEntries(idsToDelete, DegreePlanContract.Assessment.TABLE_NAME);
+            }
+            if (toBeDeletedNotes != null && toBeDeletedNotes.size() > 0) {
+                List<Long> idsToDelete = new ArrayList<>(toBeDeletedNotes.size());
+                for (CourseNote a : toBeDeletedNotes) {
+                    idsToDelete.add(a.getId());
+                }
+                repositoryManager.deleteEntries(idsToDelete, DegreePlanContract.CourseNote.TABLE_NAME);
+            }
             Intent intent = getIntent();
             setResult(RESULT_OK, intent);
             finish();
@@ -679,9 +694,9 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                     }
                     insertAssessments(getSessionAssessments());
                 }
-            } else if(requestCode == MODIFY_NOTE_RESULT) {
+            } else if (requestCode == MODIFY_NOTE_RESULT) {
                 Bundle extras = data.getExtras();
-                if(extras.getBoolean(IS_MODIFIED)) {
+                if (extras.getBoolean(IS_MODIFIED)) {
                     int collectionIndex = extras.getInt(ARRAY_INDEX_KEY);
                     List<CourseNote> notes = extras.getBoolean(IS_NEW_ITEM) ? toBeNotes : course.getCourseNotes();
                     CourseNote modifiedNote = (CourseNote) extras.getSerializable(COURSE_NOTE_BUNDLE_KEY);
@@ -709,7 +724,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
     private List<CourseNote> getSessionNotes() {
         List<CourseNote> sessionNotes;
-        if(course == null && toBeNotes == null) {
+        if (course == null && toBeNotes == null) {
             sessionNotes = new ArrayList<>();
         } else if (course == null) {
             sessionNotes = toBeNotes;
@@ -786,8 +801,8 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             CourseNote note;
 
             boolean isNewItem = false;
-            int index = this.viewIndex/VIEWS_PER_ROW;
-            if(course != null && course.getCourseNotes().size() > index) {
+            int index = this.viewIndex / VIEWS_PER_ROW;
+            if (course != null && course.getCourseNotes().size() > index) {
                 note = course.getCourseNotes().get(index);
             } else {
                 isNewItem = true;
