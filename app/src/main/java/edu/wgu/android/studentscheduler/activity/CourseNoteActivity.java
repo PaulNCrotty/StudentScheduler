@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -15,6 +16,7 @@ import java.util.Set;
 import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.domain.CourseNote;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
+import edu.wgu.android.studentscheduler.util.StringUtil;
 
 public class CourseNoteActivity extends StudentSchedulerActivity {
 
@@ -61,6 +63,23 @@ public class CourseNoteActivity extends StudentSchedulerActivity {
                 titleEditText.setText(originalNote.getTitle());
                 noteBodyEditText.setText(originalNote.getNoteBody());
             }
+        }
+    }
+
+    public void shareNote(View view) {
+        EditText noteBodyText = findViewById(R.id.courseNoteEditText);
+        EditText noteTitleText = findViewById(R.id.courseNoteTitleEditText);
+        if(StringUtil.isEmpty(noteBodyText.toString())) {
+            noteBodyText.setBackground(errorBorder);
+            Toast.makeText(this, "Please provide a note to start your message", Toast.LENGTH_SHORT).show();
+        } else {
+            noteBodyText.setBackground(null);
+            String message = noteBodyText.getText().toString();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra("sms_body", message);
+            intent.putExtra(Intent.EXTRA_SUBJECT, noteTitleText.toString());
+            startActivity(intent);
         }
     }
 
