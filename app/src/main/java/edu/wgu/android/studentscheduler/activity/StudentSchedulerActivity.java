@@ -1,8 +1,13 @@
 package edu.wgu.android.studentscheduler.activity;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +25,9 @@ import androidx.fragment.app.FragmentManager;
 import java.util.Set;
 
 import edu.wgu.android.studentscheduler.R;
+import edu.wgu.android.studentscheduler.alert.AlertBroadcaster;
+import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
+import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.fragment.ConfirmationDialogFragment;
 import edu.wgu.android.studentscheduler.fragment.DatePickerFragment;
@@ -46,6 +54,10 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     public static final String COURSE_NOTE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseNote";
     public static final String ASSESSMENT_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.assessmentObject";
 
+    private static final int COURSE_START_DATE_NOTIFICATION_KEY = 0;
+    private static final int COURSE_END_DATE_NOTIFICATION_KEY = 10000;
+    private static final int ASSESSMENT_ATTEMPT_DATE_NOTIFICATION_KEY = 20000;
+
     static final int VIEWS_PER_ROW = 4;
 
     //TODO shouldn't be calling a repo from a view layer;  move this to a business layer and invoke that instead
@@ -63,7 +75,6 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     int whiteColor;
 
     Drawable errorBorder;
-
 
     StudentSchedulerActivity(@LayoutRes int id) {
         super(id);
@@ -151,7 +162,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         String textValue = getEditTextValue(editTextField);
         if (isEmpty(textValue)) {
             invalidValues.add(editTextField);
-        } else if(validValues != null) {
+        } else if (validValues != null) {
             validValues.add(editTextField);
         }
 
@@ -258,5 +269,88 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         courseDetailsActivity.putExtra(TERM_OBJECT_BUNDLE_KEY, term);
         courseDetailsActivity.putExtra(COURSE_ID_BUNDLE_KEY, courseId);
         startActivity(courseDetailsActivity);
+    }
+
+    class AlertRequester {
+
+        private static final long MIN_ALERT_OFFSET = 10000L;
+
+        void setAlerts(long courseId, long courseStartDate, long courseEndDate, String courseName) {
+            long startOfToday = DateTimeUtil.getBeginningOfDay();
+
+            if(courseStartDate >= startOfToday) {
+                int notificationKey = COURSE_START_DATE_NOTIFICATION_KEY + (int) courseId;
+
+                String title = "New Course Starting";
+                String message = "Your course " + courseName + " is about to start.";
+
+                Notification courseStartNotification = getNotification(title, message);
+                Intent alertRequest = new Intent(getApplicationContext(), AlertBroadcaster.class);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_ID, notificationKey);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_COLOR_KEY, orangeColor);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_KEY, courseStartNotification);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), notificationKey, alertRequest, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                long triggerAtMillis = (courseStartDate - startOfToday) * DateTimeUtil.MILLISECONDS_PER_SECOND + MIN_ALERT_OFFSET;
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, pendingIntent);
+            }
+
+            if(courseEndDate >= startOfToday) {
+                int notificationKey = COURSE_END_DATE_NOTIFICATION_KEY + (int) courseId;
+
+                String title = "Course Ending Soon";
+                String message = "Your course " + courseName + " is about to end.";
+
+                Notification courseStartNotification = getNotification(title, message);
+                Intent alertRequest = new Intent(getApplicationContext(), AlertBroadcaster.class);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_ID, notificationKey);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_COLOR_KEY, orangeColor);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_KEY, courseStartNotification);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), notificationKey, alertRequest, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                long triggerAtMillis = (courseEndDate - startOfToday) * DateTimeUtil.MILLISECONDS_PER_SECOND + MIN_ALERT_OFFSET;
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, pendingIntent);
+            }
+        }
+
+        void setAlerts(Long courseId, long assessmentDate, String assessmentName) {
+            long startOfToday = DateTimeUtil.getBeginningOfDay();
+
+            if(assessmentDate >= startOfToday) {
+                int notificationKey = ASSESSMENT_ATTEMPT_DATE_NOTIFICATION_KEY + courseId.intValue();
+
+                String title = "Assessment Attempt Starting Soon";
+                String message = "Your assessment " + assessmentName + " is scheduled to begin tomorrow.";
+
+                Notification courseStartNotification = getNotification(title, message);
+                Intent alertRequest = new Intent(getApplicationContext(), AlertBroadcaster.class);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_ID, notificationKey);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_COLOR_KEY, orangeColor);
+                alertRequest.putExtra(AlertBroadcaster.NOTIFICATION_KEY, courseStartNotification);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), notificationKey, alertRequest, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                long triggerAtMillis = (assessmentDate - startOfToday) * DateTimeUtil.MILLISECONDS_PER_SECOND + MIN_ALERT_OFFSET;
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, pendingIntent);
+            }
+        }
+
+        private Notification getNotification(String title, String message) {
+            Notification.Builder builder;
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                builder = new Notification.Builder(getApplicationContext(), AlertBroadcaster.NOTIFICATION_ID).setContentTitle(title)
+                        .setColorized(true);
+            } else {
+                builder = new Notification.Builder(getApplicationContext());
+            }
+
+            return builder
+                    .setContentTitle(title)
+                    .setContentText(message)
+                    .setSmallIcon(R.drawable.edit_calendar_icon)
+                    .build();
+        }
     }
 }

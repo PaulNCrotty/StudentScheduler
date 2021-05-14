@@ -1,11 +1,7 @@
 package edu.wgu.android.studentscheduler.activity;
 
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import edu.wgu.android.studentscheduler.R;
-import edu.wgu.android.studentscheduler.alert.AlertRequester;
 import edu.wgu.android.studentscheduler.domain.CourseNote;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
 import edu.wgu.android.studentscheduler.domain.course.Course;
@@ -60,10 +55,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
     private static final String TO_BE_DELETED_ASSESSMENTS_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeDeletedAssessments";
     private static final String TO_BE_DELETED_NOTES_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeDeletedNotes";
     private static final String TO_BE_COURSE_NOTES_ARRAY_KEY = "edu.wgu.android.studentscheduler.activity.toBeCourseNotes";
-
-    private static final int COURSE_START_DATE_NOTIFICATION_KEY = 0;
-    private static final int COURSE_END_DATE_NOTIFICATION_KEY = 1;
-    private static final int ASSESSMENT_ATTEMPT_DATE_NOTIFICATION_KEY = 2;
 
     public CourseDetailsActivity() {
         super(R.layout.activity_course_detail);
@@ -562,13 +553,14 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             }
 
         } else {
+            AlertRequester alertRequester = new AlertRequester();
             long courseId;
             if (course == null) {
                 //new course needs to be created
                 long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
                 courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
-                managerAlerts(new Course(courseId, courseName, courseCode, DateTimeUtil.getDateString(courseStartDate), DateTimeUtil.getDateString(courseEndDate), selectedStatus));
-                //TODO add toast or something?
+                alertRequester.setAlerts(courseId, courseStartDate, courseEndDate, courseName);
+                Toast.makeText(this, "Your new course \"" +  courseName + "\" was saved successfully", Toast.LENGTH_SHORT).show();
             } else {
                 // run updates
                 courseId = course.getId();
@@ -623,10 +615,13 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
             }
             if (toBeAssessments != null) {
-                long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments); //TODO what about modifications/upates to courses?
+                long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments);
+                for(Assessment a: toBeAssessments) {
+                    alertRequester.setAlerts(courseId, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()), a.getName());
+                }
             }
             if (toBeNotes != null) {
-                long[] ids = repositoryManager.insertCourseNotes(courseId, toBeNotes); //TODO what about modifications/updates to course notes?
+                long[] ids = repositoryManager.insertCourseNotes(courseId, toBeNotes);
             }
             if (toBeDeletedAssessment != null && toBeDeletedAssessment.size() > 0) {
                 List<Long> idsToDelete = new ArrayList<>(toBeDeletedAssessment.size());
@@ -674,29 +669,6 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             errorMessage = errorMessage == null ? error : errorMessage + "\n" + error;
         }
         return errorMessage;
-    }
-
-    private void managerAlerts(Course course) {
-        Notification.Builder builder;
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-            builder = new Notification.Builder(this, AlertRequester.NOTIFICATION_ID);
-        } else {
-            builder = new Notification.Builder(this);
-        }
-
-        Notification notification = builder
-                .setContentTitle("New Course Starting")
-                .setContentText("You're course " + course.getCourseName() + " is about to start")
-                .setSmallIcon(R.drawable.edit_calendar_icon)
-                .build();
-
-        Intent alertRequest = new Intent(this, AlertRequester.class);
-        alertRequest.putExtra(AlertRequester.NOTIFICATION_ID, COURSE_START_DATE_NOTIFICATION_KEY);
-        alertRequest.putExtra(AlertRequester.NOTIFICATION_KEY, notification);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, COURSE_START_DATE_NOTIFICATION_KEY, alertRequest, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 10000, pendingIntent);
     }
 
     public void createAssessmentAction(View view) {

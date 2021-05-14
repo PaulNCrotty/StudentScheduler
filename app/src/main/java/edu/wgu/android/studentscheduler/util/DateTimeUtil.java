@@ -22,7 +22,7 @@ public class DateTimeUtil {
     }
 
     /***
-     * Returns the seconds since epoch (1970-01-01'T'00:00:00.000) from a properly formatted
+     * Returns the seconds (not milliseconds) since epoch (1970-01-01'T'00:00:00.000) from a properly formatted
      * ISO8601 date string (yyyy-MM-dd).
      *
      * @param dateString - the date string to parse; should be in ISO8601 format
@@ -70,6 +70,15 @@ public class DateTimeUtil {
 
     public static String getDateTimeString(Calendar calendar) {
         return DATETIME_FORMATTER_ISO_8601.format(calendar.getTime());
+    }
+
+    public static long getBeginningOfDay() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis() / MILLISECONDS_PER_SECOND;
     }
 
     public static String getBeginningOfMonth(int month) {
