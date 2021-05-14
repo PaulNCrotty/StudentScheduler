@@ -4,9 +4,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/scheduler_app_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/scheduler_app_icon"
         android:supportsRtl="true"
         android:theme="@style/StudentSchedulerTheme">
         <activity android:name=".activity.MainActivity">
@@ -24,6 +24,6 @@
         <activity android:name=".activity.CourseDetailsActivity"/>
         <activity android:name=".activity.CourseNoteActivity"/>
         <activity android:name=".activity.AssessmentDetailsActivity"/>
+        <receiver android:name=".alert.AlertRequester" />
     </application>
-
 </manifest>

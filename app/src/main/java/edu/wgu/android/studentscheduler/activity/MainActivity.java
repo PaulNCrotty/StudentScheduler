@@ -10,6 +10,12 @@ import android.view.View;
 import edu.wgu.android.studentscheduler.R;
 
 /**
+ * TODO
+ * f.  Courses - Set alerts for the start and end date, that will trigger when the application is not running.
+ * c.  Assessments - Set alerts for the start and end date, that will trigger when the application is not running.
+ * an action bar: (navigation capability between multiple screens using activity)
+ *
+ *
  * Generally, your fragment must be embedded within an AndroidX FragmentActivity to contribute a
  * portion of UI to that activity's layout. FragmentActivity is the base class for AppCompatActivity,
  * so if you're already subclassing AppCompatActivity to provide backward compatibility in your app,
