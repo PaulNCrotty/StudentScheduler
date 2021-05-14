@@ -1,13 +1,12 @@
 <resources>
     <string name="app_name">StudentScheduler</string>
     <!-- Degree Plan View   -->
-    <string name="degree_plan_title_read_only">Degree Plan for %s (Read Only)</string>
     <string name="degree_plan_title">Degree Plan for %s</string>
     <string name="degree_plan_subtitle">%s</string>
+    <string name="degree_plan_subtitle_read_only">%s (Read Only)</string>
     <!-- Term View   -->
     <string name="fragment_new_term">New Term</string>
     <string name="start_and_end_dates">%s until %s </string>
     <string name="course_title">%s - %s</string>
     <string name="degree_plan_basic_description">%s\'s "%s"</string>
-
 </resources>

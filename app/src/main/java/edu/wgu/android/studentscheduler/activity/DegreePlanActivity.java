@@ -51,8 +51,8 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
         }
         DegreePlan degreePlan = getDegreePlan(degreePlanId);
 
-        ((TextView) findViewById(R.id.degreePlanDetailsMainHeader)).setText(getString(R.string.degree_plan_title_read_only, degreePlan.getStudentName()));
-        ((TextView) findViewById(R.id.degreePlanDetailsSubtitle)).setText(getString(R.string.degree_plan_subtitle, degreePlan.getName()));
+        ((TextView) findViewById(R.id.degreePlanDetailsMainHeader)).setText(getString(R.string.degree_plan_title, degreePlan.getStudentName()));
+        ((TextView) findViewById(R.id.degreePlanDetailsSubtitle)).setText(getString(R.string.degree_plan_subtitle_read_only, degreePlan.getName()));
 
         ConstraintLayout degreePlanContainer = findViewById(R.id.degree_plan_container);
         Context degreePlanContainerContext = degreePlanContainer.getContext();
