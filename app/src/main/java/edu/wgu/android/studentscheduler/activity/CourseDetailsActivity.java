@@ -38,8 +38,6 @@ import static android.view.View.generateViewId;
 
 
 /***
- * Bugs and missing features:
- *   isn't deleting previously saved assessments or notes... only new or 'toBe' versions are getting deleted
  *
  */
 public class CourseDetailsActivity extends StudentSchedulerActivity {
@@ -241,7 +239,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
             // add constraints
             addBannerConstraints(constraintSet, layout.getId(), banner.getId(), removeIcon.getId(), bannerConnectorId);
-            addRemoveIconConstraint(constraintSet, removeIcon.getId(), banner.getId());
+            addIconConstraints(constraintSet, removeIcon.getId(), banner.getId());
             addPlanNamesConstraints(constraintSet, assessmentName.getId(), banner.getId());
             addModifiedDatesConstraints(constraintSet, assessmentDate.getId(), banner.getId());
 
@@ -301,7 +299,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
 
             // add constraints
             addBannerConstraints(constraintSet, layout.getId(), banner.getId(), removeIcon.getId(), bannerConnectorId);
-            addRemoveIconConstraint(constraintSet, removeIcon.getId(), banner.getId());
+            addIconConstraints(constraintSet, removeIcon.getId(), banner.getId());
             addPlanNamesConstraints(constraintSet, assessmentName.getId(), banner.getId());
             addModifiedDatesConstraints(constraintSet, assessmentDate.getId(), banner.getId());
 

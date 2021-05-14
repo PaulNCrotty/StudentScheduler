@@ -86,7 +86,8 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
             "left join term t on t.plan_id = dp.id " +
             "left join course c on c.term_id = t.id " +
             "left join assessment a on a.course_id = c.id " +
-            "where dp.id = ? ";
+            "where dp.id = ? " +
+            "order by t.start_date, c.start_date";
 
         SQLiteDatabase db = getReadableDatabase();
 

@@ -58,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Android Development Misery"
+            android:inputType="text"
             app:layout_constraintBottom_toBottomOf="@+id/courseNameLabel"
             app:layout_constraintStart_toEndOf="@+id/courseNameLabel"
             app:layout_constraintTop_toTopOf="@+id/courseNameLabel" />
@@ -76,6 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="C196"
+            android:inputType="text"
             app:layout_constraintBottom_toBottomOf="@+id/courseCodeLabel"
             app:layout_constraintStart_toEndOf="@+id/courseCodeLabel"
             app:layout_constraintTop_toTopOf="@+id/courseCodeLabel" />
@@ -194,6 +196,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Henry"
+            android:inputType="text"
+            android:maxLength="25"
             app:layout_constraintBottom_toBottomOf="@+id/instructorFirstName"
             app:layout_constraintStart_toEndOf="@+id/instructorFirstName"
             app:layout_constraintTop_toTopOf="@+id/instructorFirstName" />
@@ -211,6 +215,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Ford"
+            android:inputType="text"
+            android:maxLength="35"
             app:layout_constraintBottom_toBottomOf="@+id/instructorLastName"
             app:layout_constraintStart_toEndOf="@+id/instructorLastName"
             app:layout_constraintTop_toTopOf="@+id/instructorLastName" />
@@ -228,7 +234,9 @@
             style="@style/detailsViewEditText"
             android:layout_width="43sp"
             android:layout_height="wrap_content"
-            android:hint="(555)"
+            android:hint="555"
+            android:inputType="phone"
+            android:maxLength="3"
             app:layout_constraintBottom_toBottomOf="@+id/instructorPhoneNumber"
             app:layout_constraintStart_toEndOf="@+id/instructorPhoneNumber"
             app:layout_constraintTop_toTopOf="@+id/instructorPhoneNumber" />
@@ -238,6 +246,8 @@
             android:layout_width="35sp"
             android:layout_height="wrap_content"
             android:hint="555"
+            android:inputType="phone"
+            android:maxLength="3"
             app:layout_constraintBottom_toBottomOf="@+id/instructorPhoneNumber"
             app:layout_constraintStart_toEndOf="@+id/instructorPhoneAreaCodeEditText"
             app:layout_constraintTop_toTopOf="@+id/instructorPhoneNumber" />
@@ -247,6 +257,8 @@
             android:layout_width="43sp"
             android:layout_height="wrap_content"
             android:hint="5555"
+            android:inputType="phone"
+            android:maxLength="4"
             app:layout_constraintBottom_toBottomOf="@+id/instructorPhoneNumber"
             app:layout_constraintStart_toEndOf="@+id/instructorPhonePrefixEditText"
             app:layout_constraintTop_toTopOf="@+id/instructorPhoneNumber" />
@@ -265,6 +277,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="your.email@wgu.edu"
+            android:inputType="textEmailAddress"
             app:layout_constraintBottom_toBottomOf="@+id/instructorEmail"
             app:layout_constraintStart_toEndOf="@+id/instructorEmail"
             app:layout_constraintTop_toTopOf="@+id/instructorEmail" />

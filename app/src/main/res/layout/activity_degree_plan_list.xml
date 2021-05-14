@@ -36,7 +36,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/degreePlanListMainHeader" />
 
-
         <TextView
             android:id="@+id/recentDegreePlansHeader"
             style="@style/detailsViewHeader"
@@ -45,6 +44,27 @@
             android:text="Recent Degree Plans"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/degreePlanListMainHeader" />
+        <ImageButton
+            android:id="@+id/deletePlanButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/addPlanButton"
+            app:layout_constraintTop_toTopOf="@+id/recentDegreePlansHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/recentDegreePlansHeader"
+            android:src="@drawable/subtract_icon"
+            android:background="#FFFFFF"
+            android:onClick="deleteSelectedPlans" />
+        <ImageButton
+            android:id="@+id/addPlanButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/recentDegreePlansHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/recentDegreePlansHeader"
+            android:layout_marginEnd="35dp"
+            android:src="@drawable/add_icon"
+            android:background="#FFFFFF"
+            android:onClick="createNewPlan" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/recentDegreePlansContainer"

@@ -115,7 +115,7 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
 
             // add constraints
             addBannerConstraints(constraintSet, layout.getId(), banner.getId(), removeIcon.getId(), connectionId);
-            addRemoveIconConstraint(constraintSet, removeIcon.getId(), banner.getId());
+            addIconConstraints(constraintSet, removeIcon.getId(), banner.getId());
             addPlanNamesConstraints(constraintSet, title.getId(), banner.getId());
             addModifiedDatesConstraints(constraintSet, dates.getId(), banner.getId());
 

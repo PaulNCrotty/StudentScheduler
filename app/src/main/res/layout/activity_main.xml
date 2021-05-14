@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/edit_calendar"
+        android:src="@drawable/edit_calendar_xlarge"
         android:layout_marginTop="50dp"
         android:contentDescription="generic calendar icon used as logo" />
 

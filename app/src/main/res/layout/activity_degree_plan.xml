@@ -36,35 +36,35 @@
 
         <!-- Term Section -->
         <!-- TODO try to use RecycleView -->
-        <TextView
-            android:id="@+id/termHeader"
-            style="@style/detailsViewHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Terms"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/degreePlanDetailsSubtitle" />
-        <ImageButton
-            android:id="@+id/deleteAssessmentButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:onClick="deleteSelectedAssessments"
-            android:src="@drawable/subtract_icon"
-            app:layout_constraintEnd_toStartOf="@+id/addAssessmentButton"
-            app:layout_constraintBottom_toBottomOf="@+id/termHeader"
-            app:layout_constraintTop_toTopOf="@+id/termHeader" />
-        <ImageButton
-            android:id="@+id/addAssessmentButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="35dp"
-            android:background="#FFFFFF"
-            android:onClick="createAssessmentAction"
-            android:src="@drawable/add_icon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/termHeader"
-            app:layout_constraintTop_toTopOf="@+id/termHeader" />
+<!--        <TextView-->
+<!--            android:id="@+id/termHeader"-->
+<!--            style="@style/detailsViewHeader"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Terms"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/degreePlanDetailsSubtitle" />-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/deleteAssessmentButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="#FFFFFF"-->
+<!--            android:onClick="deleteSelectedAssessments"-->
+<!--            android:src="@drawable/subtract_icon"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/addAssessmentButton"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/termHeader"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/termHeader" />-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/addAssessmentButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="35dp"-->
+<!--            android:background="#FFFFFF"-->
+<!--            android:onClick="createAssessmentAction"-->
+<!--            android:src="@drawable/add_icon"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/termHeader"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/termHeader" />-->
         <!-- Dynamically Filled with associated terms -->
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/termHeader">
+            app:layout_constraintTop_toBottomOf="@+id/degreePlanDetailsSubtitle">
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Primary Action Buttons (submit or cancel transaction) -->
@@ -85,22 +85,13 @@
             app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
             android:background="@color/light_orange"/>
         <Button
-            android:id="@+id/submitButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/degree_plan_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="35dp"
-            android:text="Save"
-            android:onClick="verifyAndSubmitCourse" />
-        <Button
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/degree_plan_container"
-            app:layout_constraintEnd_toStartOf="@+id/submitButton"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="15dp"
-            android:text="Cancel"
+            android:text="Back"
             android:onClick="cancel" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

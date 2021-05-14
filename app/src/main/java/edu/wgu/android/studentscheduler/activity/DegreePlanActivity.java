@@ -3,9 +3,6 @@ package edu.wgu.android.studentscheduler.activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,23 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
-import com.google.gson.Gson;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.wgu.android.studentscheduler.R;
+import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
-import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 
 import static android.view.View.generateViewId;
 
 public class DegreePlanActivity extends StudentSchedulerActivity {
 
-    private static final int MODIFY_TERM_RESULT = 0;
+//    private static final int MODIFY_TERM_RESULT = 0;
 
     private static final Map<CourseStatus, Integer> COURSE_STATUS_MAP = getCourseStatusMap();
 
@@ -55,12 +50,12 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
             degreePlanId = getIntent().getExtras().getLong(DEGREE_PLAN_ID_BUNDLE_KEY);
         }
         DegreePlan degreePlan = getDegreePlan(degreePlanId);
-        Gson gson = new Gson();
-        Log.d("DEGREE_PLAN: ", gson.toJson(degreePlan));
 
-        ConstraintLayout degreePlanContainer = (ConstraintLayout) findViewById(R.id.degree_plan_container);
+        ((TextView) findViewById(R.id.degreePlanDetailsMainHeader)).setText(getString(R.string.degree_plan_title_read_only, degreePlan.getStudentName()));
+        ((TextView) findViewById(R.id.degreePlanDetailsSubtitle)).setText(getString(R.string.degree_plan_subtitle, degreePlan.getName()));
+
+        ConstraintLayout degreePlanContainer = findViewById(R.id.degree_plan_container);
         Context degreePlanContainerContext = degreePlanContainer.getContext();
-        //TODO put styles and formatting in "values"
         int defaultTextHeight = 100; //getResources().getDimensionPixelSize(R.dimen.text_view_term_list_layout_height);
         int termBannerBackgroundColor = Color.parseColor("#3700B3");
         int courseContainerBackgroundColor = Color.parseColor("#DEDEDE");
@@ -92,12 +87,12 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
             dates.setText(getString(R.string.start_and_end_dates, term.getStartDate(), term.getEndDate()));
             degreePlanContainer.addView(dates);
 
-            ImageButton editIcon = new ImageButton(degreePlanContainerContext);
-            editIcon.setId(generateViewId());
-            editIcon.setBackgroundColor(termBannerBackgroundColor);
-//            editIcon.setOnClickListener(new ModifyTermAction(term));
-            editIcon.setImageResource(R.drawable.edit_icon_white);
-            degreePlanContainer.addView(editIcon);
+//            ImageButton editIcon = new ImageButton(degreePlanContainerContext);
+//            editIcon.setId(generateViewId());
+//            editIcon.setBackgroundColor(termBannerBackgroundColor);
+////            editIcon.setOnClickListener(new ModifyTermAction(term));
+//            editIcon.setImageResource(R.drawable.edit_icon_white);
+//            degreePlanContainer.addView(editIcon);
 
             constraints.connect(background.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
             constraints.connect(background.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
@@ -114,17 +109,18 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
             constraints.setMargin(title.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
             constraints.setMargin(title.getId(), ConstraintSet.START, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
 
-            constraints.connect(dates.getId(), ConstraintSet.END, editIcon.getId(), ConstraintSet.START);
+//            constraints.connect(dates.getId(), ConstraintSet.END, editIcon.getId(), ConstraintSet.START);
+            constraints.connect(dates.getId(), ConstraintSet.END, background.getId(), ConstraintSet.END);
             constraints.connect(dates.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.TOP);
             constraints.constrainWidth(dates.getId(), ConstraintSet.WRAP_CONTENT);
             constraints.setMargin(dates.getId(), ConstraintSet.TOP, 20); //perhaps the style will still take effect; otherwise, we'll need some dimens in dp
             constraints.setMargin(dates.getId(), ConstraintSet.START, 20);
             constraints.setMargin(dates.getId(), ConstraintSet.END, 20);
 
-            constraints.connect(editIcon.getId(), ConstraintSet.END, background.getId(), ConstraintSet.END);
-            constraints.connect(editIcon.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.TOP);
-            constraints.constrainWidth(editIcon.getId(), ConstraintSet.WRAP_CONTENT);
-            constraints.setMargin(editIcon.getId(), ConstraintSet.END, 20);
+//            constraints.connect(editIcon.getId(), ConstraintSet.END, background.getId(), ConstraintSet.END);
+//            constraints.connect(editIcon.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.TOP);
+//            constraints.constrainWidth(editIcon.getId(), ConstraintSet.WRAP_CONTENT);
+//            constraints.setMargin(editIcon.getId(), ConstraintSet.END, 20);
 
             //Course Containers and Details
             ConstraintLayout courseContainer = new ConstraintLayout(degreePlanContainerContext);
@@ -136,20 +132,24 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
             constraints.connect(courseContainer.getId(), ConstraintSet.START, background.getId(), ConstraintSet.START);
             constraints.connect(courseContainer.getId(), ConstraintSet.END, background.getId(), ConstraintSet.END);
             constraints.connect(courseContainer.getId(), ConstraintSet.TOP, background.getId(), ConstraintSet.BOTTOM); //begin where termOneBackground border ends (vertically)
-            constraints.constrainHeight(courseContainer.getId(), ConstraintSet.WRAP_CONTENT); //TODO default to some generic value to allow for adding a course when no courses exist (newly created term)?
+            constraints.constrainHeight(courseContainer.getId(), ConstraintSet.WRAP_CONTENT);
 
             ConstraintSet coursesConstraints = new ConstraintSet();
             coursesConstraints.clone(courseContainer);
             Context termContext = courseContainer.getContext();
-            int previousCourseId = courseContainer.getId(); //set first course top relative to container
             List<Course> courses = term.getCourses();
-
+            int previousCourseId = courseContainer.getId(); //set first course top relative to container
             if(courses.size() <= 0) {
-                Button createCourseButton = new Button(termContext);
+//                Button createCourseButton = new Button(termContext);
+//                createCourseButton.setId(generateViewId());
+//                createCourseButton.setTextColor(courseTextColor);
+//                createCourseButton.setText("Create New Course");
+//                createCourseButton.setOnClickListener(v -> showCourseDetailsActivity(term, 0));
+//                courseContainer.addView(createCourseButton);
+                TextView createCourseButton = new TextView(termContext);
                 createCourseButton.setId(generateViewId());
                 createCourseButton.setTextColor(courseTextColor);
-                createCourseButton.setText("Create New Course");
-                createCourseButton.setOnClickListener(v -> showCourseDetailsActivity(term, 0));
+                createCourseButton.setText("No Course Exist in Term");
                 courseContainer.addView(createCourseButton);
 
                 coursesConstraints.connect(createCourseButton.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
@@ -164,11 +164,11 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
                 courseStatus.setImageResource(COURSE_STATUS_MAP.get(course.getStatus()));
                 courseContainer.addView(courseStatus);
 
-                Button courseTitle = new Button(termContext);
+                TextView courseTitle = new TextView(termContext);
                 courseTitle.setId(generateViewId());
                 courseTitle.setTextColor(courseTextColor);
                 courseTitle.setText(getString(R.string.course_title, course.getCourseCode(), course.getCourseName()));
-                courseTitle.setOnClickListener(v -> showCourseDetailsActivity(term, course.getId()));
+//                courseTitle.setOnClickListener(v -> showCourseDetailsActivity(term, course.getId()));
                 courseContainer.addView(courseTitle);
 
                 TextView courseEndDate = new TextView(termContext);
@@ -187,6 +187,7 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
                 coursesConstraints.constrainHeight(courseTitle.getId(), ConstraintSet.WRAP_CONTENT);
                 coursesConstraints.constrainWidth(courseTitle.getId(), ConstraintSet.WRAP_CONTENT);
                 coursesConstraints.setMargin(courseTitle.getId(), ConstraintSet.START, 40);
+                coursesConstraints.setMargin(courseTitle.getId(), ConstraintSet.TOP, 35);
 
                 coursesConstraints.connect(courseEndDate.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
                 coursesConstraints.constrainHeight(courseEndDate.getId(), ConstraintSet.WRAP_CONTENT);

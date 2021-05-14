@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +18,6 @@ import edu.wgu.android.studentscheduler.R;
 import edu.wgu.android.studentscheduler.fragment.NoDegreePlansDialogFragment;
 import edu.wgu.android.studentscheduler.persistence.dao.DegreePlanDao;
 import edu.wgu.android.studentscheduler.util.DateTimeUtil;
-import edu.wgu.android.studentscheduler.widget.IndexedCheckBox;
 
 import static android.view.View.generateViewId;
 
@@ -78,19 +78,32 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
             }
 
             //declare views and prep for basic color styles
+            ImageView dpViewLink = new ImageView(context);
             TextView banner;
             TextView planNames;
             TextView modifiedDates;
             if (useStandardStyles) {
+                dpViewLink.setBackgroundColor(orangeColor);
+                dpViewLink.setImageResource(R.drawable.edit_calendar_icon_white);
                 banner = new TextView(context, null, 0, R.style.listOptionBanner);
                 planNames = new TextView(context, null, 0, R.style.listOptionDetails);
                 modifiedDates = new TextView(context, null, 0, R.style.listOptionDates);
             } else {
+                dpViewLink.setBackgroundColor(whiteColor);
+                dpViewLink.setImageResource(R.drawable.edit_calendar_icon);
                 banner = new TextView(context, null, 0, R.style.listOptionBannerAlt);
                 planNames = new TextView(context, null, 0, R.style.listOptionDetailsAlt);
                 modifiedDates = new TextView(context, null, 0, R.style.listOptionDatesAlt);
             }
             //set content
+            dpViewLink.setId(generateViewId());
+            dpViewLink.setOnClickListener(v -> {
+                Intent intent = new Intent(this, DegreePlanActivity.class);
+                intent.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, d.getId());
+                startActivity(intent);
+            });
+            layout.addView(dpViewLink);
+
             banner.setId(generateViewId());
             banner.setOnClickListener(new ModifyDegreePlanAction(viewIndex++));
             layout.addView(banner);
@@ -106,12 +119,14 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
             layout.addView(modifiedDates);
 
             // add constraints
-            addBannerConstraints(constraintSet, recentPlansContainer.getId(), banner.getId(), bannerConnectorId);
+            addIconConstraints(constraintSet, dpViewLink.getId(), banner.getId());
+            addBannerConstraints(constraintSet, layout.getId(), banner.getId(), dpViewLink.getId(), bannerConnectorId);
             addPlanNamesConstraints(constraintSet, planNames.getId(), banner.getId());
             addModifiedDatesConstraints(constraintSet, modifiedDates.getId(), banner.getId());
 
             //certain constraint overrides
             constraintSet.setMargin(planNames.getId(), ConstraintSet.START, marginStart);
+            constraintSet.setMargin(dpViewLink.getId(), ConstraintSet.START, 1);
 
             //prep for next iteration
             bannerConnectorId = banner.getId();
@@ -135,6 +150,14 @@ public class DegreePlanListActivity extends StudentSchedulerActivity implements 
         Intent degreePlanCreation = new Intent(getApplicationContext(), DegreePlanCreationActivity.class);
         startActivity(degreePlanCreation);
         finish();
+    }
+
+    public void deleteSelectedPlans(View view) {
+        Toast.makeText(this, "Deletion of Degree Plans is not yet supported", Toast.LENGTH_LONG).show();
+    }
+
+    public void createNewPlan(View view) {
+        startActivity(new Intent(this, DegreePlanCreationActivity.class));
     }
 
     private class ModifyDegreePlanAction implements View.OnClickListener {

@@ -254,7 +254,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
         constraintSet.constrainHeight(constrainedViewId, bannerHeight);
     }
 
-    void addRemoveIconConstraint(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
+    void addIconConstraints(ConstraintSet constraintSet, int constrainedViewId, int bannerId) {
         constraintSet.connect(constrainedViewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
         constraintSet.connect(constrainedViewId, ConstraintSet.TOP, bannerId, ConstraintSet.TOP);
         constraintSet.connect(constrainedViewId, ConstraintSet.BOTTOM, bannerId, ConstraintSet.BOTTOM);

@@ -58,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Spring 2021"
+            android:inputType="text"
             app:layout_constraintTop_toTopOf="@+id/termNameLabel"
             app:layout_constraintBottom_toBottomOf="@+id/termNameLabel"
             app:layout_constraintStart_toEndOf="@+id/termNameLabel" />
