@@ -11,4 +11,8 @@
         android:icon="@drawable/home"
         android:title="homeButton"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/degreePlansList"
+        android:title="Degree Plans"
+        app:showAsAction="never"/>
 </menu>

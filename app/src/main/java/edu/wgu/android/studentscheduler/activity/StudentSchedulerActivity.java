@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.res.ResourcesCompat;
@@ -104,6 +106,24 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_appbar_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.backButton:
+                finish();
+                break;
+            case R.id.homeIcon:
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+                break;
+            case R.id.degreePlansList:
+                startActivity(new Intent(this, DegreePlanListActivity.class));
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
