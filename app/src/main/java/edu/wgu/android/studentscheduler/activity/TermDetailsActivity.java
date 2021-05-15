@@ -211,6 +211,7 @@ public class TermDetailsActivity extends StudentSchedulerActivity {
             } else {
                 repositoryManager.updateTerm(term.getId(), name, startDate, endDate, selectedStatus.getStatus());
             }
+            setResult(RESULT_OK);
             finish();
         }
 
