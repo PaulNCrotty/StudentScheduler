@@ -9,4 +9,6 @@
     <string name="start_and_end_dates">%s until %s </string>
     <string name="course_title">%s - %s</string>
     <string name="degree_plan_basic_description">%s\'s "%s"</string>
+    <!-- Assessment List View   -->
+    <string name="assessment_list_title">Assessments for %s</string>
 </resources>

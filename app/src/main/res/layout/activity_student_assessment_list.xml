@@ -5,70 +5,68 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/assessmentListMainContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
+        <!-- Main Activity Banner -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/light_orange"
-            app:layout_constraintBottom_toBottomOf="@+id/degreePlanDetailsMainHeader"
+            app:layout_constraintBottom_toBottomOf="@+id/assessmentListHeader"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/degreePlanDetailsMainHeader"
+            android:id="@+id/assessmentListHeader"
             style="@style/detailsViewBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Degree Plan for Charles Barkley"
-            android:layout_marginEnd="15dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/assessment_list_title"
+            app:layout_constraintEnd_toStartOf="@+id/editIconImage"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/degreePlanDetailsSubtitle"
-            style="@style/detailsViewSubtitle"
+        <ImageView
+            android:id="@+id/editIconImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Path to Victory"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/degreePlanDetailsMainHeader" />
+            android:layout_marginEnd="35dp"
+            android:src="@drawable/edit_calendar_icon"
+            app:layout_constraintBottom_toBottomOf="@+id/assessmentListHeader"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/assessmentListHeader" />
+        
 
+        <!-- Assessment Container -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/degree_plan_container"
+            android:id="@+id/assessmentContainer"
             style="@style/listViewContainerBroad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/degreePlanDetailsSubtitle">
+            app:layout_constraintTop_toBottomOf="@+id/assessmentListHeader"
+            >
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <!-- Primary Action Buttons (submit or cancel transaction) -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/cancelButton"
+            android:background="@color/light_orange"
             app:layout_constraintBottom_toBottomOf="@+id/cancelButton"
-            android:background="@color/light_orange"/>
-        <Button
-            android:id="@+id/assessmentButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/degree_plan_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="15dp"
-            android:text="Assessments"
-            android:onClick="loadStudentAssessments" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cancelButton" />
+
         <Button
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/degree_plan_container"
-            app:layout_constraintEnd_toStartOf="@+id/assessmentButton"
             android:layout_marginEnd="15dp"
+            android:onClick="cancel"
             android:text="Back"
-            android:onClick="cancel" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/assessmentContainer" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

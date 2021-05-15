@@ -26,6 +26,7 @@ public class Course implements Serializable {
         this.status = status;
     }
 
+    @Setter
     private Long id;
     private String courseName;
     private String courseCode;

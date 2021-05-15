@@ -32,6 +32,7 @@ public class DegreePlanExtractor {
     private static int COURSE_END_DATE_COLUMN;
     private static int COURSE_STATUS_COLUMN;
     private static int ASSESSMENT_ID_COLUMN;
+    private static int ASSESSMENT_DATE_COLUMN;
     private static int ASSESSMENT_NAME_COLUMN;
     private static int ASSESSMENT_CODE_COLUMN;
     private static int ASSESSMENT_TYPE_COLUMN;
@@ -88,9 +89,9 @@ public class DegreePlanExtractor {
                 if(assessmentId != 0) {
                     String assessmentName = cursor.getString(ASSESSMENT_NAME_COLUMN);
                     String assessmentCode = cursor.getString(ASSESSMENT_CODE_COLUMN);
+                    String assessmentDate = DateTimeUtil.getDateString(cursor.getLong(ASSESSMENT_DATE_COLUMN));
                     AssessmentType assessmentType = AssessmentType.fromType(cursor.getString(ASSESSMENT_TYPE_COLUMN));
-
-                    course.getAssessments().add(new Assessment(assessmentId, assessmentName, assessmentCode, null, assessmentType)); //TODO does this update the reference used by parent containers (i.e. terms and degreePlan) properly?
+                    course.getAssessments().add(new Assessment(assessmentId, assessmentName, assessmentCode, assessmentDate, assessmentType));
                 }
 
             } while (cursor.moveToNext());
@@ -118,6 +119,7 @@ public class DegreePlanExtractor {
         COURSE_END_DATE_COLUMN = cursor.getColumnIndex("course_end_date");
         COURSE_STATUS_COLUMN = cursor.getColumnIndex("course_status");
         ASSESSMENT_ID_COLUMN = cursor.getColumnIndex("assessment_id");
+        ASSESSMENT_DATE_COLUMN = cursor.getColumnIndex("assessment_date");
         ASSESSMENT_NAME_COLUMN = cursor.getColumnIndex("assessment_name");
         ASSESSMENT_CODE_COLUMN = cursor.getColumnIndex("assessment_code");
         ASSESSMENT_TYPE_COLUMN = cursor.getColumnIndex("assessment_type");

@@ -1,20 +1,15 @@
 package edu.wgu.android.studentscheduler.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
 
 import edu.wgu.android.studentscheduler.R;
+import edu.wgu.android.studentscheduler.domain.DegreePlan;
+import edu.wgu.android.studentscheduler.persistence.MockDegreePlanRepository;
 
 /**
- * TODO
- * f.  Courses - Set alerts for the start and end date, that will trigger when the application is not running.
- * c.  Assessments - Set alerts for the start and end date, that will trigger when the application is not running.
- * an action bar: (navigation capability between multiple screens using activity)
- *
  *
  * Generally, your fragment must be embedded within an AndroidX FragmentActivity to contribute a
  * portion of UI to that activity's layout. FragmentActivity is the base class for AppCompatActivity,
@@ -47,16 +42,10 @@ public class MainActivity extends StudentSchedulerActivity {
         startActivity(new Intent(this, DegreePlanListActivity.class));
     }
 
-    //TODO remove when done....
-    /**
-     * This method converts device specific pixels to density independent pixels.
-     *
-     * @param px A value in px (pixels) unit. Which we need to convert into db
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent dp equivalent to px value
-     */
-    public static float convertPixelsToDp(float px, Context context) {
-        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    public void generatePlanForTesting(View view) {
+        MockDegreePlanRepository degreePlanRepository = new MockDegreePlanRepository();
+        DegreePlan degreePlanData = degreePlanRepository.getDegreePlanData();
+        repositoryManager.insertMockDegreePlan(degreePlanData);
     }
 
 }

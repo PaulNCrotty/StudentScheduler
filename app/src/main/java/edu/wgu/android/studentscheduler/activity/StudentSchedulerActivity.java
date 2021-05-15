@@ -55,6 +55,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
     public static final String COURSE_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseObject";
     public static final String COURSE_NOTE_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.courseNote";
     public static final String ASSESSMENT_OBJECT_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.assessmentObject";
+    public static final String ASSESSMENT_ARRAY_BUNDLE_KEY = "edu.wgu.studentscheduler.activity.assessmentArray";
 
     private static final int COURSE_START_DATE_NOTIFICATION_KEY = 0;
     private static final int COURSE_END_DATE_NOTIFICATION_KEY = 10000;

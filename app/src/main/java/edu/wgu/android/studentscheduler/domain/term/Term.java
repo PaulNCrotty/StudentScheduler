@@ -16,6 +16,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Term implements Serializable {
 
+    @Setter
     private Long id;
     private String name;
     private String startDate;

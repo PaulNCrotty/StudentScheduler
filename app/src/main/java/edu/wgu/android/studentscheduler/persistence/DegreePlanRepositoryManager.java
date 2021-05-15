@@ -63,50 +63,51 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
     public DegreePlan getDegreePlanData(long degreePlanId) {
         String query =
-            "select " +
-                "dp.id as degree_plan_id, " +
-                "dp.student_name as student_name, " +
-                "dp.name as degree_plan_name, " +
-                "t.id as term_id, " +
-                "t.name as term_name, " +
-                "t.start_date as term_start_date, " +
-                "t.end_date as term_end_date, " +
-                "t.status as term_status, "  +
-                "c.id as course_id, " +
-                "c.name as course_name, " +
-                "c.code as course_code, " +
-                "c.start_date as course_start_date, " +
-                "c.end_date as course_end_date, " +
-                "c.status as course_status, " +
-                "a.id as assessment_id, " +
-                "a.name as assessment_name, " +
-                "a.code as assessment_code, " +
-                "a.type as assessment_type " +
-            "from degree_plan dp " +
-            "left join term t on t.plan_id = dp.id " +
-            "left join course c on c.term_id = t.id " +
-            "left join assessment a on a.course_id = c.id " +
-            "where dp.id = ? " +
-            "order by t.start_date, c.start_date";
+                "select " +
+                        "dp.id as degree_plan_id, " +
+                        "dp.student_name as student_name, " +
+                        "dp.name as degree_plan_name, " +
+                        "t.id as term_id, " +
+                        "t.name as term_name, " +
+                        "t.start_date as term_start_date, " +
+                        "t.end_date as term_end_date, " +
+                        "t.status as term_status, " +
+                        "c.id as course_id, " +
+                        "c.name as course_name, " +
+                        "c.code as course_code, " +
+                        "c.start_date as course_start_date, " +
+                        "c.end_date as course_end_date, " +
+                        "c.status as course_status, " +
+                        "a.id as assessment_id, " +
+                        "a.date as assessment_date, " +
+                        "a.name as assessment_name, " +
+                        "a.code as assessment_code, " +
+                        "a.type as assessment_type " +
+                        "from degree_plan dp " +
+                        "left join term t on t.plan_id = dp.id " +
+                        "left join course c on c.term_id = t.id " +
+                        "left join assessment a on a.course_id = c.id " +
+                        "where dp.id = ? " +
+                        "order by t.start_date, c.start_date";
 
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(degreePlanId).toString()});
+        Cursor cursor = db.rawQuery(query, new String[]{Long.valueOf(degreePlanId).toString()});
         return DegreePlanExtractor.extract(cursor); //extractor will close cursor #TODO verify
     }
 
     public List<Term> getPlanTerms(long degreePlanId) {
         String query =
-            "select " +
-                "t.id as term_id, " +
-                "t.name as term_name, " +
-                "t.start_date as term_start_date, " +
-                "t.end_date as term_end_date, " +
-                "t.status as term_status " +
-            "from degree_plan dp " +
-            "join term t on t.plan_id = dp.id " +
-            "where dp.id = ? " +
-            "order by t.start_date";
+                "select " +
+                        "t.id as term_id, " +
+                        "t.name as term_name, " +
+                        "t.start_date as term_start_date, " +
+                        "t.end_date as term_end_date, " +
+                        "t.status as term_status " +
+                        "from degree_plan dp " +
+                        "join term t on t.plan_id = dp.id " +
+                        "where dp.id = ? " +
+                        "order by t.start_date";
 
         SQLiteDatabase db = getReadableDatabase();
 
@@ -116,11 +117,11 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
     private String getIdStringList(List<Long> ids) {
         String idStringList = null;
-        if(ids.size() > 0) {
+        if (ids.size() > 0) {
             StringBuilder sb = new StringBuilder();
             sb.append(ids.get(0));
             for (int i = 1; i < ids.size(); i++) {
-                    sb.append(", ").append(ids.get(i));
+                sb.append(", ").append(ids.get(i));
             }
             idStringList = sb.toString();
         }
@@ -131,16 +132,16 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
     public List<Course> getTermCourses(long termId) {
         String query =
                 "select " +
-                    "c.id as course_id, " +
-                    "c.name as course_name, " +
-                    "c.code as course_code, " +
-                    "c.start_date as course_start_date, " +
-                    "c.end_date as course_end_date, " +
-                    "c.status as course_status " +
-                "from term t " +
-                "join course c on c.term_id = t.id " +
-                "where t.id = ? " +
-                "order by c.start_date";
+                        "c.id as course_id, " +
+                        "c.name as course_name, " +
+                        "c.code as course_code, " +
+                        "c.start_date as course_start_date, " +
+                        "c.end_date as course_end_date, " +
+                        "c.status as course_status " +
+                        "from term t " +
+                        "join course c on c.term_id = t.id " +
+                        "where t.id = ? " +
+                        "order by c.start_date";
 
         SQLiteDatabase db = getReadableDatabase();
 
@@ -151,31 +152,31 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
     public Course getCourseDetails(long courseId) {
         String query =
                 "select " +
-                    "c.id as course_id, " +
-                    "c.name as course_name, " +
-                    "c.code as course_code, " +
-                    "c.start_date as course_start_date, " +
-                    "c.end_date as course_end_date, " +
-                    "c.status as course_status, " +
-                    "i.id as instructor_id, " +
-                    "i.first_name as instructor_first, " +
-                    "i.last_name as instructor_last, " +
-                    "i.phone as instructor_phone, " +
-                    "i.email as instructor_email, " +
-                    "a.id as assessment_id, " +
-                    "a.name as assessment_name, " +
-                    "a.code as assessment_code, " +
-                    "a.date as assessment_date, " +
-                    "a.type as assessment_type " +
-                "from course c " +
-                    "left join instructor i on i.id = c.instructor_id " +
-                    "left join assessment a on a.course_id = c.id " +
-                "where c.id = ? ";
+                        "c.id as course_id, " +
+                        "c.name as course_name, " +
+                        "c.code as course_code, " +
+                        "c.start_date as course_start_date, " +
+                        "c.end_date as course_end_date, " +
+                        "c.status as course_status, " +
+                        "i.id as instructor_id, " +
+                        "i.first_name as instructor_first, " +
+                        "i.last_name as instructor_last, " +
+                        "i.phone as instructor_phone, " +
+                        "i.email as instructor_email, " +
+                        "a.id as assessment_id, " +
+                        "a.name as assessment_name, " +
+                        "a.code as assessment_code, " +
+                        "a.date as assessment_date, " +
+                        "a.type as assessment_type " +
+                        "from course c " +
+                        "left join instructor i on i.id = c.instructor_id " +
+                        "left join assessment a on a.course_id = c.id " +
+                        "where c.id = ? ";
 
 
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
+        Cursor cursor = db.rawQuery(query, new String[]{Long.valueOf(courseId).toString()});
         return CourseDetailsExtractor.extract(cursor); //extractor will close cursor #TODO verify
     }
 
@@ -226,6 +227,63 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
             data.put(DegreePlanContract.DegreePlan.STUDENT_NAME, studentName);
         }
         return db.insert(DegreePlanContract.DegreePlan.TABLE_NAME, null, data);
+    }
+
+    public void insertMockDegreePlan(DegreePlan plan) {
+        long degreePlanId = insertDegreePlan(plan.getName(), plan.getStudentName());
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            ContentValues termData = new ContentValues();
+            ContentValues courseData = new ContentValues();
+            ContentValues instructorData = new ContentValues();
+            ContentValues assessmentData = new ContentValues();
+            for (Term t : plan.getTerms()) {
+                termData.put(DegreePlanContract.Term.DEGREE_PLAN_ID, degreePlanId);
+                termData.put(DegreePlanContract.Term.NAME, t.getName());
+                termData.put(DegreePlanContract.Term.START_DATE, DateTimeUtil.getSecondsSinceEpoch(t.getStartDate()));
+                termData.put(DegreePlanContract.Term.END_DATE, DateTimeUtil.getSecondsSinceEpoch(t.getEndDate()));
+
+                String status = t.getStatus().getStatus();
+                if (!isEmpty(status)) {
+                    termData.put(DegreePlanContract.Term.STATUS, status.toUpperCase());
+                }
+                //insert and set term id one at a time
+                t.setId(db.insert(DegreePlanContract.Term.TABLE_NAME, null, termData));
+
+                for (Course c : t.getCourses()) {
+                    CourseInstructor instructor = c.getInstructor();
+                    instructorData.put(DegreePlanContract.Instructor.FIRST_NAME, instructor.getFirstName());
+                    instructorData.put(DegreePlanContract.Instructor.LAST_NAME, instructor.getLastName());
+                    instructorData.put(DegreePlanContract.Instructor.PHONE_NUMBER, instructor.getPhoneNumber());
+                    instructorData.put(DegreePlanContract.Instructor.EMAIL, instructor.getEmail());
+
+                    long instructorId = db.insert(DegreePlanContract.Instructor.TABLE_NAME, null, instructorData);
+
+                    courseData.put(DegreePlanContract.Course.TERM_ID, t.getId());
+                    courseData.put(DegreePlanContract.Course.INSTRUCTOR, instructorId);
+                    courseData.put(DegreePlanContract.Course.NAME, c.getCourseName());
+                    courseData.put(DegreePlanContract.Course.CODE, c.getCourseCode());
+                    courseData.put(DegreePlanContract.Course.STATUS, c.getStatus().getStatus().toUpperCase());
+                    courseData.put(DegreePlanContract.Course.START_DATE, DateTimeUtil.getSecondsSinceEpoch(c.getStartDate()));
+                    courseData.put(DegreePlanContract.Course.END_DATE, DateTimeUtil.getSecondsSinceEpoch(c.getEndDate()));
+                    c.setId(db.insert(DegreePlanContract.Course.TABLE_NAME, null, courseData));
+
+                    for(Assessment a: c.getAssessments()) {
+                        assessmentData.put(DegreePlanContract.Assessment.COURSE_ID, c.getId());
+                        assessmentData.put(DegreePlanContract.Assessment.NAME, a.getName());
+                        assessmentData.put(DegreePlanContract.Assessment.CODE, a.getCode());
+                        assessmentData.put(DegreePlanContract.Assessment.DATE, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()));
+                        assessmentData.put(DegreePlanContract.Assessment.TYPE, a.getType().getType());
+                        db.insert(DegreePlanContract.Assessment.TABLE_NAME, null, assessmentData);
+                    }
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public long insertTerm(long degreePlanId, String termName, long startDate, long endDate, String status) {
@@ -285,10 +343,10 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         data.put(DegreePlanContract.Course.CODE, courseCode);
         data.put(DegreePlanContract.Course.STATUS, status.toUpperCase());
 
-        if(courseStartDate !=  0) {
+        if (courseStartDate != 0) {
             data.put(DegreePlanContract.Course.START_DATE, courseStartDate);
         }
-        if(courseEndDate != 0) {
+        if (courseEndDate != 0) {
             data.put(DegreePlanContract.Course.END_DATE, courseEndDate);
         }
         return db.insert(DegreePlanContract.Course.TABLE_NAME, null, data);
@@ -301,10 +359,10 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         data.put(DegreePlanContract.Course.CODE, courseCode);
         data.put(DegreePlanContract.Course.STATUS, status.toUpperCase());
 
-        if(courseStartDate !=  0) {
+        if (courseStartDate != 0) {
             data.put(DegreePlanContract.Course.START_DATE, courseStartDate);
         }
-        if(courseEndDate != 0) {
+        if (courseEndDate != 0) {
             data.put(DegreePlanContract.Course.END_DATE, courseEndDate);
         }
 
@@ -318,7 +376,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         try {
             int i = 0;
             ContentValues data = new ContentValues();
-            for(Assessment a: assessments) {
+            for (Assessment a : assessments) {
                 data.put(DegreePlanContract.Assessment.COURSE_ID, courseId);
                 data.put(DegreePlanContract.Assessment.NAME, a.getName());
                 data.put(DegreePlanContract.Assessment.CODE, a.getCode());
@@ -340,7 +398,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         try {
             int i = 0;
             ContentValues data = new ContentValues();
-            for(Assessment a: assessments) {
+            for (Assessment a : assessments) {
                 data.put(DegreePlanContract.Assessment.NAME, a.getName());
                 data.put(DegreePlanContract.Assessment.CODE, a.getCode());
                 data.put(DegreePlanContract.Assessment.DATE, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()));
@@ -356,16 +414,16 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
 
     public List<CourseNote> getCourseNotes(long courseId) {
         String query =
-            "select " +
-                "id as note_id, " +
-                "title as note_title, " +
-                "note as note_body, " +
-                "created_date as note_created_date, " +
-                "modified_date as note_modified_date " +
-            "from course_note where course_id = ? ";
+                "select " +
+                        "id as note_id, " +
+                        "title as note_title, " +
+                        "note as note_body, " +
+                        "created_date as note_created_date, " +
+                        "modified_date as note_modified_date " +
+                        "from course_note where course_id = ? ";
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, new String[]{ Long.valueOf(courseId).toString()});
+        Cursor cursor = db.rawQuery(query, new String[]{Long.valueOf(courseId).toString()});
         return CourseNoteExtractor.extract(cursor);
     }
 
@@ -376,7 +434,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         try {
             int i = 0;
             ContentValues data = new ContentValues();
-            for(CourseNote n: notes) {
+            for (CourseNote n : notes) {
                 data.put(DegreePlanContract.CourseNote.COURSE_ID, courseId);
                 data.put(DegreePlanContract.CourseNote.TITLE, n.getTitle());
                 data.put(DegreePlanContract.CourseNote.NOTE, n.getNoteBody());
@@ -397,7 +455,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         try {
             int i = 0;
             ContentValues data = new ContentValues();
-            for(CourseNote n: notes) {
+            for (CourseNote n : notes) {
                 data.put(DegreePlanContract.CourseNote.COURSE_ID, courseId);
                 data.put(DegreePlanContract.CourseNote.TITLE, n.getTitle());
                 data.put(DegreePlanContract.CourseNote.NOTE, n.getNoteBody());
@@ -417,7 +475,7 @@ public class DegreePlanRepositoryManager extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-            for(int i = 0; i < entryIds.size(); i++) {
+            for (int i = 0; i < entryIds.size(); i++) {
                 rowsDeleted[i] = db.delete(tableName, "ID = ? ", new String[]{entryIds.get(i).toString()});
             }
             db.setTransactionSuccessful();

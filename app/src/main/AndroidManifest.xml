@@ -24,6 +24,7 @@
         <activity android:name=".activity.CourseDetailsActivity"/>
         <activity android:name=".activity.CourseNoteActivity"/>
         <activity android:name=".activity.AssessmentDetailsActivity"/>
+        <activity android:name=".activity.StudentAssessmentListActivity"/>
         <receiver android:name=".alert.AlertBroadcaster" />
     </application>
 </manifest>

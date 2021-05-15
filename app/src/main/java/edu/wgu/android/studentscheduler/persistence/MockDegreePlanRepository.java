@@ -9,12 +9,14 @@ import java.util.Random;
 
 import edu.wgu.android.studentscheduler.domain.CourseNote;
 import edu.wgu.android.studentscheduler.domain.assessment.Assessment;
+import edu.wgu.android.studentscheduler.domain.assessment.AssessmentType;
 import edu.wgu.android.studentscheduler.domain.course.Course;
 import edu.wgu.android.studentscheduler.domain.course.CourseInstructor;
 import edu.wgu.android.studentscheduler.domain.course.CourseStatus;
 import edu.wgu.android.studentscheduler.domain.DegreePlan;
 import edu.wgu.android.studentscheduler.domain.term.Term;
 import edu.wgu.android.studentscheduler.domain.term.TermStatus;
+import edu.wgu.android.studentscheduler.util.DateTimeUtil;
 
 import static edu.wgu.android.studentscheduler.util.DateTimeUtil.getDateString;
 
@@ -28,6 +30,7 @@ public class MockDegreePlanRepository {
 
     private static final int MAX_COURSES_PER_TERM = 10;
     private static final int MAX_COURSES_TERMS_PER_PLAN = 10;
+    private static final int MAX_ASSESSMENTS_PER_COURSE = 4; // just because it seems reasonable?
     private static final List<String> TERM_NAME_POOL = Arrays.asList("%d Winter Term", "%d Spring Term", "%d Summer Term", "%d Fall Term");
 
     private static final List<String> COURSE_CODE_POOL = Arrays.asList("C", "D", "F", "G", "M", "R", "S", "T");
@@ -37,6 +40,17 @@ public class MockDegreePlanRepository {
             "Clara Schumann Concerts", "Robert Schumann Rhythms", "Granville General Computations",
             "Mozart Music Medley", "Serena Strength Training", "Schwarzenegger Training",
             "Germain Geometry");
+
+    private static final List<String> COURSE_INSTRUCTOR_POOL = Arrays.asList("Ada Lovelace", "Isaac Newton",
+            "Clara Schumann", "Marie Curie", "Albert Einstein", "Wolfgang Mozart");
+
+    private static final List<String> ASSESSMENT_NAME_POOL = Arrays.asList("Android Application",
+            "Musical Performances", "Cross Fit Burnout", "Geometric Analysis", "Relational Structures",
+            "Advanced Biochemistry", "Data Structures", "Algorithms");
+
+    private static final CourseStatus[] COURSE_STATUSES = CourseStatus.values();
+    private static final AssessmentType[] ASSESSMENT_TYPES = AssessmentType.values();
+    private static final long NOW_IN_SECONDS = DateTimeUtil.getSecondsSinceEpoch();
 
     /**
      * Generates a calendar instance at the beginning of a month anywhere from 5 to 0 months from today
@@ -84,7 +98,7 @@ public class MockDegreePlanRepository {
     protected Calendar getFirstTermStartDate(int amountOTermsInDegreePlan) {
         Calendar beginning = Calendar.getInstance();
         beginning.setTime(CURRENT_TERM_START.getTime()); //effectively clone current term start date
-        if(amountOTermsInDegreePlan > 0 && amountOTermsInDegreePlan < 5) {
+        if (amountOTermsInDegreePlan > 0 && amountOTermsInDegreePlan < 5) {
             if (RANDOM.nextBoolean()) {
                 beginning.add(Calendar.MONTH, -MONTHS_PER_TERM); //create a past term in random cases
             }
@@ -147,22 +161,22 @@ public class MockDegreePlanRepository {
     protected List<Course> getMockCourses(Calendar termStartDate) {
         int amountOfCoursesInTerm = RANDOM.nextInt(MAX_COURSES_PER_TERM) + 1;
         List<Course> courses = new ArrayList<>(amountOfCoursesInTerm);
-        CourseStatus[] courseStatuses = CourseStatus.values();
-
         int avgDaysPerCourse = getDaysPerCourse(amountOfCoursesInTerm);
 
         Calendar courseStartDate = Calendar.getInstance();
         courseStartDate.setTime(termStartDate.getTime());
         for (int i = 0; i < amountOfCoursesInTerm; i++) {
             int nameIndex = RANDOM.nextInt(COURSE_NAME_POOL.size());
+            String codePrefix = COURSE_CODE_POOL.get(RANDOM.nextInt(COURSE_CODE_POOL.size())) + nameIndex;
+
             String courseName = COURSE_NAME_POOL.get(nameIndex);
-            String courseCode = "" + COURSE_CODE_POOL.get(RANDOM.nextInt(COURSE_CODE_POOL.size())) + nameIndex + COURSE_CODE_NUMBER_POOL.get(RANDOM.nextInt(COURSE_CODE_NUMBER_POOL.size()));
+            String courseCode = "" + codePrefix + COURSE_CODE_NUMBER_POOL.get(RANDOM.nextInt(COURSE_CODE_NUMBER_POOL.size()));
             String startDate = getDateString(courseStartDate);
             String endDate = getDateString(toCourseEndDate(courseStartDate, avgDaysPerCourse));
-            List<Assessment> assessments = null; //TODO add fake assessments?
-            CourseStatus status = courseStatuses[RANDOM.nextInt(courseStatuses.length)]; //TODO select course status from a smaller pool that make sense based upon specific course dates
-            CourseInstructor instructor = null; //TODO add fake instructor?
-            List<CourseNote> courseNotes = null; //TODO add random notes?
+            CourseStatus status = getCourseStatus(startDate, endDate);
+            CourseInstructor instructor = getInstructor();
+            List<Assessment> assessments = getAssessments(codePrefix, endDate);
+            List<CourseNote> courseNotes = null;
 
             courses.add(new Course((long) (i + 1), courseName, courseCode, startDate, endDate, status, instructor, assessments, courseNotes));
 
@@ -171,6 +185,49 @@ public class MockDegreePlanRepository {
 
         }
         return courses;
+    }
+
+    private CourseStatus getCourseStatus(String courseStartDate, String courseEndDate) {
+        CourseStatus status;
+        long startDateSeconds = DateTimeUtil.getSecondsSinceEpoch(courseStartDate);
+        long endDateSeconds = DateTimeUtil.getSecondsSinceEpoch(courseEndDate);
+        if (NOW_IN_SECONDS > endDateSeconds) {
+            if (RANDOM.nextInt() % 4 == 0) {  // %20 chance of failure for past courses...
+                status = CourseStatus.FAILED;
+            } else {
+                status = CourseStatus.PASSED;
+            }
+        } else if (NOW_IN_SECONDS > startDateSeconds) {  // not beyond end date, but beyond start date ("current")
+            if (RANDOM.nextInt() % 4 == 0) {  // %20 chance of only being enrolled ...
+                status = CourseStatus.ENROLLED;
+            } else {
+                status = CourseStatus.IN_PROGRESS;
+            }
+        } else {  // future courses
+            status = CourseStatus.PLANNED;
+        }
+
+        return status;
+    }
+
+    private List<Assessment> getAssessments(String codePrefix, String endDate) {
+        int amountOfAssessments = RANDOM.nextInt(MAX_ASSESSMENTS_PER_COURSE) + 1;
+        List<Assessment> assessments = new ArrayList<>(amountOfAssessments);
+        for (int i = 0; i < amountOfAssessments; i++) {
+            AssessmentType type = ASSESSMENT_TYPES[RANDOM.nextInt(ASSESSMENT_TYPES.length)];
+            assessments.add(new Assessment(0L, ASSESSMENT_NAME_POOL.get(RANDOM.nextInt(ASSESSMENT_NAME_POOL.size())), codePrefix + i, endDate, type));
+        }
+
+        return assessments;
+    }
+
+    private CourseInstructor getInstructor() {
+        String[] names = COURSE_INSTRUCTOR_POOL.get(RANDOM.nextInt(COURSE_INSTRUCTOR_POOL.size())).split(" ");
+
+        String firstName = names[0];
+        String lastName = names[1];
+        String email = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@wgu.edu";
+        return new CourseInstructor(0L, firstName, lastName, "208-555-5555", email);
     }
 
     Calendar toCourseEndDate(Calendar courseStartDate, int daysPerCourse) {
@@ -190,7 +247,7 @@ public class MockDegreePlanRepository {
     }
 
     private static int getDaysPerCourse(int amountOfCoursesInTerm, int buffer) {
-        return ((AVG_DAYS_PER_MONTH * MONTHS_PER_TERM)/amountOfCoursesInTerm) - buffer;
+        return ((AVG_DAYS_PER_MONTH * MONTHS_PER_TERM) / amountOfCoursesInTerm) - buffer;
     }
 
 }
