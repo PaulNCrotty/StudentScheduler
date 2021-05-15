@@ -38,12 +38,37 @@ public class StudentAssessmentListActivity extends StudentSchedulerActivity {
     private void insertAssessments(List<Assessment> assessments) {
         ConstraintLayout layout = findViewById(R.id.assessmentContainer);
         init();
+
         Context context = layout.getContext();
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(layout);
 
         int bannerConnectorId = layout.getId();
         boolean useStandardStyles = true;
+
+        if(assessments.size() == 0) { // put place holder to help user known why the screen is empty
+            TextView banner = new TextView(context, null, 0, R.style.listOptionBanner);
+            TextView placeholderName = new TextView(context, null, 0, R.style.listOptionDetails);
+
+            //set content
+            banner.setId(generateViewId());
+            layout.addView(banner);
+
+            placeholderName.setId(generateViewId());
+            placeholderName.setText(getString(R.string.no_assessments_found));
+            layout.addView(placeholderName);
+
+            // add constraints
+            addBannerConstraints(constraintSet, layout.getId(), banner.getId(), bannerConnectorId);
+            addPlanNamesConstraints(constraintSet, placeholderName.getId(), banner.getId());
+            constraintSet.setMargin(placeholderName.getId(), ConstraintSet.START, marginStart);
+
+            //prep for next iteration
+            bannerConnectorId = banner.getId();
+            useStandardStyles = !useStandardStyles;
+        }
+
+
         for (Assessment a : assessments) {
             //declare views and prep for basic color styles
             TextView banner;

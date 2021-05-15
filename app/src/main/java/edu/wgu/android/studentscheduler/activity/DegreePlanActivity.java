@@ -156,7 +156,7 @@ public class DegreePlanActivity extends StudentSchedulerActivity {
                 TextView createCourseButton = new TextView(termContext);
                 createCourseButton.setId(generateViewId());
                 createCourseButton.setTextColor(courseTextColor);
-                createCourseButton.setText("No Course Exist in Term");
+                createCourseButton.setText(getString(R.string.no_courses_found));
                 courseContainer.addView(createCourseButton);
 
                 coursesConstraints.connect(createCourseButton.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);

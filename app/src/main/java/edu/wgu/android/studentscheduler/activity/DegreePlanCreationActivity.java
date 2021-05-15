@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.IdRes;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,6 +54,8 @@ public class DegreePlanCreationActivity extends StudentSchedulerActivity {
             repositoryManager.insertTerm(degreePlanId, termName, termStartDateSeconds, termEndDateSeconds, termStatus.toUpperCase());
             Intent termListActivity = new Intent(getApplicationContext(), TermListActivity.class);
             termListActivity.putExtra(DEGREE_PLAN_ID_BUNDLE_KEY, degreePlanId);
+            termListActivity.putExtra(DEGREE_PLAN_STUDENT_NAME_BUNDLE_KEY, studentName);
+            termListActivity.putExtra(DEGREE_PLAN_NAME_BUNDLE_KEY, planName);
             startActivity(termListActivity);
             finish();
         }
