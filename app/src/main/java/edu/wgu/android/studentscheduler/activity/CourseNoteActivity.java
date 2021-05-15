@@ -75,10 +75,12 @@ public class CourseNoteActivity extends StudentSchedulerActivity {
         } else {
             noteBodyText.setBackground(null);
             String message = noteBodyText.getText().toString();
+            String title = noteTitleText.getText().toString();
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.putExtra("sms_body", message);
-            intent.putExtra(Intent.EXTRA_SUBJECT, noteTitleText.toString());
+            intent.putExtra(Intent.EXTRA_SUBJECT, title);
+            intent.putExtra(Intent.EXTRA_TEXT, message);
             startActivity(intent);
         }
     }
