@@ -296,14 +296,14 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
 
         private static final long MIN_ALERT_OFFSET = 10000L;
 
-        void setAlerts(long courseId, long courseStartDate, long courseEndDate, String courseName) {
+        void setAlerts(long courseId, long courseStartDate, long courseEndDate, String courseCode, String courseName) {
             long startOfToday = DateTimeUtil.getBeginningOfDay();
 
             if(courseStartDate >= startOfToday) {
                 int notificationKey = COURSE_START_DATE_NOTIFICATION_KEY + (int) courseId;
 
                 String title = "New Course Starting";
-                String message = "Your course " + courseName + " is about to start.";
+                String message = "Your course " + courseCode + ": " + courseName + " is about to start.";
 
                 Notification courseStartNotification = getNotification(title, message);
                 Intent alertRequest = new Intent(getApplicationContext(), AlertBroadcaster.class);
@@ -321,7 +321,7 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
                 int notificationKey = COURSE_END_DATE_NOTIFICATION_KEY + (int) courseId;
 
                 String title = "Course Ending Soon";
-                String message = "Your course " + courseName + " is about to end.";
+                String message = "Your course " + courseCode + ": " + courseName + " is about to end.";
 
                 Notification courseStartNotification = getNotification(title, message);
                 Intent alertRequest = new Intent(getApplicationContext(), AlertBroadcaster.class);
@@ -336,14 +336,14 @@ public class StudentSchedulerActivity extends AppCompatActivity implements Confi
             }
         }
 
-        void setAlerts(Long courseId, long assessmentDate, String assessmentName) {
+        void setAlerts(Long courseId, long assessmentDate, String assessmentCode, String assessmentName) {
             long startOfToday = DateTimeUtil.getBeginningOfDay();
 
             if(assessmentDate >= startOfToday) {
                 int notificationKey = ASSESSMENT_ATTEMPT_DATE_NOTIFICATION_KEY + courseId.intValue();
 
                 String title = "Assessment Attempt Starting Soon";
-                String message = "Your assessment " + assessmentName + " is scheduled to begin tomorrow.";
+                String message = "Your assessment " + assessmentCode + ": " + assessmentName + " is scheduled to begin today.";
 
                 Notification courseStartNotification = getNotification(title, message);
                 Intent alertRequest = new Intent(getApplicationContext(), AlertBroadcaster.class);

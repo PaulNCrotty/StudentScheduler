@@ -557,7 +557,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 //new course needs to be created
                 long instructorId = repositoryManager.insertInstructor(instructorFirstName, instructorLastName, instructorPhoneAreaCode, instructorPhonePrefix, instructorPhoneSuffix, instructorEmail);
                 courseId = repositoryManager.insertCourse(term.getId(), instructorId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
-                alertRequester.setAlerts(courseId, courseStartDate, courseEndDate, courseName);
+                alertRequester.setAlerts(courseId, courseStartDate, courseEndDate, courseCode, courseName);
                 Toast.makeText(this, "Your new course \"" +  courseName + "\" was saved successfully", Toast.LENGTH_SHORT).show();
             } else {
                 // run updates
@@ -572,6 +572,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 if (!course.equals(modifiedCourse)) {
                     Log.i("UPDATE", "Updating course information from \n" + course + " \n to \n" + modifiedCourse);
                     repositoryManager.updateCourse(courseId, courseName, courseCode, courseStartDate, courseEndDate, selectedStatus.getStatus());
+                    alertRequester.setAlerts(courseId, courseStartDate, courseEndDate, courseCode, courseName);
                 }
 
                 //check for and persiste (update) any modifications to existing assessments
@@ -592,6 +593,9 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
                 if (modifiedAssessments.size() > 0) {
                     Log.d("UPDATE", "updating assessment details for modified assessments.");
                     int[] ids = repositoryManager.updateAssessments(modifiedAssessments);
+                    for(Assessment a: modifiedAssessments) {
+                        alertRequester.setAlerts(courseId, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()), a.getCode(), a.getName());
+                    }
                 }
 
                 //check for and persist (update) any modifications to existing notes
@@ -615,7 +619,7 @@ public class CourseDetailsActivity extends StudentSchedulerActivity {
             if (toBeAssessments != null) {
                 long[] ids = repositoryManager.insertAssessments(courseId, toBeAssessments);
                 for(Assessment a: toBeAssessments) {
-                    alertRequester.setAlerts(courseId, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()), a.getName());
+                    alertRequester.setAlerts(courseId, DateTimeUtil.getSecondsSinceEpoch(a.getAssessmentDate()), a.getCode(), a.getName());
                 }
             }
             if (toBeNotes != null) {
